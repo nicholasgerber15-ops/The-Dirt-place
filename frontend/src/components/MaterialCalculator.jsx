@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, Info } from 'lucide-react';
+import { Calculator, Info, Mail } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -16,6 +16,9 @@ const MaterialCalculator = () => {
 
   const [result, setResult] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [isEmailingSending, setIsEmailSending] = useState(false);
+  const [emailMessage, setEmailMessage] = useState('');
 
   const projectTypes = ['Driveway', 'Garden Bed', 'Pathway', 'Patio', 'Landscape Area', 'Other'];
   const materials = ['Topsoil', 'Gravel', 'Sand', 'Road Base', 'Mulch', 'Decorative Rock'];
@@ -47,6 +50,31 @@ const MaterialCalculator = () => {
       alert('Error calculating material. Please check your inputs and try again.');
     } finally {
       setIsCalculating(false);
+    }
+  };
+
+  const handleEmailResults = async () => {
+    if (!userEmail) {
+      alert('Please enter your email address');
+      return;
+    }
+
+    setIsEmailSending(true);
+    setEmailMessage('');
+
+    try {
+      await axios.post(`${API}/email-calculation`, {
+        email: userEmail,
+        calculation: result
+      });
+
+      setEmailMessage('Calculation results sent to your email!');
+      setTimeout(() => setEmailMessage(''), 5000);
+    } catch (error) {
+      console.error('Email error:', error);
+      setEmailMessage('Failed to send email. Please try again.');
+    } finally {
+      setIsEmailSending(false);
     }
   };
 
@@ -243,6 +271,39 @@ const MaterialCalculator = () => {
                 {result.note}
               </p>
             </div>
+          </div>
+
+          <div className="mt-6 p-6 bg-[#FAF9F6] border-2 border-[#D9A441] rounded">
+            <h4 className="text-lg font-bold text-[#3B2F2F] mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              📧 Email These Results
+            </h4>
+            <p className="text-sm text-[#6B4F3F] mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              Save your calculation for later or share it with your contractor
+            </p>
+            <div className="flex gap-3">
+              <input
+                type="email"
+                value={userEmail}
+                onChange={(e) => setUserEmail(e.target.value)}
+                placeholder="your@email.com"
+                className="flex-1 px-4 py-3 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none transition-colors duration-300"
+                style={{ fontFamily: 'Montserrat, sans-serif' }}
+              />
+              <button
+                onClick={handleEmailResults}
+                disabled={isEmailingSending}
+                className="px-6 py-3 bg-[#6B7A3A] text-white font-semibold rounded hover:bg-[#3B2F2F] transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                style={{ fontFamily: 'Montserrat, sans-serif' }}
+              >
+                <Mail size={18} />
+                <span>{isEmailingSending ? 'Sending...' : 'Email Me'}</span>
+              </button>
+            </div>
+            {emailMessage && (
+              <p className={`mt-3 text-sm ${emailMessage.includes('sent') ? 'text-[#6B7A3A]' : 'text-red-600'}`} style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                {emailMessage}
+              </p>
+            )}
           </div>
 
           <div className="mt-6 text-center">

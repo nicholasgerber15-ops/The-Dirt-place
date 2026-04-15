@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
 import { businessInfo } from '../data/mock';
+import SEO from '../components/SEO';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -80,6 +81,13 @@ const ContactPage = () => {
 
   return (
     <div className="contact-page">
+      <SEO 
+        title="Contact Us - Get a Quote | The Dirt Place Boerne, TX"
+        description="Contact The Dirt Place for landscape materials delivery in Boerne, TX. Call (830) 555-0198 or fill out our contact form for a free quote. Serving the Texas Hill Country."
+        keywords="contact the dirt place, landscape materials quote boerne, dirt delivery quote, material delivery boerne tx"
+        url="https://earth-supply-1.preview.emergentagent.com/contact"
+      />
+      
       {/* Hero Section */}
       <section className="relative py-32 overflow-hidden">
         <div 

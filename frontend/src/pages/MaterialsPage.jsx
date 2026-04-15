@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import MaterialCard from '../components/MaterialCard';
 import MaterialCalculator from '../components/MaterialCalculator';
+import SEO from '../components/SEO';
 import { materials } from '../data/mock';
 
 const MaterialsPage = () => {
@@ -26,6 +27,13 @@ const MaterialsPage = () => {
 
   return (
     <div className="materials-page">
+      <SEO 
+        title="Our Materials - Topsoil, Gravel, Sand & More | The Dirt Place"
+        description="Browse our selection of premium landscape materials including topsoil, gravel, sand, road base, mulch, and decorative rock. Free material calculator to estimate your needs."
+        keywords="topsoil boerne, gravel boerne, sand boerne, road base boerne, mulch boerne, decorative rock boerne, landscape materials calculator"
+        url="https://earth-supply-1.preview.emergentagent.com/materials"
+      />
+      
       {/* Hero Section with Parallax Background */}
       <section className="relative py-32 overflow-hidden">
         <div 

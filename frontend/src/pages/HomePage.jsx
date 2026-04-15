@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Truck, Shield, Clock, Award, Star } from 'lucide-react';
 import MaterialCard from '../components/MaterialCard';
+import SEO from '../components/SEO';
+import LocalBusinessSchema from '../components/LocalBusinessSchema';
 import { materials, deliveryInfo, aboutText, testimonials } from '../data/mock';
 
 const HomePage = () => {
@@ -31,6 +33,14 @@ const HomePage = () => {
 
   return (
     <div className="homepage">
+      <SEO 
+        title="Landscape Materials in Boerne, TX | The Dirt Place"
+        description="The Dirt Place provides dirt, gravel, sand, and landscape materials in Boerne, Texas. Fast delivery across the Texas Hill Country. Premium quality guaranteed."
+        keywords="dirt delivery boerne, gravel boerne tx, landscape materials boerne, topsoil boerne, mulch boerne, texas hill country materials, sand delivery boerne, road base boerne"
+        url="https://earth-supply-1.preview.emergentagent.com"
+      />
+      <LocalBusinessSchema />
+      
       {/* Hero Section with Parallax */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div
