@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
 import { businessInfo } from '../data/mock';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -39,14 +43,21 @@ const ContactPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitMessage('');
     
-    // Mock form submission (will be replaced with backend integration)
-    setTimeout(() => {
-      setSubmitMessage("Thank you - we'll contact you shortly.");
-      setIsSubmitting(false);
+    try {
+      const response = await axios.post(`${API}/contact`, {
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        material: formData.material,
+        message: formData.message
+      });
+
+      setSubmitMessage(response.data.message);
       setFormData({
         name: '',
         phone: '',
@@ -59,7 +70,12 @@ const ContactPage = () => {
       setTimeout(() => {
         setSubmitMessage('');
       }, 5000);
-    }, 1000);
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitMessage(error.response?.data?.detail || 'Failed to send message. Please try again or call us directly.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

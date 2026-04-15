@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import MaterialCard from '../components/MaterialCard';
+import MaterialCalculator from '../components/MaterialCalculator';
 import { materials } from '../data/mock';
 
 const MaterialsPage = () => {
@@ -75,6 +76,10 @@ const MaterialsPage = () => {
 
           {/* Additional Info Section */}
           <div className="mt-24 max-w-4xl mx-auto scroll-animate">
+            <MaterialCalculator />
+          </div>
+
+          <div className="mt-12 max-w-4xl mx-auto scroll-animate">
             <div className="bg-white p-12 rounded-lg shadow-xl border-l-4 border-[#D9A441]">
               <h2 
                 className="text-4xl font-bold text-[#3B2F2F] mb-6"
