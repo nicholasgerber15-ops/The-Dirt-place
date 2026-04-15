@@ -175,6 +175,13 @@ async def calculate_material(request: CalculatorRequest):
     Calculate material quantity based on project dimensions
     """
     try:
+        # Validate positive dimensions
+        if request.length <= 0 or request.width <= 0 or request.depth <= 0:
+            raise HTTPException(
+                status_code=400,
+                detail="All dimensions must be positive numbers greater than zero."
+            )
+        
         # Calculate volume in cubic feet
         volume_cubic_feet = request.length * request.width * (request.depth / 12)  # depth is in inches
         
