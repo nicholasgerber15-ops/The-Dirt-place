@@ -5,14 +5,14 @@ export const materials = [
     id: 1,
     name: "Topsoil",
     description: "Premium topsoil perfect for gardens, lawns, and landscaping projects. Rich in nutrients and organic matter.",
-    image: "https://images.unsplash.com/photo-1685555809025-0fe60ab6df46",
+    image: "https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/6qvpvdwn_mulch%20mound.png",
     category: "Soil"
   },
   {
     id: 2,
     name: "Gravel",
     description: "Durable gravel for driveways, pathways, and drainage solutions. Available in various sizes and colors.",
-    image: "https://images.unsplash.com/photo-1604176857921-ddddcbbee64e",
+    image: "https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/sxv8c3hc_sample%205%20.jpg",
     category: "Stone"
   },
   {
@@ -26,21 +26,21 @@ export const materials = [
     id: 4,
     name: "Road Base",
     description: "Crushed limestone perfect for road construction, driveways, and stable foundation work.",
-    image: "https://images.unsplash.com/photo-1757029509449-43c6142b89d0",
+    image: "https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/9bmvbbb2_sample%203%20.jpg",
     category: "Base"
   },
   {
     id: 5,
     name: "Mulch",
     description: "Natural wood mulch to retain moisture, suppress weeds, and enhance your landscape's appearance.",
-    image: "https://images.unsplash.com/photo-1589562760889-38898c71d3d8",
+    image: "https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/6qvpvdwn_mulch%20mound.png",
     category: "Mulch"
   },
   {
     id: 6,
     name: "Decorative Rock",
     description: "Beautiful decorative stones to add visual interest and low-maintenance elegance to any landscape.",
-    image: "https://images.unsplash.com/photo-1665706782455-f8e800c8aeaf",
+    image: "https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/nafgeujl_sample%201%20.webp",
     category: "Stone"
   }
 ];

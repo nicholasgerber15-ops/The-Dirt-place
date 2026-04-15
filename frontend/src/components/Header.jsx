@@ -34,9 +34,11 @@ const Header = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
             <div className={`transition-all duration-300 ${isScrolled ? 'w-16 h-16' : 'w-20 h-20'}`}>
-              <div className="w-full h-full rounded-full bg-[#D9A441] flex items-center justify-center border-4 border-[#FAF9F6] group-hover:border-[#D9A441] transition-all duration-300 group-hover:scale-105">
-                <span className="text-[#3B2F2F] font-bold text-2xl">TDP</span>
-              </div>
+              <img 
+                src="https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/pl8t7hjh_Final%20logo.png" 
+                alt="The Dirt Place Logo"
+                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+              />
             </div>
             <div className="hidden sm:block">
               <h1 className="text-[#FAF9F6] text-2xl font-bold tracking-wide" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>

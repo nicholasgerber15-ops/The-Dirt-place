@@ -11,8 +11,12 @@ const Footer = () => {
           {/* Logo and About */}
           <div>
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-16 h-16 rounded-full bg-[#D9A441] flex items-center justify-center border-4 border-[#FAF9F6]">
-                <span className="text-[#3B2F2F] font-bold text-xl">TDP</span>
+              <div className="w-16 h-16">
+                <img 
+                  src="https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/pl8t7hjh_Final%20logo.png"
+                  alt="The Dirt Place Logo"
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
                 <h3 className="text-xl font-bold" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>

@@ -10,7 +10,7 @@ const SEO = ({
   type = 'website'
 }) => {
   const siteName = "The Dirt Place";
-  const defaultImage = "https://earth-supply-1.preview.emergentagent.com/og-image.jpg";
+  const defaultImage = "https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/pl8t7hjh_Final%20logo.png";
   
   return (
     <Helmet>
