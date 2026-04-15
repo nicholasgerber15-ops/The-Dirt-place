@@ -1,0 +1,160 @@
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import MaterialCard from '../components/MaterialCard';
+import { materials } from '../data/mock';
+
+const MaterialsPage = () => {
+  useEffect(() => {
+    // Scroll animations
+    const handleScroll = () => {
+      const elements = document.querySelectorAll('.scroll-animate');
+      elements.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight * 0.8;
+        if (isVisible) {
+          el.classList.add('animate-in');
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check on mount
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <div className="materials-page">
+      {/* Hero Section with Parallax Background */}
+      <section className="relative py-32 overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center parallax-bg"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1591745287451-268db77122a9')`,
+          }}
+        ></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#3B2F2F]/80 via-[#3B2F2F]/70 to-[#FAF9F6]"></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <Link 
+              to="/"
+              className="inline-flex items-center space-x-2 text-[#FAF9F6] hover:text-[#D9A441] mb-8 transition-colors duration-300"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              <ArrowLeft size={20} />
+              <span>Back to Home</span>
+            </Link>
+            <h1 
+              className="text-6xl md:text-7xl lg:text-8xl font-bold text-[#FAF9F6] mb-6 animate-slide-up"
+              style={{ fontFamily: 'Bebas Neue, sans-serif' }}
+            >
+              Our Materials
+            </h1>
+            <div className="w-32 h-1 bg-[#D9A441] mx-auto mb-8"></div>
+            <p 
+              className="text-xl text-[#FAF9F6] leading-relaxed animate-slide-up-delay"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              We supply high‑quality dirt, gravel, sand, mulch, and rock for residential, ranch, and commercial projects. Every load meets our quality standards.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Materials Grid */}
+      <section className="py-24 bg-[#FAF9F6]">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {materials.map((material, index) => (
+              <div key={material.id} className="scroll-animate">
+                <MaterialCard material={material} index={index} />
+              </div>
+            ))}
+          </div>
+
+          {/* Additional Info Section */}
+          <div className="mt-24 max-w-4xl mx-auto scroll-animate">
+            <div className="bg-white p-12 rounded-lg shadow-xl border-l-4 border-[#D9A441]">
+              <h2 
+                className="text-4xl font-bold text-[#3B2F2F] mb-6"
+                style={{ fontFamily: 'Bebas Neue, sans-serif' }}
+              >
+                Need Help Choosing?
+              </h2>
+              <p 
+                className="text-lg text-[#6B4F3F] mb-6 leading-relaxed"
+                style={{ fontFamily: 'Montserrat, sans-serif' }}
+              >
+                Not sure which material is right for your project? Our experienced team can help you select the perfect materials for your specific needs. Whether you're building a driveway, creating a garden bed, or working on a large commercial project, we've got you covered.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link
+                  to="/contact"
+                  className="px-8 py-4 bg-[#D9A441] text-[#3B2F2F] text-lg font-bold rounded hover:bg-[#3B2F2F] hover:text-[#FAF9F6] hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-center"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  Contact Us
+                </Link>
+                <a
+                  href="tel:(830) 555-0198"
+                  className="px-8 py-4 bg-transparent border-2 border-[#3B2F2F] text-[#3B2F2F] text-lg font-bold rounded hover:bg-[#3B2F2F] hover:text-[#FAF9F6] hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-center"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  Call Now: (830) 555-0198
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Quality Assurance Section */}
+      <section className="py-24 bg-[#3B2F2F] relative overflow-hidden">
+        <div 
+          className="absolute inset-0 opacity-5 bg-cover bg-center"
+          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1519806390608-acf7ef9c8d1b')` }}
+        ></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-4xl mx-auto text-center scroll-animate">
+            <h2 
+              className="text-5xl md:text-6xl font-bold text-[#FAF9F6] mb-8"
+              style={{ fontFamily: 'Bebas Neue, sans-serif' }}
+            >
+              Quality You Can Trust
+            </h2>
+            <div className="w-32 h-1 bg-[#D9A441] mx-auto mb-8"></div>
+            <p 
+              className="text-lg text-[#FAF9F6] leading-relaxed mb-12"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Every material we deliver is carefully sourced and inspected to ensure it meets our rigorous quality standards. We stand behind every load with our satisfaction guarantee.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+              <div className="group">
+                <div className="text-6xl font-bold text-[#D9A441] mb-2 group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                  15+
+                </div>
+                <p className="text-[#FAF9F6]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Years in Business</p>
+              </div>
+              <div className="group">
+                <div className="text-6xl font-bold text-[#D9A441] mb-2 group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                  1000+
+                </div>
+                <p className="text-[#FAF9F6]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Happy Customers</p>
+              </div>
+              <div className="group">
+                <div className="text-6xl font-bold text-[#D9A441] mb-2 group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                  100%
+                </div>
+                <p className="text-[#FAF9F6]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Quality Guaranteed</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default MaterialsPage;
