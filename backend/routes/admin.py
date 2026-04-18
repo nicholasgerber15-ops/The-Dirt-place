@@ -202,3 +202,126 @@ async def search_orders(q: str):
     except Exception as e:
         logger.error(f"Search failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+# ============== PRICING MANAGEMENT ==============
+
+class MaterialPricing(BaseModel):
+    material_id: str
+    name: str
+    price_per_cubic_yard: float
+    min_order: int
+
+@router.get("/pricing", dependencies=[Depends(verify_admin)])
+async def get_all_pricing():
+    """
+    Get all material pricing
+    """
+    try:
+        pricing = await db.material_pricing.find().to_list(100)
+        
+        # If no pricing exists, initialize with defaults
+        if not pricing:
+            default_pricing = [
+                {"material_id": "1", "name": "Topsoil", "price_per_cubic_yard": 45.00, "min_order": 1},
+                {"material_id": "2", "name": "Gravel", "price_per_cubic_yard": 55.00, "min_order": 2},
+                {"material_id": "3", "name": "Sand", "price_per_cubic_yard": 40.00, "min_order": 1},
+                {"material_id": "4", "name": "Road Base", "price_per_cubic_yard": 50.00, "min_order": 2},
+                {"material_id": "5", "name": "Mulch", "price_per_cubic_yard": 35.00, "min_order": 1},
+                {"material_id": "6", "name": "Decorative Rock", "price_per_cubic_yard": 75.00, "min_order": 1},
+            ]
+            await db.material_pricing.insert_many(default_pricing)
+            pricing = await db.material_pricing.find().to_list(100)
+        
+        for item in pricing:
+            item["_id"] = str(item["_id"])
+        
+        return {"pricing": pricing}
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch pricing: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/pricing/{material_id}", dependencies=[Depends(verify_admin)])
+async def update_material_pricing(material_id: str, pricing: MaterialPricing):
+    """
+    Update pricing for a specific material
+    """
+    try:
+        result = await db.material_pricing.update_one(
+            {"material_id": material_id},
+            {
+                "$set": {
+                    "price_per_cubic_yard": pricing.price_per_cubic_yard,
+                    "min_order": pricing.min_order,
+                    "updated_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Material not found")
+        
+        return {"success": True, "message": "Pricing updated successfully"}
+        
+    except Exception as e:
+        logger.error(f"Failed to update pricing: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/delivery-fees", dependencies=[Depends(verify_admin)])
+async def get_delivery_fees():
+    """
+    Get delivery fee structure
+    """
+    try:
+        fees = await db.delivery_fees.find().to_list(100)
+        
+        # Initialize if not exists
+        if not fees:
+            default_fees = [
+                {"zip_code": "78006", "fee": 0.00, "area": "Boerne"},
+                {"zip_code": "78015", "fee": 15.00, "area": "Boerne Area"},
+                {"zip_code": "78070", "fee": 20.00, "area": "Fair Oaks Ranch"},
+                {"zip_code": "78163", "fee": 25.00, "area": "Comfort"},
+                {"zip_code": "78255", "fee": 30.00, "area": "Leon Springs"},
+                {"zip_code": "default", "fee": 40.00, "area": "Extended Area"}
+            ]
+            await db.delivery_fees.insert_many(default_fees)
+            fees = await db.delivery_fees.find().to_list(100)
+        
+        for fee in fees:
+            fee["_id"] = str(fee["_id"])
+        
+        return {"delivery_fees": fees}
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch delivery fees: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+class DeliveryFeeUpdate(BaseModel):
+    zip_code: str
+    fee: float
+    area: str
+
+@router.put("/delivery-fees/{zip_code}", dependencies=[Depends(verify_admin)])
+async def update_delivery_fee(zip_code: str, fee_update: DeliveryFeeUpdate):
+    """
+    Update delivery fee for a ZIP code
+    """
+    try:
+        result = await db.delivery_fees.update_one(
+            {"zip_code": zip_code},
+            {
+                "$set": {
+                    "fee": fee_update.fee,
+                    "area": fee_update.area,
+                    "updated_at": datetime.utcnow()
+                }
+            },
+            upsert=True
+        )
+        
+        return {"success": True, "message": "Delivery fee updated successfully"}
+        
+    except Exception as e:
+        logger.error(f"Failed to update delivery fee: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))

@@ -44,15 +44,24 @@ DELIVERY_FEES = {
 
 DEFAULT_DELIVERY_FEE = 40.00  # Extended delivery areas
 
-# Material pricing (server-side only - security)
-MATERIAL_PRICES = {
-    "1": {"name": "Topsoil", "price": 45.00},
-    "2": {"name": "Gravel", "price": 55.00},
-    "3": {"name": "Sand", "price": 40.00},
-    "4": {"name": "Road Base", "price": 50.00},
-    "5": {"name": "Mulch", "price": 35.00},
-    "6": {"name": "Decorative Rock", "price": 75.00},
-}
+async def get_material_prices():
+    """
+    Get current material pricing from database
+    """
+    pricing = await db.material_pricing.find().to_list(100)
+    return {item["material_id"]: {"name": item["name"], "price": item["price_per_cubic_yard"]} for item in pricing}
+
+async def get_delivery_fee_for_zip(zip_code: str):
+    """
+    Get delivery fee from database
+    """
+    fee_data = await db.delivery_fees.find_one({"zip_code": zip_code})
+    if fee_data:
+        return fee_data["fee"]
+    
+    # Get default fee
+    default_fee = await db.delivery_fees.find_one({"zip_code": "default"})
+    return default_fee["fee"] if default_fee else DEFAULT_DELIVERY_FEE
 
 class CartItem(BaseModel):
     id: str
@@ -81,6 +90,9 @@ async def create_checkout_session(request: CheckoutRequest):
     Create Stripe checkout session for material orders
     """
     try:
+        # Get current pricing from database
+        MATERIAL_PRICES = await get_material_prices()
+        
         # Calculate totals (server-side for security)
         materials_total = 0.00
         validated_items = []
@@ -100,8 +112,8 @@ async def create_checkout_session(request: CheckoutRequest):
                 "price": server_price
             })
         
-        # Calculate delivery fee
-        delivery_fee = DELIVERY_FEES.get(request.delivery_zip, DEFAULT_DELIVERY_FEE)
+        # Calculate delivery fee from database
+        delivery_fee = await get_delivery_fee_for_zip(request.delivery_zip)
         
         # Total amount
         total_amount = materials_total + delivery_fee
@@ -291,11 +303,14 @@ async def get_delivery_fee(zip_code: str):
     """
     Get delivery fee for a ZIP code
     """
-    fee = DELIVERY_FEES.get(zip_code, DEFAULT_DELIVERY_FEE)
+    fee = await get_delivery_fee_for_zip(zip_code)
+    fee_data = await db.delivery_fees.find_one({"zip_code": zip_code})
+    in_primary_zone = fee_data is not None and zip_code != "default"
+    
     return {
         "zip_code": zip_code,
         "delivery_fee": fee,
-        "in_primary_zone": zip_code in DELIVERY_FEES
+        "in_primary_zone": in_primary_zone
     }
 
 async def send_order_confirmation_email(order_data):
