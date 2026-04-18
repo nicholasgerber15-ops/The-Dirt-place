@@ -123,7 +123,7 @@ const Footer = () => {
             © {new Date().getFullYear()} The Dirt Place. All rights reserved. | Serving the Texas Hill Country
           </p>
           <p className="text-xs text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-            Website by <span className="text-[#D9A441] font-semibold">Kamryn Gerber</span>
+            Designed by <span className="text-[#D9A441] font-semibold">Nfinnite</span>
           </p>
         </div>
       </div>
