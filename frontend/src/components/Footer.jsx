@@ -119,8 +119,11 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="border-t border-[#6B4F3F] pt-8 text-center">
-          <p className="text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <p className="text-sm mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             © {new Date().getFullYear()} The Dirt Place. All rights reserved. | Serving the Texas Hill Country
+          </p>
+          <p className="text-xs text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            Website by <span className="text-[#D9A441] font-semibold">Kamryn Gerber</span>
           </p>
         </div>
       </div>

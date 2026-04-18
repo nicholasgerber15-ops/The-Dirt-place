@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Check, Phone, ChevronDown, ChevronUp, ArrowLeft, Truck, Clock, DollarSign } from 'lucide-react';
 import SEO from '../components/SEO';
+import ZipCodeChecker from '../components/ZipCodeChecker';
 
 const DeliveryPage = () => {
   const [expandedFaq, setExpandedFaq] = useState(null);
@@ -168,6 +169,11 @@ const DeliveryPage = () => {
       {/* Map and Service Areas */}
       <section className="py-24 bg-gradient-to-b from-white to-[#FAF9F6]">
         <div className="container mx-auto px-4">
+          {/* ZIP Code Checker */}
+          <div className="max-w-2xl mx-auto mb-16 scroll-animate">
+            <ZipCodeChecker />
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Google Map */}
             <div className="scroll-animate">

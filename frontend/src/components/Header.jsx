@@ -70,10 +70,10 @@ const Header = () => {
             ))}
             <Link
               to="/contact"
-              className="px-6 py-2 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#FAF9F6] hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+              className="px-6 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#FAF9F6] hover:shadow-lg transform hover:scale-105 transition-all duration-300"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Get Quote
+              Request Delivery
             </Link>
           </nav>
 
@@ -110,7 +110,7 @@ const Header = () => {
               className="block mt-4 px-6 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded text-center hover:bg-[#FAF9F6] transition-colors duration-300"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Get Quote
+              Request Delivery
             </Link>
           </nav>
         )}

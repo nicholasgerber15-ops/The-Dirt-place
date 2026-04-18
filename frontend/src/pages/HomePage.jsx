@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Truck, Shield, Clock, Award, Star } from 'lucide-react';
 import MaterialCard from '../components/MaterialCard';
+import Gallery from '../components/Gallery';
 import SEO from '../components/SEO';
 import LocalBusinessSchema from '../components/LocalBusinessSchema';
 import { materials, deliveryInfo, aboutText, testimonials } from '../data/mock';
@@ -314,6 +315,9 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+
+      {/* Gallery Section */}
+      <Gallery />
     </div>
   );
 };

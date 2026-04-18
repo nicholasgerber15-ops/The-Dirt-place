@@ -1,5 +1,6 @@
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Truck } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const MaterialCard = ({ material, index }) => {
   return (
@@ -21,6 +22,12 @@ const MaterialCard = ({ material, index }) => {
             {material.category}
           </span>
         </div>
+        <div className="absolute top-4 right-4">
+          <span className="px-3 py-1 bg-[#6B7A3A] text-white text-xs font-bold rounded-full flex items-center space-x-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            <Truck size={12} />
+            <span>Same-Day Available</span>
+          </span>
+        </div>
       </div>
       
       <div className="p-6">
@@ -30,10 +37,19 @@ const MaterialCard = ({ material, index }) => {
         <p className="text-[#6B4F3F] text-sm leading-relaxed mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
           {material.description}
         </p>
-        <button className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-[#3B2F2F] text-[#FAF9F6] font-semibold rounded hover:bg-[#D9A441] hover:text-[#3B2F2F] transition-all duration-300 group/btn">
-          <span style={{ fontFamily: 'Montserrat, sans-serif' }}>Request Pricing</span>
-          <ArrowRight size={18} className="transition-transform duration-300 group-hover/btn:translate-x-1" />
-        </button>
+        <div className="flex gap-3">
+          <button className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-[#3B2F2F] text-[#FAF9F6] font-semibold rounded hover:bg-[#D9A441] hover:text-[#3B2F2F] transition-all duration-300 group/btn">
+            <span style={{ fontFamily: 'Montserrat, sans-serif' }}>Request Pricing</span>
+            <ArrowRight size={18} className="transition-transform duration-300 group-hover/btn:translate-x-1" />
+          </button>
+          <Link
+            to="/delivery"
+            className="flex items-center justify-center px-4 py-3 bg-[#6B7A3A] text-white font-semibold rounded hover:bg-[#D9A441] hover:text-[#3B2F2F] transition-all duration-300"
+            style={{ fontFamily: 'Montserrat, sans-serif' }}
+          >
+            <Truck size={18} />
+          </Link>
+        </div>
       </div>
     </div>
   );
