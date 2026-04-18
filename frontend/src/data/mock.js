@@ -6,42 +6,60 @@ export const materials = [
     name: "Topsoil",
     description: "Premium topsoil perfect for gardens, lawns, and landscaping projects. Rich in nutrients and organic matter.",
     image: "https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/6qvpvdwn_mulch%20mound.png",
-    category: "Soil"
+    category: "Soil",
+    pricePerCubicYard: 45.00,
+    unit: "cubic yard",
+    minOrder: 1
   },
   {
     id: 2,
     name: "Gravel",
     description: "Durable gravel for driveways, pathways, and drainage solutions. Available in various sizes and colors.",
     image: "https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/sxv8c3hc_sample%205%20.jpg",
-    category: "Stone"
+    category: "Stone",
+    pricePerCubicYard: 55.00,
+    unit: "cubic yard",
+    minOrder: 2
   },
   {
     id: 3,
     name: "Sand",
     description: "Clean, versatile sand ideal for construction, landscaping, and play areas. Multiple grades available.",
     image: "https://images.unsplash.com/photo-1524207874394-5ec7c8c8e1a6",
-    category: "Sand"
+    category: "Sand",
+    pricePerCubicYard: 40.00,
+    unit: "cubic yard",
+    minOrder: 1
   },
   {
     id: 4,
     name: "Road Base",
     description: "Crushed limestone perfect for road construction, driveways, and stable foundation work.",
     image: "https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/9bmvbbb2_sample%203%20.jpg",
-    category: "Base"
+    category: "Base",
+    pricePerCubicYard: 50.00,
+    unit: "cubic yard",
+    minOrder: 2
   },
   {
     id: 5,
     name: "Mulch",
     description: "Natural wood mulch to retain moisture, suppress weeds, and enhance your landscape's appearance.",
     image: "https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/6qvpvdwn_mulch%20mound.png",
-    category: "Mulch"
+    category: "Mulch",
+    pricePerCubicYard: 35.00,
+    unit: "cubic yard",
+    minOrder: 1
   },
   {
     id: 6,
     name: "Decorative Rock",
     description: "Beautiful decorative stones to add visual interest and low-maintenance elegance to any landscape.",
     image: "https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/nafgeujl_sample%201%20.webp",
-    category: "Stone"
+    category: "Stone",
+    pricePerCubicYard: 75.00,
+    unit: "cubic yard",
+    minOrder: 1
   }
 ];
 
