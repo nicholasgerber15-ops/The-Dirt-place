@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ShoppingCart } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { getItemCount } = useCart();
+  const cartCount = getItemCount();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,6 +71,17 @@ const Header = () => {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#D9A441] transition-all duration-300 group-hover:w-full"></span>
               </Link>
             ))}
+            <Link
+              to="/cart"
+              className="relative text-[#FAF9F6] hover:text-[#D9A441] transition-colors duration-300"
+            >
+              <ShoppingCart size={24} />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 w-5 h-5 bg-[#D9A441] text-[#3B2F2F] text-xs font-bold rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
             <Link
               to="/contact"
               className="px-6 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#FAF9F6] hover:shadow-lg transform hover:scale-105 transition-all duration-300"
