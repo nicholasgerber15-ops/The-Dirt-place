@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Truck, Shield, Clock, Award, Star } from 'lucide-react';
 import MaterialCard from '../components/MaterialCard';
-import DeliveryArea from '../components/DeliveryArea';
 import SEO from '../components/SEO';
 import LocalBusinessSchema from '../components/LocalBusinessSchema';
 import { materials, deliveryInfo, aboutText, testimonials } from '../data/mock';
@@ -264,9 +263,6 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-
-      {/* Delivery Area Section */}
-      <DeliveryArea />
 
       {/* Testimonials Section */}
       <section className="py-24 bg-[#FAF9F6]">

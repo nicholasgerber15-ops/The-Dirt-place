@@ -69,6 +69,12 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/delivery" className="hover:text-[#D9A441] transition-colors duration-300 flex items-center group">
+                  <span className="w-0 h-0.5 bg-[#D9A441] transition-all duration-300 group-hover:w-4 mr-0 group-hover:mr-2"></span>
+                  Delivery
+                </Link>
+              </li>
+              <li>
                 <Link to="/contact" className="hover:text-[#D9A441] transition-colors duration-300 flex items-center group">
                   <span className="w-0 h-0.5 bg-[#D9A441] transition-all duration-300 group-hover:w-4 mr-0 group-hover:mr-2"></span>
                   Contact
