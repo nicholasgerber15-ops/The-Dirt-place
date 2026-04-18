@@ -10,6 +10,8 @@ from typing import List
 import uuid
 from datetime import datetime, timezone
 from routes.contact import router as contact_router
+from routes.ecommerce import router as ecommerce_router
+from routes.admin import router as admin_router
 
 
 ROOT_DIR = Path(__file__).parent
@@ -70,6 +72,8 @@ async def get_status_checks():
 # Include the routers in the main app
 app.include_router(api_router)
 app.include_router(contact_router, prefix="/api")
+app.include_router(ecommerce_router, prefix="/api/ecommerce")
+app.include_router(admin_router, prefix="/api/admin")
 
 app.add_middleware(
     CORSMiddleware,
