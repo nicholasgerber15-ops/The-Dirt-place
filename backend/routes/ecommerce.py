@@ -8,6 +8,7 @@ from pydantic import BaseModel, EmailStr
 from dotenv import load_dotenv
 from pathlib import Path
 from motor.motor_asyncio import AsyncIOMotorClient
+from bson import ObjectId
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 import resend
 
@@ -39,7 +40,6 @@ DELIVERY_FEES = {
     '78070': 20.00,   # Fair Oaks Ranch
     '78163': 25.00,   # Comfort
     '78255': 30.00,   # Leon Springs
-    '78006': 0.00,    # Bergheim
 }
 
 DEFAULT_DELIVERY_FEE = 40.00  # Extended delivery areas
@@ -226,7 +226,7 @@ async def get_checkout_status(session_id: str):
             # Update order status if paid
             if status.payment_status == "paid":
                 order = await db.orders.update_one(
-                    {"_id": transaction["order_id"]},
+                    {"_id": ObjectId(transaction["order_id"])},
                     {
                         "$set": {
                             "payment_status": "paid",
@@ -237,7 +237,7 @@ async def get_checkout_status(session_id: str):
                 )
                 
                 # Send confirmation email
-                order_data = await db.orders.find_one({"_id": transaction["order_id"]})
+                order_data = await db.orders.find_one({"_id": ObjectId(transaction["order_id"])})
                 if order_data:
                     await send_order_confirmation_email(order_data)
         
@@ -282,7 +282,7 @@ async def stripe_webhook(request: Request):
                 order_id = webhook_response.metadata.get("order_id")
                 if order_id:
                     await db.orders.update_one(
-                        {"_id": order_id},
+                        {"_id": ObjectId(order_id)},
                         {
                             "$set": {
                                 "payment_status": "paid",

@@ -91,6 +91,10 @@ async def get_order_details(order_id: str):
     Get specific order details
     """
     try:
+        # Validate ObjectId format
+        if not ObjectId.is_valid(order_id):
+            raise HTTPException(status_code=400, detail="Invalid order ID format")
+        
         order = await db.orders.find_one({"_id": ObjectId(order_id)})
         if not order:
             raise HTTPException(status_code=404, detail="Order not found")
@@ -98,6 +102,8 @@ async def get_order_details(order_id: str):
         order["_id"] = str(order["_id"])
         return order
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to fetch order: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -108,6 +114,10 @@ async def update_order_status(order_id: str, update: OrderStatusUpdate):
     Update order status
     """
     try:
+        # Validate ObjectId format
+        if not ObjectId.is_valid(order_id):
+            raise HTTPException(status_code=400, detail="Invalid order ID format")
+        
         valid_statuses = ["pending_payment", "processing", "in_delivery", "delivered", "cancelled"]
         if update.status not in valid_statuses:
             raise HTTPException(status_code=400, detail="Invalid status")
@@ -127,6 +137,8 @@ async def update_order_status(order_id: str, update: OrderStatusUpdate):
         
         return {"success": True, "message": "Order status updated"}
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to update order: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

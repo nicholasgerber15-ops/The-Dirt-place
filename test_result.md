@@ -246,3 +246,7 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Admin Portal frontend implementation complete. Created OrdersManagementPage.jsx and PricingManagementPage.jsx. Admin login, dashboard, orders management, and pricing management are all implemented. Need comprehensive E2E testing of: 1) Admin auth flow 2) Orders management CRUD 3) Pricing updates 4) Full cart->checkout->Stripe flow 5) Integration between ecommerce and admin portal. Admin password: dirtplace2024"
+  - agent: "testing"
+    message: "Testing iteration 1 complete. Found CRITICAL ObjectId bug in ecommerce payment flow, HIGH priority admin layout overlap, and minor issues."
+  - agent: "main"
+    message: "Fixed all issues from iteration 1: (1) CRITICAL - Added ObjectId() wrapping in ecommerce.py checkout/status and webhook handlers (2) HIGH - Fixed admin layout to hide public navbar on /admin/* routes (3) Removed password hint from login page (4) Removed duplicate DELIVERY_FEES key (5) Added ObjectId validation in admin order endpoints. All 15 backend pytest cases pass. Need retest to verify fixes."

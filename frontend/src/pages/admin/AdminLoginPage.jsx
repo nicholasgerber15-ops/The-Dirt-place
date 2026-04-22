@@ -84,10 +84,6 @@ const AdminLoginPage = () => {
               )}
             </button>
           </form>
-
-          <p className="text-center text-sm text-[#6B4F3F] mt-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-            Password: dirtplace2024
-          </p>
         </div>
       </div>
     </div>
