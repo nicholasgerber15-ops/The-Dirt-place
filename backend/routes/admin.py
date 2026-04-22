@@ -215,7 +215,25 @@ async def search_orders(q: str):
         logger.error(f"Search failed: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# ============== PRICING MANAGEMENT ==============
+# ============== MATERIALS MANAGEMENT ==============
+
+class MaterialCreate(BaseModel):
+    name: str
+    price_per_unit: float
+    unit_type: str
+    min_order: int
+    stock_quantity: int
+    image_url: Optional[str] = ""
+    description: Optional[str] = ""
+
+class MaterialUpdate(BaseModel):
+    name: str
+    price_per_unit: float
+    unit_type: str
+    min_order: int
+    stock_quantity: Optional[int] = None
+    image_url: Optional[str] = ""
+    description: Optional[str] = ""
 
 class MaterialPricing(BaseModel):
     material_id: str
@@ -256,7 +274,7 @@ async def get_all_pricing():
 @router.put("/pricing/{material_id}", dependencies=[Depends(verify_admin)])
 async def update_material_pricing(material_id: str, pricing: MaterialPricing):
     """
-    Update pricing for a specific material
+    Update pricing for a specific material (legacy endpoint)
     """
     try:
         result = await db.material_pricing.update_one(
@@ -277,6 +295,176 @@ async def update_material_pricing(material_id: str, pricing: MaterialPricing):
         
     except Exception as e:
         logger.error(f"Failed to update pricing: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# New Material Management Endpoints
+
+@router.post("/materials", dependencies=[Depends(verify_admin)])
+async def create_material(material: MaterialCreate):
+    """
+    Create a new material
+    """
+    try:
+        # Generate new material_id
+        existing_materials = await db.material_pricing.find().sort("material_id", -1).limit(1).to_list(1)
+        if existing_materials:
+            last_id = int(existing_materials[0]["material_id"])
+            new_id = str(last_id + 1)
+        else:
+            new_id = "1"
+        
+        material_data = {
+            "material_id": new_id,
+            "name": material.name,
+            "price_per_unit": material.price_per_unit,
+            "unit_type": material.unit_type,
+            "min_order": material.min_order,
+            "stock_quantity": material.stock_quantity,
+            "image_url": material.image_url,
+            "description": material.description,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        
+        await db.material_pricing.insert_one(material_data)
+        
+        return {"success": True, "message": "Material created successfully", "material_id": new_id}
+        
+    except Exception as e:
+        logger.error(f"Failed to create material: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/materials/{material_id}", dependencies=[Depends(verify_admin)])
+async def update_material(material_id: str, material: MaterialUpdate):
+    """
+    Update material details including inventory
+    """
+    try:
+        update_data = {
+            "name": material.name,
+            "price_per_unit": material.price_per_unit,
+            "unit_type": material.unit_type,
+            "min_order": material.min_order,
+            "image_url": material.image_url,
+            "description": material.description,
+            "updated_at": datetime.utcnow()
+        }
+        
+        if material.stock_quantity is not None:
+            update_data["stock_quantity"] = material.stock_quantity
+        
+        result = await db.material_pricing.update_one(
+            {"material_id": material_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Material not found")
+        
+        return {"success": True, "message": "Material updated successfully"}
+        
+    except Exception as e:
+        logger.error(f"Failed to update material: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/materials/{material_id}", dependencies=[Depends(verify_admin)])
+async def delete_material(material_id: str):
+    """
+    Delete a material
+    """
+    try:
+        result = await db.material_pricing.delete_one({"material_id": material_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Material not found")
+        
+        return {"success": True, "message": "Material deleted successfully"}
+        
+    except Exception as e:
+        logger.error(f"Failed to delete material: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/inventory", dependencies=[Depends(verify_admin)])
+async def get_inventory():
+    """
+    Get inventory status for all materials
+    """
+    try:
+        materials = await db.material_pricing.find().to_list(100)
+        
+        inventory = []
+        for material in materials:
+            material["_id"] = str(material["_id"])
+            stock = material.get("stock_quantity", 0)
+            
+            # Determine stock status
+            if stock == 0:
+                status = "out_of_stock"
+            elif stock < 20:
+                status = "low_stock"
+            else:
+                status = "in_stock"
+            
+            material["stock_status"] = status
+            inventory.append(material)
+        
+        return {"inventory": inventory}
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch inventory: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Site Settings
+
+class HeroImageUpdate(BaseModel):
+    hero_image_url: str
+
+@router.get("/settings", dependencies=[Depends(verify_admin)])
+async def get_site_settings():
+    """
+    Get site settings
+    """
+    try:
+        settings = await db.site_settings.find_one({"setting_type": "general"})
+        if not settings:
+            # Initialize default settings
+            default_settings = {
+                "setting_type": "general",
+                "hero_image_url": "",
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow()
+            }
+            await db.site_settings.insert_one(default_settings)
+            settings = default_settings
+        
+        settings["_id"] = str(settings["_id"])
+        return settings
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch settings: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/settings/hero-image", dependencies=[Depends(verify_admin)])
+async def update_hero_image(update: HeroImageUpdate):
+    """
+    Update hero image URL
+    """
+    try:
+        result = await db.site_settings.update_one(
+            {"setting_type": "general"},
+            {
+                "$set": {
+                    "hero_image_url": update.hero_image_url,
+                    "updated_at": datetime.utcnow()
+                }
+            },
+            upsert=True
+        )
+        
+        return {"success": True, "message": "Hero image updated successfully"}
+        
+    except Exception as e:
+        logger.error(f"Failed to update hero image: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/delivery-fees", dependencies=[Depends(verify_admin)])

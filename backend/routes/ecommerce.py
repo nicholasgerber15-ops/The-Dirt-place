@@ -102,6 +102,16 @@ async def create_checkout_session(request: CheckoutRequest):
             if item.id not in MATERIAL_PRICES:
                 raise HTTPException(status_code=400, detail=f"Invalid material ID: {item.id}")
             
+            # Check stock availability
+            material = await db.material_pricing.find_one({"material_id": item.id})
+            if material:
+                stock_qty = material.get("stock_quantity", 0)
+                if stock_qty < item.quantity:
+                    raise HTTPException(
+                        status_code=400, 
+                        detail=f"Insufficient stock for {material['name']}. Available: {stock_qty}, Requested: {item.quantity}"
+                    )
+            
             server_price = MATERIAL_PRICES[item.id]["price"]
             materials_total += server_price * item.quantity
             
@@ -236,9 +246,16 @@ async def get_checkout_status(session_id: str):
                     }
                 )
                 
-                # Send confirmation email
+                # Deduct stock quantities
                 order_data = await db.orders.find_one({"_id": ObjectId(transaction["order_id"])})
                 if order_data:
+                    for item in order_data.get("items", []):
+                        await db.material_pricing.update_one(
+                            {"material_id": item["id"]},
+                            {"$inc": {"stock_quantity": -item["quantity"]}}
+                        )
+                    
+                    # Send confirmation email
                     await send_order_confirmation_email(order_data)
         
         return {
@@ -291,6 +308,15 @@ async def stripe_webhook(request: Request):
                             }
                         }
                     )
+                    
+                    # Deduct stock quantities
+                    order_data = await db.orders.find_one({"_id": ObjectId(order_id)})
+                    if order_data:
+                        for item in order_data.get("items", []):
+                            await db.material_pricing.update_one(
+                                {"material_id": item["id"]},
+                                {"$inc": {"stock_quantity": -item["quantity"]}}
+                            )
         
         return {"status": "success"}
         

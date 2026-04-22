@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { DollarSign, LogOut, Save, Edit2, X, Check } from 'lucide-react';
+import { DollarSign, LogOut, Edit2, X, Check, Plus, Package } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+const UNIT_TYPES = ['cubic yards', 'tons', 'bags', 'pallets', 'square feet'];
 
 const PricingManagementPage = () => {
   const navigate = useNavigate();
@@ -14,6 +16,16 @@ const PricingManagementPage = () => {
   const [editingMaterial, setEditingMaterial] = useState(null);
   const [editingDelivery, setEditingDelivery] = useState(null);
   const [savingId, setSavingId] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newMaterial, setNewMaterial] = useState({
+    name: '',
+    price_per_unit: '',
+    unit_type: 'cubic yards',
+    min_order: 1,
+    stock_quantity: 0,
+    image_url: '',
+    description: ''
+  });
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -51,6 +63,38 @@ const PricingManagementPage = () => {
     }
   };
 
+  const handleAddMaterial = async () => {
+    try {
+      setSavingId('new');
+      const token = localStorage.getItem('admin_token');
+      
+      await axios.post(
+        `${API}/admin/materials`,
+        newMaterial,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setShowAddModal(false);
+      setNewMaterial({
+        name: '',
+        price_per_unit: '',
+        unit_type: 'cubic yards',
+        min_order: 1,
+        stock_quantity: 0,
+        image_url: '',
+        description: ''
+      });
+      
+      fetchAllPricing();
+      alert('Material added successfully!');
+    } catch (error) {
+      console.error('Failed to add material:', error);
+      alert('Failed to add material');
+    } finally {
+      setSavingId(null);
+    }
+  };
+
   const updateMaterialPricing = async (materialId) => {
     if (!editingMaterial) return;
 
@@ -59,17 +103,11 @@ const PricingManagementPage = () => {
       const token = localStorage.getItem('admin_token');
       
       await axios.put(
-        `${API}/admin/pricing/${materialId}`,
-        {
-          material_id: editingMaterial.material_id,
-          name: editingMaterial.name,
-          price_per_cubic_yard: parseFloat(editingMaterial.price_per_cubic_yard),
-          min_order: parseInt(editingMaterial.min_order)
-        },
+        `${API}/admin/materials/${materialId}`,
+        editingMaterial,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Update local state
       setMaterials(prev =>
         prev.map(m =>
           m.material_id === materialId ? editingMaterial : m
@@ -77,10 +115,10 @@ const PricingManagementPage = () => {
       );
       
       setEditingMaterial(null);
-      alert('Pricing updated successfully!');
+      alert('Material updated successfully!');
     } catch (error) {
-      console.error('Failed to update pricing:', error);
-      alert('Failed to update pricing');
+      console.error('Failed to update material:', error);
+      alert('Failed to update material');
     } finally {
       setSavingId(null);
     }
@@ -95,15 +133,10 @@ const PricingManagementPage = () => {
       
       await axios.put(
         `${API}/admin/delivery-fees/${zipCode}`,
-        {
-          zip_code: editingDelivery.zip_code,
-          fee: parseFloat(editingDelivery.fee),
-          area: editingDelivery.area
-        },
+        editingDelivery,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Update local state
       setDeliveryFees(prev =>
         prev.map(d =>
           d.zip_code === zipCode ? editingDelivery : d
@@ -141,6 +174,12 @@ const PricingManagementPage = () => {
     setEditingDelivery(null);
   };
 
+  const getStockColor = (stock) => {
+    if (stock === 0) return 'text-red-600';
+    if (stock < 20) return 'text-yellow-600';
+    return 'text-green-600';
+  };
+
   return (
     <div className="min-h-screen bg-[#FAF9F6]">
       {/* Admin Header */}
@@ -152,7 +191,7 @@ const PricingManagementPage = () => {
                 The Dirt Place Admin
               </h1>
               <p className="text-[#D9A441] text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                Pricing Management
+                Materials & Pricing Management
               </p>
             </div>
             <button
@@ -190,7 +229,21 @@ const PricingManagementPage = () => {
               className="px-4 py-4 border-b-2 border-[#D9A441] text-[#D9A441] font-semibold"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Pricing
+              Materials & Pricing
+            </Link>
+            <Link
+              to="/admin/inventory"
+              className="px-4 py-4 text-[#6B4F3F] hover:text-[#D9A441] font-semibold transition-colors"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Inventory
+            </Link>
+            <Link
+              to="/admin/settings"
+              className="px-4 py-4 text-[#6B4F3F] hover:text-[#D9A441] font-semibold transition-colors"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Settings
             </Link>
           </div>
         </div>
@@ -205,15 +258,25 @@ const PricingManagementPage = () => {
           <div className="space-y-8">
             {/* Material Pricing */}
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex items-center mb-6">
-                <DollarSign size={32} className="text-[#D9A441] mr-3" />
-                <h2 className="text-3xl font-bold text-[#3B2F2F]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
-                  Material Pricing
-                </h2>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center">
+                  <DollarSign size={32} className="text-[#D9A441] mr-3" />
+                  <h2 className="text-3xl font-bold text-[#3B2F2F]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                    Material Pricing & Inventory
+                  </h2>
+                </div>
+                <button
+                  onClick={() => setShowAddModal(true)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-[#6B7A3A] text-white font-semibold rounded hover:bg-[#3B2F2F] transition-colors"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  <Plus size={18} />
+                  <span>Add Material</span>
+                </button>
               </div>
 
               <p className="text-[#6B4F3F] mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                Adjust pricing for landscape materials. Changes take effect immediately for new orders.
+                Manage materials, pricing, units, and stock levels. Changes take effect immediately.
               </p>
 
               <div className="overflow-x-auto">
@@ -221,8 +284,10 @@ const PricingManagementPage = () => {
                   <thead>
                     <tr className="border-b-2 border-[#6B4F3F]/20">
                       <th className="text-left py-3 px-4 font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Material</th>
-                      <th className="text-left py-3 px-4 font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Price per Cu Yd</th>
-                      <th className="text-left py-3 px-4 font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Min Order (Cu Yd)</th>
+                      <th className="text-left py-3 px-4 font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Price/Unit</th>
+                      <th className="text-left py-3 px-4 font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Unit Type</th>
+                      <th className="text-left py-3 px-4 font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Min Order</th>
+                      <th className="text-left py-3 px-4 font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Stock</th>
                       <th className="text-center py-3 px-4 font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Actions</th>
                     </tr>
                   </thead>
@@ -243,15 +308,33 @@ const PricingManagementPage = () => {
                                 <input
                                   type="number"
                                   step="0.01"
-                                  value={editingMaterial.price_per_cubic_yard}
-                                  onChange={(e) => setEditingMaterial({ ...editingMaterial, price_per_cubic_yard: e.target.value })}
+                                  value={editingMaterial.price_per_unit}
+                                  onChange={(e) => setEditingMaterial({ ...editingMaterial, price_per_unit: e.target.value })}
                                   className="w-24 px-2 py-1 border-2 border-[#D9A441] rounded focus:outline-none"
                                   style={{ fontFamily: 'Montserrat, sans-serif' }}
                                 />
                               </div>
                             ) : (
                               <span className="text-[#3B2F2F] font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                                ${Number(material.price_per_cubic_yard).toFixed(2)}
+                                ${Number(material.price_per_unit || material.price_per_cubic_yard || 0).toFixed(2)}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-3 px-4">
+                            {isEditing ? (
+                              <select
+                                value={editingMaterial.unit_type}
+                                onChange={(e) => setEditingMaterial({ ...editingMaterial, unit_type: e.target.value })}
+                                className="w-32 px-2 py-1 border-2 border-[#D9A441] rounded focus:outline-none"
+                                style={{ fontFamily: 'Montserrat, sans-serif' }}
+                              >
+                                {UNIT_TYPES.map(unit => (
+                                  <option key={unit} value={unit}>{unit}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              <span className="text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                                {material.unit_type || 'cubic yards'}
                               </span>
                             )}
                           </td>
@@ -268,6 +351,22 @@ const PricingManagementPage = () => {
                             ) : (
                               <span className="text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                                 {material.min_order}
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-3 px-4">
+                            {isEditing ? (
+                              <input
+                                type="number"
+                                min="0"
+                                value={editingMaterial.stock_quantity}
+                                onChange={(e) => setEditingMaterial({ ...editingMaterial, stock_quantity: e.target.value })}
+                                className="w-20 px-2 py-1 border-2 border-[#D9A441] rounded focus:outline-none"
+                                style={{ fontFamily: 'Montserrat, sans-serif' }}
+                              />
+                            ) : (
+                              <span className={`font-semibold ${getStockColor(material.stock_quantity || 0)}`} style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                                {material.stock_quantity || 0}
                               </span>
                             )}
                           </td>
@@ -425,6 +524,152 @@ const PricingManagementPage = () => {
           </div>
         )}
       </div>
+
+      {/* Add Material Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-[#3B2F2F]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                  Add New Material
+                </h3>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="text-[#6B4F3F] hover:text-[#3B2F2F]"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[#3B2F2F] font-semibold mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    Material Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={newMaterial.name}
+                    onChange={(e) => setNewMaterial({ ...newMaterial, name: e.target.value })}
+                    className="w-full px-4 py-2 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                    placeholder="e.g., Premium Topsoil"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[#3B2F2F] font-semibold mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      Price per Unit *
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={newMaterial.price_per_unit}
+                      onChange={(e) => setNewMaterial({ ...newMaterial, price_per_unit: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                      style={{ fontFamily: 'Montserrat, sans-serif' }}
+                      placeholder="45.00"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[#3B2F2F] font-semibold mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      Unit Type *
+                    </label>
+                    <select
+                      value={newMaterial.unit_type}
+                      onChange={(e) => setNewMaterial({ ...newMaterial, unit_type: e.target.value })}
+                      className="w-full px-4 py-2 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                      style={{ fontFamily: 'Montserrat, sans-serif' }}
+                    >
+                      {UNIT_TYPES.map(unit => (
+                        <option key={unit} value={unit}>{unit}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[#3B2F2F] font-semibold mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      Minimum Order *
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={newMaterial.min_order}
+                      onChange={(e) => setNewMaterial({ ...newMaterial, min_order: parseInt(e.target.value) })}
+                      className="w-full px-4 py-2 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                      style={{ fontFamily: 'Montserrat, sans-serif' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[#3B2F2F] font-semibold mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      Initial Stock Quantity *
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={newMaterial.stock_quantity}
+                      onChange={(e) => setNewMaterial({ ...newMaterial, stock_quantity: parseInt(e.target.value) })}
+                      className="w-full px-4 py-2 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                      style={{ fontFamily: 'Montserrat, sans-serif' }}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[#3B2F2F] font-semibold mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    Image URL (optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={newMaterial.image_url}
+                    onChange={(e) => setNewMaterial({ ...newMaterial, image_url: e.target.value })}
+                    className="w-full px-4 py-2 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#3B2F2F] font-semibold mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    Description (optional)
+                  </label>
+                  <textarea
+                    value={newMaterial.description}
+                    onChange={(e) => setNewMaterial({ ...newMaterial, description: e.target.value })}
+                    className="w-full px-4 py-2 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                    rows="3"
+                    placeholder="Brief description of the material"
+                  />
+                </div>
+
+                <div className="flex space-x-4 pt-4">
+                  <button
+                    onClick={handleAddMaterial}
+                    disabled={!newMaterial.name || !newMaterial.price_per_unit || savingId === 'new'}
+                    className="flex-1 px-6 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#3B2F2F] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                  >
+                    {savingId === 'new' ? 'Adding...' : 'Add Material'}
+                  </button>
+                  <button
+                    onClick={() => setShowAddModal(false)}
+                    className="flex-1 px-6 py-3 bg-gray-300 text-[#3B2F2F] font-bold rounded hover:bg-gray-400 transition-colors"
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
