@@ -1,16 +1,66 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Truck, Shield, Clock, Award, Star } from 'lucide-react';
 import MaterialCard from '../components/MaterialCard';
 import Gallery from '../components/Gallery';
 import SEO from '../components/SEO';
 import LocalBusinessSchema from '../components/LocalBusinessSchema';
-import { materials, deliveryInfo, aboutText, testimonials } from '../data/mock';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+const DEFAULT_HERO_IMAGE = 'https://images.unsplash.com/photo-1632452888109-af6d83269329';
+
+// Static content (can be moved to API later if needed)
+const deliveryInfo = {
+  title: "Fast, Reliable Delivery",
+  description: "We deliver across the Texas Hill Country with professional service and careful handling.",
+  features: [
+    "Same-day delivery available",
+    "Experienced drivers and equipment",
+    "Flexible scheduling to fit your project",
+    "Direct placement where you need it",
+    "Serving Boerne and surrounding areas"
+  ],
+  image: "https://images.unsplash.com/photo-1672541298906-4aeb3edd3520"
+};
+
+const aboutText = "The Dirt Place has been serving Boerne and the Texas Hill Country for over 15 years. We're your trusted source for premium landscape materials, delivered with honest pricing and reliable service. Whether you're a homeowner, rancher, or contractor, we have the materials and expertise to support your project from start to finish.";
+
+const testimonials = [
+  {
+    id: 1,
+    name: "Sarah Mitchell",
+    location: "Boerne, TX",
+    text: "Outstanding service! The topsoil quality is excellent and delivery was right on time. Highly recommend.",
+    rating: 5
+  },
+  {
+    id: 2,
+    name: "John Rodriguez",
+    location: "Fair Oaks Ranch",
+    text: "Been using The Dirt Place for all our ranch projects. Always reliable, fair pricing, and quality materials.",
+    rating: 5
+  },
+  {
+    id: 3,
+    name: "Emily Johnson",
+    location: "Comfort, TX",
+    text: "Great experience from start to finish. They helped me choose the right gravel for my driveway and the result is perfect!",
+    rating: 5
+  }
+];
 
 const HomePage = () => {
   const parallaxRef = useRef(null);
+  const [heroImage, setHeroImage] = useState(DEFAULT_HERO_IMAGE);
+  const [materials, setMaterials] = useState([]);
+  const [loadingMaterials, setLoadingMaterials] = useState(true);
 
   useEffect(() => {
+    fetchHeroImage();
+    fetchMaterials();
+    
     const handleScroll = () => {
       const scrolled = window.scrollY;
       if (parallaxRef.current) {
@@ -32,6 +82,46 @@ const HomePage = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const fetchHeroImage = async () => {
+    try {
+      const response = await axios.get(`${API}/admin/settings`, {
+        headers: { Authorization: 'Bearer dirtplace2024' }
+      });
+      if (response.data.hero_image_url) {
+        setHeroImage(response.data.hero_image_url);
+      }
+    } catch (error) {
+      console.log('Using default hero image');
+    }
+  };
+
+  const fetchMaterials = async () => {
+    try {
+      setLoadingMaterials(true);
+      const response = await axios.get(`${API}/ecommerce/materials`);
+      
+      const transformedMaterials = response.data.materials.map(m => ({
+        id: m.material_id || m.id,
+        name: m.name,
+        description: m.description || `Premium ${m.name.toLowerCase()} for your landscaping needs.`,
+        image: m.image_url || 'https://images.unsplash.com/photo-1591745287451-268db77122a9',
+        category: m.name,
+        pricePerCubicYard: m.price_per_unit || m.price_per_cubic_yard || 0,
+        unit: m.unit_type || 'cubic yard',
+        minOrder: m.min_order || 1,
+        stock_quantity: m.stock_quantity || 0,
+        in_stock: (m.stock_quantity || 0) > 0
+      })).slice(0, 6); // Show first 6 on homepage
+      
+      setMaterials(transformedMaterials);
+    } catch (error) {
+      console.error('Failed to fetch materials:', error);
+      setMaterials([]);
+    } finally {
+      setLoadingMaterials(false);
+    }
+  };
+
   return (
     <div className="homepage">
       <SEO 
@@ -48,7 +138,7 @@ const HomePage = () => {
           ref={parallaxRef}
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1632452888109-af6d83269329')`,
+            backgroundImage: `url('${heroImage}')`,
             transform: 'scale(1.2)'
           }}
         ></div>
