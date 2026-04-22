@@ -16,6 +16,8 @@ import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import OrdersManagementPage from "./pages/admin/OrdersManagementPage";
 import PricingManagementPage from "./pages/admin/PricingManagementPage";
+import InventoryPage from "./pages/admin/InventoryPage";
+import SiteSettingsPage from "./pages/admin/SiteSettingsPage";
 
 function AppContent() {
   const location = useLocation();
@@ -36,6 +38,8 @@ function AppContent() {
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/orders" element={<OrdersManagementPage />} />
         <Route path="/admin/pricing" element={<PricingManagementPage />} />
+        <Route path="/admin/inventory" element={<InventoryPage />} />
+        <Route path="/admin/settings" element={<SiteSettingsPage />} />
       </Routes>
       {!isAdminRoute && <Footer />}
     </>

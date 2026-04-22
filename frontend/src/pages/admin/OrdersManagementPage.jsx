@@ -178,7 +178,21 @@ const OrdersManagementPage = () => {
               className="px-4 py-4 text-[#6B4F3F] hover:text-[#D9A441] font-semibold transition-colors"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Pricing
+              Materials & Pricing
+            </Link>
+            <Link
+              to="/admin/inventory"
+              className="px-4 py-4 text-[#6B4F3F] hover:text-[#D9A441] font-semibold transition-colors"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Inventory
+            </Link>
+            <Link
+              to="/admin/settings"
+              className="px-4 py-4 text-[#6B4F3F] hover:text-[#D9A441] font-semibold transition-colors"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Settings
             </Link>
           </div>
         </div>
