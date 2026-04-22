@@ -251,7 +251,7 @@ const PricingManagementPage = () => {
                               </div>
                             ) : (
                               <span className="text-[#3B2F2F] font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                                ${material.price_per_cubic_yard.toFixed(2)}
+                                ${Number(material.price_per_cubic_yard).toFixed(2)}
                               </span>
                             )}
                           </td>
@@ -376,8 +376,8 @@ const PricingManagementPage = () => {
                               </div>
                             ) : (
                               <span className="text-[#3B2F2F] font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                                ${delivery.fee.toFixed(2)}
-                                {delivery.fee === 0 && <span className="ml-2 text-green-600 text-xs">(FREE)</span>}
+                                ${Number(delivery.fee).toFixed(2)}
+                                {Number(delivery.fee) === 0 && <span className="ml-2 text-green-600 text-xs">(FREE)</span>}
                               </span>
                             )}
                           </td>

@@ -139,7 +139,7 @@ const AdminDashboard = () => {
               <span className="text-sm text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Total Revenue</span>
             </div>
             <p className="text-4xl font-bold text-[#3B2F2F]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
-              ${stats?.total_revenue?.toFixed(2) || '0.00'}
+              ${Number(stats?.total_revenue || 0).toFixed(2)}
             </p>
           </div>
 
@@ -195,7 +195,7 @@ const AdminDashboard = () => {
                       {order.customer.name}
                     </td>
                     <td className="py-3 px-4 text-[#3B2F2F] font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                      ${order.pricing.total.toFixed(2)}
+                      ${Number(order.pricing.total).toFixed(2)}
                     </td>
                     <td className="py-3 px-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(order.status)}`} style={{ fontFamily: 'Montserrat, sans-serif' }}>

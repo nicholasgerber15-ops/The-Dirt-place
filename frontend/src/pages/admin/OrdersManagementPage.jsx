@@ -280,7 +280,7 @@ const OrdersManagementPage = () => {
                               {order.customer.name}
                             </td>
                             <td className="py-3 px-2 text-[#3B2F2F] font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                              ${order.pricing.total.toFixed(2)}
+                              ${Number(order.pricing.total).toFixed(2)}
                             </td>
                             <td className="py-3 px-2">
                               <span className={`px-2 py-1 rounded text-xs font-semibold border ${getStatusColor(order.status)}`} style={{ fontFamily: 'Montserrat, sans-serif' }}>
@@ -391,7 +391,7 @@ const OrdersManagementPage = () => {
                           {item.name} x{item.quantity}
                         </span>
                         <span className="font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                          ${(item.price * item.quantity).toFixed(2)}
+                          ${(Number(item.price) * Number(item.quantity)).toFixed(2)}
                         </span>
                       </div>
                     ))}
@@ -401,19 +401,19 @@ const OrdersManagementPage = () => {
                     <div className="flex justify-between mb-1">
                       <span className="text-sm text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Materials Total</span>
                       <span className="text-sm font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                        ${selectedOrder.pricing.materials_total.toFixed(2)}
+                        ${Number(selectedOrder.pricing.materials_total).toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between mb-2">
                       <span className="text-sm text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Delivery Fee</span>
                       <span className="text-sm font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                        ${selectedOrder.pricing.delivery_fee.toFixed(2)}
+                        ${Number(selectedOrder.pricing.delivery_fee).toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="font-bold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Total</span>
                       <span className="font-bold text-[#3B2F2F] text-lg" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                        ${selectedOrder.pricing.total.toFixed(2)}
+                        ${Number(selectedOrder.pricing.total).toFixed(2)}
                       </span>
                     </div>
                   </div>
