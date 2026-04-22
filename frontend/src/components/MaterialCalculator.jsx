@@ -65,7 +65,15 @@ const MaterialCalculator = () => {
     try {
       await axios.post(`${API}/email-calculation`, {
         email: userEmail,
-        calculation: result
+        calculation: {
+          ...result,
+          dimensions: `${result.length}' × ${result.width}' × ${result.depth}"`,
+          volume_cubic_yards: result.cubic_yards,
+          recommended_amount: result.tons,
+          unit: 'tons',
+          recommendation: 'Order 10-15% extra material to account for settling and compaction.',
+          note: 'Actual amounts may vary based on specific material density and site conditions.'
+        }
       });
 
       setEmailMessage('Calculation results sent to your email!');
@@ -246,29 +254,33 @@ const MaterialCalculator = () => {
               <span className="font-bold text-[#3B2F2F]">{result.project_type}</span>
             </div>
             <div className="flex justify-between items-center p-3 bg-white rounded">
+              <span className="text-[#6B4F3F]">Material:</span>
+              <span className="font-bold text-[#3B2F2F]">{result.material}</span>
+            </div>
+            <div className="flex justify-between items-center p-3 bg-white rounded">
               <span className="text-[#6B4F3F]">Dimensions:</span>
               <span className="font-bold text-[#3B2F2F]">
-                {result.dimensions.length}' × {result.dimensions.width}' × {result.dimensions.depth}"
+                {result.length}' × {result.width}' × {result.depth}"
               </span>
             </div>
             <div className="flex justify-between items-center p-3 bg-white rounded">
               <span className="text-[#6B4F3F]">Volume:</span>
               <span className="font-bold text-[#3B2F2F]">
-                {result.volume_cubic_yards} cubic yards
+                {result.cubic_yards} cubic yards
               </span>
             </div>
             <div className="flex justify-between items-center p-4 bg-[#D9A441] rounded">
-              <span className="text-[#3B2F2F] font-bold">Recommended Amount:</span>
+              <span className="text-[#3B2F2F] font-bold">Estimated Weight:</span>
               <span className="font-bold text-[#3B2F2F] text-xl">
-                {result.recommended_amount} {result.unit}
+                {result.tons} tons
               </span>
             </div>
             <div className="p-4 bg-white rounded border border-[#6B7A3A]">
               <p className="text-sm text-[#6B4F3F] mb-2">
-                <strong>💡 Tip:</strong> {result.recommendation}
+                <strong>💡 Tip:</strong> Order 10-15% extra material to account for settling and compaction.
               </p>
               <p className="text-xs text-[#6B4F3F] italic">
-                {result.note}
+                Actual amounts may vary based on specific material density and site conditions.
               </p>
             </div>
           </div>

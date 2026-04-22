@@ -40,6 +40,22 @@ class StatusCheck(BaseModel):
 class StatusCheckCreate(BaseModel):
     client_name: str
 
+class CalculatorRequest(BaseModel):
+    project_type: str
+    length: float
+    width: float
+    depth: float
+    material: str
+
+class CalculatorResponse(BaseModel):
+    cubic_yards: float
+    tons: float
+    project_type: str
+    material: str
+    length: float
+    width: float
+    depth: float
+
 # Add your routes to the router instead of directly to app
 @api_router.get("/")
 async def root():
@@ -68,6 +84,41 @@ async def get_status_checks():
             check['timestamp'] = datetime.fromisoformat(check['timestamp'])
     
     return status_checks
+
+@api_router.post("/calculator", response_model=CalculatorResponse)
+async def calculate_material(request: CalculatorRequest):
+    """
+    Calculate material needed based on dimensions
+    Converts cubic feet to cubic yards and estimates tons
+    """
+    # Calculate cubic feet
+    cubic_feet = request.length * request.width * (request.depth / 12)
+    
+    # Convert to cubic yards (1 cubic yard = 27 cubic feet)
+    cubic_yards = cubic_feet / 27
+    
+    # Material density (tons per cubic yard) - approximate values
+    material_density = {
+        'Topsoil': 1.3,
+        'Gravel': 1.4,
+        'Sand': 1.3,
+        'Road Base': 1.5,
+        'Mulch': 0.6,
+        'Decorative Rock': 1.6
+    }
+    
+    density = material_density.get(request.material, 1.3)
+    tons = cubic_yards * density
+    
+    return CalculatorResponse(
+        cubic_yards=round(cubic_yards, 2),
+        tons=round(tons, 2),
+        project_type=request.project_type,
+        material=request.material,
+        length=request.length,
+        width=request.width,
+        depth=request.depth
+    )
 
 # Include the routers in the main app
 app.include_router(api_router)
