@@ -1,13 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import MaterialCard from '../components/MaterialCard';
 import MaterialCalculator from '../components/MaterialCalculator';
 import SEO from '../components/SEO';
-import { materials } from '../data/mock';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const MaterialsPage = () => {
+  const [materials, setMaterials] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
+    fetchMaterials();
+    
     // Scroll animations
     const handleScroll = () => {
       const elements = document.querySelectorAll('.scroll-animate');
@@ -24,6 +32,35 @@ const MaterialsPage = () => {
     handleScroll(); // Check on mount
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const fetchMaterials = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API}/ecommerce/materials`);
+      
+      // Transform API data to match MaterialCard expectations
+      const transformedMaterials = response.data.materials.map(m => ({
+        id: m.material_id || m.id,
+        name: m.name,
+        description: m.description || `Premium ${m.name.toLowerCase()} for your landscaping needs.`,
+        image: m.image_url || 'https://images.unsplash.com/photo-1591745287451-268db77122a9',
+        category: m.name,
+        pricePerCubicYard: m.price_per_unit || m.price_per_cubic_yard || 0,
+        unit: m.unit_type || 'cubic yard',
+        minOrder: m.min_order || 1,
+        stock_quantity: m.stock_quantity || 0,
+        in_stock: (m.stock_quantity || 0) > 0
+      }));
+      
+      setMaterials(transformedMaterials);
+    } catch (error) {
+      console.error('Failed to fetch materials:', error);
+      // Fallback to empty array on error
+      setMaterials([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="materials-page">
@@ -74,13 +111,25 @@ const MaterialsPage = () => {
       {/* Materials Grid */}
       <section className="py-24 bg-[#FAF9F6]">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {materials.map((material, index) => (
-              <div key={material.id} className="scroll-animate">
-                <MaterialCard material={material} index={index} />
-              </div>
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#D9A441]"></div>
+            </div>
+          ) : materials.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-2xl text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                No materials available at the moment.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {materials.map((material, index) => (
+                <div key={material.id} className="scroll-animate">
+                  <MaterialCard material={material} index={index} />
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Additional Info Section */}
           <div className="mt-24 max-w-4xl mx-auto scroll-animate">

@@ -84,6 +84,18 @@ class CheckoutRequest(BaseModel):
 class OrderStatusUpdate(BaseModel):
     status: str
 
+@router.get("/materials")
+async def get_materials():
+    """
+    Get all available materials for public display
+    """
+    try:
+        materials = await db.material_pricing.find({}, {"_id": 0}).to_list(100)
+        return {"materials": materials}
+    except Exception as e:
+        logger.error(f"Failed to fetch materials: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.post("/checkout/create-session")
 async def create_checkout_session(request: CheckoutRequest):
     """
