@@ -74,19 +74,93 @@ async def admin_login(credentials: AdminLogin):
 
 # Demo data for offline mode
 def get_demo_orders():
-    return []
+    from datetime import datetime, timedelta
+    import random
+    
+    materials = ["Topsoil", "Gravel", "Sand", "Road Base", "Mulch", "Decorative Rock"]
+    statuses = ["pending_payment", "processing", "in_delivery", "delivered"]
+    names = ["John Smith", "Maria Garcia", "Tom Johnson", "Sarah Williams", "Mike Brown"]
+    
+    demo_orders = []
+    for i in range(5):
+        days_ago = random.randint(0, 30)
+        demo_orders.append({
+            "_id": f"demo_{i+1}",
+            "order_number": f"ORD-2024-{1000+i}",
+            "customer": {
+                "name": names[i],
+                "email": names[i].lower().replace(" ", ".") + "@email.com",
+                "phone": f"(830) 555-{1000+i:04d}"
+            },
+            "material": materials[i % len(materials)],
+            "quantity": random.randint(1, 10),
+            "pricing": {
+                "material": random.randint(50, 150),
+                "delivery": random.choice([0, 25, 40, 50]),
+                "total": random.randint(75, 500)
+            },
+            "status": statuses[i % len(statuses)],
+            "payment_status": "paid" if i > 1 else "pending",
+            "created_at": (datetime.now() - timedelta(days=days_ago)).isoformat()
+        })
+    return demo_orders
+
+def get_demo_pricing():
+    return [
+        {"material_id": "1", "name": "Topsoil", "price_per_cubic_yard": 45.00, "min_order": 1},
+        {"material_id": "2", "name": "Gravel", "price_per_cubic_yard": 55.00, "min_order": 2},
+        {"material_id": "3", "name": "Sand", "price_per_cubic_yard": 40.00, "min_order": 1},
+        {"material_id": "4", "name": "Road Base", "price_per_cubic_yard": 50.00, "min_order": 2},
+        {"material_id": "5", "name": "Mulch", "price_per_cubic_yard": 35.00, "min_order": 1},
+        {"material_id": "6", "name": "Decorative Rock", "price_per_cubic_yard": 75.00, "min_order": 1},
+    ]
+
+def get_demo_delivery_fees():
+    return [
+        {"zip_code": "78006", "fee": 0, "area": "Boerne"},
+        {"zip_code": "78015", "fee": 15, "area": "Boerne Area"},
+        {"zip_code": "78070", "fee": 20, "area": "Fair Oaks Ranch"},
+        {"zip_code": "78163", "fee": 25, "area": "Comfort"},
+        {"zip_code": "78255", "fee": 30, "area": "Leon Springs"},
+        {"zip_code": "default", "fee": 40, "area": "Extended Area"},
+    ]
+
+def get_demo_inventory():
+    return [
+        {"material_id": "1", "name": "Topsoil", "stock_quantity": 150, "stock_status": "in_stock"},
+        {"material_id": "2", "name": "Gravel", "stock_quantity": 200, "stock_status": "in_stock"},
+        {"material_id": "3", "name": "Sand", "stock_quantity": 80, "stock_status": "in_stock"},
+        {"material_id": "4", "name": "Road Base", "stock_quantity": 15, "stock_status": "low_stock"},
+        {"material_id": "5", "name": "Mulch", "stock_quantity": 100, "stock_status": "in_stock"},
+        {"material_id": "6", "name": "Decorative Rock", "stock_quantity": 0, "stock_status": "out_of_stock"},
+    ]
 
 def get_demo_stats():
     return {
-        "total_orders": 0,
+        "total_orders": 5,
         "orders_by_status": {
-            "pending_payment": 0,
-            "processing": 0,
-            "in_delivery": 0,
-            "delivered": 0
+            "pending_payment": 1,
+            "processing": 1,
+            "in_delivery": 1,
+            "delivered": 2
         },
-        "total_revenue": 0,
+        "total_revenue": 1250.00,
         "recent_orders": get_demo_orders()
+    }
+
+def get_demo_settings():
+    return {
+        "setting_type": "general",
+        "hero_image_url": "",
+        "business_hours": {
+            "monday": {"open": "8:00", "close": "17:00"},
+            "tuesday": {"open": "8:00", "close": "17:00"},
+            "wednesday": {"open": "8:00", "close": "17:00"},
+            "thursday": {"open": "8:00", "close": "17:00"},
+            "friday": {"open": "8:00", "close": "17:00"},
+            "saturday": {"open": "8:00", "close": "15:00"},
+            "sunday": {"open": "", "close": "", "closed": True}
+        }
     }
 
 @router.get("/orders", dependencies=[Depends(verify_admin)])
@@ -100,7 +174,8 @@ async def get_all_orders(
     """
     db = get_database()
     if db is None:
-        return {"orders": [], "total": 0, "limit": limit, "skip": skip}
+        orders = get_demo_orders()[:limit]
+        return {"orders": orders, "total": len(orders), "limit": limit, "skip": skip}
     
     try:
         query = {}
@@ -190,6 +265,7 @@ async def get_dashboard_stats():
     """
     db = get_database()
     if db is None:
+        logger.info("MongoDB not available - returning demo stats")
         return get_demo_stats()
     
     try:
@@ -290,6 +366,10 @@ async def get_all_pricing():
     """
     Get all material pricing
     """
+    db = get_database()
+    if db is None:
+        return {"pricing": get_demo_pricing()}
+    
     try:
         pricing = await db.material_pricing.find().to_list(100)
         
@@ -433,6 +513,10 @@ async def get_inventory():
     """
     Get inventory status for all materials
     """
+    db = get_database()
+    if db is None:
+        return {"inventory": get_demo_inventory()}
+    
     try:
         materials = await db.material_pricing.find().to_list(100)
         
@@ -468,6 +552,10 @@ async def get_site_settings():
     """
     Get site settings
     """
+    db = get_database()
+    if db is None:
+        return get_demo_settings()
+    
     try:
         settings = await db.site_settings.find_one({"setting_type": "general"})
         if not settings:
@@ -516,6 +604,10 @@ async def get_delivery_fees():
     """
     Get delivery fee structure
     """
+    db = get_database()
+    if db is None:
+        return {"delivery_fees": get_demo_delivery_fees()}
+    
     try:
         fees = await db.delivery_fees.find().to_list(100)
         
