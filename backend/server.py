@@ -1,7 +1,9 @@
 from fastapi import FastAPI, APIRouter
 from fastapi.responses import JSONResponse
+from fastapi.middleware.gzip import GZipMiddleware
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
@@ -48,7 +50,14 @@ def get_db():
         return None
 
 # Create the main app without a prefix
-app = FastAPI()
+app = FastAPI(
+    title="The Dirt Place API",
+    description="Backend API for The Dirt Place landscape materials",
+    version="2.0.0"
+)
+
+# Add GZip compression for faster responses
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
