@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense } from "react";
 import "@/App.css";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
@@ -6,20 +6,20 @@ import { CartProvider } from './context/CartContext';
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
-// Lazy load pages for code splitting
-const HomePage = lazy(() => import('./pages/HomePage'));
-const MaterialsPage = lazy(() => import('./pages/MaterialsPage'));
-const DeliveryPage = lazy(() => import('./pages/DeliveryPage'));
-const ContactPage = lazy(() => import('./pages/ContactPage'));
-const CartPage = lazy(() => import('./pages/CartPage'));
-const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
-const OrderSuccessPage = lazy(() => import('./pages/OrderSuccessPage'));
-const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage'));
-const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
-const OrdersManagementPage = lazy(() => import('./pages/admin/OrdersManagementPage'));
-const PricingManagementPage = lazy(() => import('./pages/admin/PricingManagementPage'));
-const InventoryPage = lazy(() => import('./pages/admin/InventoryPage'));
-const SiteSettingsPage = lazy(() => import('./pages/admin/SiteSettingsPage'));
+// Import pages directly (no lazy loading to avoid route issues)
+import HomePage from "./pages/HomePage";
+import MaterialsPage from "./pages/MaterialsPage";
+import DeliveryPage from "./pages/DeliveryPage";
+import ContactPage from "./pages/ContactPage";
+import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrderSuccessPage from "./pages/OrderSuccessPage";
+import AdminLoginPage from "./pages/admin/AdminLoginPage";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import OrdersManagementPage from "./pages/admin/OrdersManagementPage";
+import PricingManagementPage from "./pages/admin/PricingManagementPage";
+import InventoryPage from "./pages/admin/InventoryPage";
+import SiteSettingsPage from "./pages/admin/SiteSettingsPage";
 
 function PageLoader() {
   return (
