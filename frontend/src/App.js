@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { CartProvider } from './context/CartContext';
 import Header from "./components/Header";
@@ -51,6 +51,7 @@ function AppContent() {
           <Route path="/admin/pricing" element={<PricingManagementPage />} />
           <Route path="/admin/inventory" element={<InventoryPage />} />
           <Route path="/admin/settings" element={<SiteSettingsPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>
       {!isAdminRoute && <Footer />}
