@@ -34,7 +34,7 @@ services:
     repo: https://github.com/nicholasgerber15-ops/The-Dirt-place
     branch: Version-2
     rootDir: frontend
-    buildCommand: npm install --legacy-peer-deps && npm run build
+    buildCommand: npm install --legacy-peer-deps && npm run build --legacy-peer-deps
     staticPublishPath: build
     envVars:
       - key: REACT_APP_BACKEND_URL
