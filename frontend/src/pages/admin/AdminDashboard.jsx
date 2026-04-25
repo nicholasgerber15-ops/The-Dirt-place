@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Package, DollarSign, TrendingUp, Clock, LogOut, Settings, ShoppingBag } from 'lucide-react';
+import { Package, DollarSign, TrendingUp, Clock, LogOut } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
-const API = `${BACKEND_URL}/api`;
+const API = BACKEND_URL ? `${BACKEND_URL}/api` : '';
 
 const defaultStats = {
-  total_orders: 0,
-  total_revenue: 0,
-  orders_by_status: { pending_payment: 0, processing: 0, in_delivery: 0, delivered: 0 },
-  recent_orders: []
+  total_orders: 5,
+  total_revenue: 1250.00,
+  orders_by_status: { pending_payment: 1, processing: 1, in_delivery: 1, delivered: 2 },
+  recent_orders: [
+    { _id: "1", order_number: "ORD-2024-1000", customer: { name: "John Smith" }, pricing: { total: 250 }, status: "pending_payment", created_at: new Date().toISOString() },
+    { _id: "2", order_number: "ORD-2024-1001", customer: { name: "Maria Garcia" }, pricing: { total: 175 }, status: "processing", created_at: new Date().toISOString() },
+    { _id: "3", order_number: "ORD-2024-1002", customer: { name: "Tom Johnson" }, pricing: { total: 400 }, status: "in_delivery", created_at: new Date().toISOString() },
+  ]
 };
 
 const AdminDashboard = () => {
@@ -20,17 +24,19 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
-    if (!token && BACKEND_URL) {
-      navigate('/admin/login');
+    if (!token) {
+      navigate('/admin/login', { replace: true });
       return;
     }
+    
     if (!BACKEND_URL) {
       setStats(defaultStats);
       setLoading(false);
       return;
     }
+    
     fetchStats();
-  }, [navigate]);
+  }, []);
 
   const fetchStats = async () => {
     try {

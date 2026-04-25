@@ -20,7 +20,7 @@ const AdminLoginPage = () => {
 
     if (password === ADMIN_PASSWORD) {
       localStorage.setItem('admin_token', ADMIN_PASSWORD);
-      navigate('/admin/dashboard');
+      navigate('/admin/dashboard', { replace: true });
       setIsLoading(false);
       return;
     }
@@ -35,7 +35,7 @@ const AdminLoginPage = () => {
       const response = await axios.post(`${API}/admin/login`, { password }, { timeout: 5000 });
       if (response.data && response.data.success) {
         localStorage.setItem('admin_token', response.data.token);
-        navigate('/admin/dashboard');
+        navigate('/admin/dashboard', { replace: true });
       } else {
         setError('Invalid password');
       }
