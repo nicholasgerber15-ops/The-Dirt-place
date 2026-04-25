@@ -1,0 +1,46 @@
+# Render Blueprint - The Dirt Place
+# Import: render blueprint apply render.yaml
+
+previewsEnabled: true
+
+services:
+  # === BACKEND API ===
+  - name: the-dirt-place-backend
+    runtime: python
+    region: oregon
+    plan: free
+    repo: https://github.com/nicholasgerber15-ops/The-Dirt-place
+    branch: Version-2
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MONGO_URL
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+        value: dirtplace2024
+      - key: CORS_ORIGINS
+        sync: false
+        value: "*"
+      - key: RESEND_API_KEY
+        sync: false
+
+  # === FRONTEND ===
+  - name: the-dirt-place
+    runtime: static
+    repo: https://github.com/nicholasgerber15-ops/The-Dirt-place
+    branch: Version-2
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    envVars:
+      - key: REACT_APP_BACKEND_URL
+        sync: false
+        value: https://the-dirt-place-backend.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

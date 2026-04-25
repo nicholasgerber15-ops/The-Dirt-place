@@ -1,0 +1,45 @@
+{
+  "summary": "Tested Admin Portal + Ecommerce integration. 15/15 backend tests pass covering admin auth, stats, orders list/search/filter, pricing CRUD with persistence, delivery fees CRUD, Stripe checkout session creation, and order→admin visibility. Frontend admin login works; dashboard stats cards render; test order created via checkout API appears in Recent Orders. Orders and Pricing sub-nav links exist and render content.",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "/api/ecommerce/checkout/status/{session_id} and /api/ecommerce/webhook/stripe", "issue": "Order lookups use {\"_id\": transaction[\"order_id\"]} where order_id is a STRING, but Mongo _id is ObjectId. Must wrap with ObjectId(order_id). Result: after Stripe payment completes, order status stays 'pending_payment' and payment_status stays 'pending' — orders never progress to 'processing', revenue stat always $0, and confirmation emails never fire.", "priority": "CRITICAL"}
+    ],
+    "minor": [
+      {"endpoint": "ecommerce.py DELIVERY_FEES dict", "issue": "Duplicate key '78006' (Boerne and Bergheim). Harmless now since DB lookups are used, but dead/misleading code."},
+      {"endpoint": "/api/admin/orders/{order_id} and PATCH status", "issue": "Exceptions from invalid ObjectId (e.g., non-24-hex order_id) bubble to generic 500 instead of 400/404."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Admin header/navbar", "issue": "'THE DIRT PLACE ADMIN / Management Portal' text visibly overlaps with the public-site logo 'THE DIRT PLACE / Boerne, Texas' in top-left after login. Looks like the admin layout renders on top of the public Navbar instead of replacing it. See /admin/dashboard screenshot.", "selector": "admin header container", "priority": "HIGH"},
+      {"component": "Admin layout", "issue": "Public-site navbar (Home/Materials/Delivery/Contact/Cart/Request Delivery) is shown on admin pages — admin pages should have their own layout without the public shop navbar."}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/admin/login", "issues": ["Password hint 'Password: dirtplace2024' is printed on the login page — remove before production (security disclosure)."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "CRITICAL: Fix ObjectId conversion in /app/backend/routes/ecommerce.py in get_checkout_status() and stripe_webhook() — wrap transaction['order_id'] / metadata['order_id'] with ObjectId() when updating db.orders. Without this fix the entire Stripe→admin revenue/status flow is broken.",
+    "HIGH: Fix admin layout so public Navbar does not render on /admin/* routes — the overlapping logo/title in top-left is a visible bug.",
+    "Remove the hardcoded password hint from AdminLoginPage.jsx.",
+    "Remove duplicate '78006' key in DELIVERY_FEES dict in ecommerce.py.",
+    "Add ObjectId validation + proper 400/404 responses in admin order detail and status update endpoints."
+  ],
+  "critical_code_review_comments": [
+    "Orders written with ObjectId _id but referenced as string via transaction['order_id'] — type mismatch causes silent update failures (matched_count=0). No test catches this because tests don't actually complete Stripe payment.",
+    "ADMIN_PASSWORD is used as the bearer token itself — any leak of a single request exposes the master password. OK for MVP but flag for prod.",
+    "Admin routes depend on a global Mongo client created at import time in routes/admin.py and routes/ecommerce.py — duplicated Mongo client init across files; should be centralized.",
+    "No rate limiting on /api/admin/login — brute-forceable.",
+    "Pricing PUT doesn't validate material_id matches the path parameter vs body."
+  ],
+  "updated_files": ["/app/backend/tests/backend_test.py"],
+  "success_rate": {"backend": "100% (15/15 pytest cases)", "frontend": "~70% (admin login + dashboard + integration confirmed; layout overlap bug)"},
+  "test_credentials": "Admin password: dirtplace2024 (from /app/memory/test_credentials.md)",
+  "seed_data_creation": "Created one test order 'TEST Customer' DP-2026... via POST /api/ecommerce/checkout/create-session during testing. Safe to leave or delete.",
+  "retest_needed": true,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Backend pytest suite at /app/backend/tests/backend_test.py is the regression suite — rerun after main agent fixes. The CRITICAL bug (ObjectId in ecommerce status/webhook) cannot be caught by the current tests without simulating a completed Stripe payment; consider adding a direct DB-level test or mocking the Stripe status response. Frontend nav between Dashboard/Orders/Pricing tabs should be re-verified after admin layout fix.",
+  "rca of the issue": "RCA of CRITICAL bug: In /app/backend/routes/ecommerce.py, create_checkout_session stores order_id as str(order_result.inserted_id). Later get_checkout_status() and stripe_webhook() call db.orders.update_one({'_id': transaction['order_id']}, ...) with a STRING, but Mongo _id is ObjectId → zero matches → order never transitions to 'processing'/'paid'. Fix: from bson import ObjectId; then {'_id': ObjectId(transaction['order_id'])} in both handlers. Reproduction: create checkout session, poll /api/ecommerce/checkout/status/{session_id} after Stripe simulates payment — order.status remains 'pending_payment'. Mitigation: add ObjectId wrap + a unit test that mocks StripeCheckout.get_checkout_status to return paid and asserts order status transition."
+}
