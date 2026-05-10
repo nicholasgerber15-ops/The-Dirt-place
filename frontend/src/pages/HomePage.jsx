@@ -232,7 +232,7 @@ const HomePage = () => {
             {[
               { icon: Shield, title: 'Quality Guaranteed', description: 'Every load meets our high standards' },
               { icon: Clock, title: 'Fast Turnaround', description: 'Quick service when you need it' },
-              { icon: Award, title: '15+ Years Experience', description: 'Trusted by the community' },
+              { icon: Award, title: 'Since 2022', description: 'Trusted by the community' },
               { icon: Truck, title: 'Professional Service', description: 'Expert drivers and equipment' }
             ].map((item, index) => (
               <div 
