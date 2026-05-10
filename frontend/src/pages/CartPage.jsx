@@ -26,7 +26,7 @@ const CartPage = () => {
         <SEO 
           title="Shopping Cart | The Dirt Place"
           description="View your cart"
-          url="https://earth-supply-1.preview.emergentagent.com/cart"
+          url="https://theboernedirtplace.com/cart"
         />
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
@@ -56,7 +56,7 @@ const CartPage = () => {
       <SEO 
         title="Shopping Cart | The Dirt Place"
         description="View your cart"
-        url="https://earth-supply-1.preview.emergentagent.com/cart"
+        url="https://theboernedirtplace.com/cart"
       />
       <div className="container mx-auto px-4">
         <h1 className="text-6xl font-bold text-[#3B2F2F] mb-12" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>

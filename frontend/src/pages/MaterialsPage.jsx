@@ -68,7 +68,7 @@ const MaterialsPage = () => {
         title="Our Materials - Topsoil, Gravel, Sand & More | The Dirt Place"
         description="Browse our selection of premium landscape materials including topsoil, gravel, sand, road base, mulch, and decorative rock. Free material calculator to estimate your needs."
         keywords="topsoil boerne, gravel boerne, sand boerne, road base boerne, mulch boerne, decorative rock boerne, landscape materials calculator"
-        url="https://earth-supply-1.preview.emergentagent.com/materials"
+        url="https://theboernedirtplace.com/materials"
       />
       
       {/* Hero Section with Parallax Background */}

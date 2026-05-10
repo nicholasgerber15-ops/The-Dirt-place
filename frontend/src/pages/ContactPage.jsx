@@ -85,7 +85,7 @@ const ContactPage = () => {
         title="Contact Us - Get a Quote | The Dirt Place Boerne, TX"
         description="Contact The Dirt Place for landscape materials in Boerne, TX. Call (830) 555-0198 or fill out our contact form for a free quote. We deliver across the Texas Hill Country."
         keywords="contact the dirt place, landscape materials quote boerne, dirt quote, materials boerne tx"
-        url="https://earth-supply-1.preview.emergentagent.com/contact"
+        url="https://theboernedirtplace.com/contact"
       />
       
       {/* Hero Section */}

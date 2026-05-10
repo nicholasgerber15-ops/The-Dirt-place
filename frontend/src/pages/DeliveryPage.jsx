@@ -9,7 +9,7 @@ const DeliveryPage = () => {
       <SEO
         title="Delivery | The Dirt Place"
         description="We deliver premium landscape materials across the Texas Hill Country"
-        url="https://earth-supply-1.preview.emergentagent.com/delivery"
+        url="https://theboernedirtplace.com/delivery"
       />
 
       <section className="relative py-32 overflow-hidden">

@@ -116,7 +116,7 @@ const HomePage = () => {
         title="Landscape Materials in Boerne, TX | The Dirt Place"
         description="The Dirt Place provides dirt, gravel, sand, and landscape materials in Boerne, Texas. We deliver across the Texas Hill Country. Premium quality guaranteed."
         keywords="dirt boerne, gravel boerne tx, landscape materials boerne, topsoil boerne, mulch boerne, texas hill country materials, sand boerne, road base boerne"
-        url="https://earth-supply-1.preview.emergentagent.com"
+        url="https://theboernedirtplace.com"
       />
       <LocalBusinessSchema />
       

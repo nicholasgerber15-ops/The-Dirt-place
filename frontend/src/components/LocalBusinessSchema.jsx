@@ -21,7 +21,7 @@ const LocalBusinessSchema = () => {
       "latitude": 29.789870,
       "longitude": -98.702540
     },
-    "url": "https://earth-supply-1.preview.emergentagent.com",
+    "url": "https://theboernedirtplace.com",
     "telephone": "(830) 555-0198",
     "email": "info@thedirtplace.com",
     "openingHoursSpecification": [
@@ -53,42 +53,84 @@ const LocalBusinessSchema = () => {
         "@type": "Offer",
         "itemOffered": {
           "@type": "Product",
-          "name": "Topsoil"
+          "name": "Topsoil",
+          "offers": {
+            "@type": "Offer",
+            "price": "45.00",
+            "priceCurrency": "USD",
+            "priceValidUntil": "2027-12-31",
+            "availability": "https://schema.org/InStock"
+          }
         }
       },
       {
         "@type": "Offer",
         "itemOffered": {
           "@type": "Product",
-          "name": "Gravel"
+          "name": "Gravel",
+          "offers": {
+            "@type": "Offer",
+            "price": "55.00",
+            "priceCurrency": "USD",
+            "priceValidUntil": "2027-12-31",
+            "availability": "https://schema.org/InStock"
+          }
         }
       },
       {
         "@type": "Offer",
         "itemOffered": {
           "@type": "Product",
-          "name": "Sand"
+          "name": "Sand",
+          "offers": {
+            "@type": "Offer",
+            "price": "40.00",
+            "priceCurrency": "USD",
+            "priceValidUntil": "2027-12-31",
+            "availability": "https://schema.org/InStock"
+          }
         }
       },
       {
         "@type": "Offer",
         "itemOffered": {
           "@type": "Product",
-          "name": "Road Base"
+          "name": "Road Base",
+          "offers": {
+            "@type": "Offer",
+            "price": "50.00",
+            "priceCurrency": "USD",
+            "priceValidUntil": "2027-12-31",
+            "availability": "https://schema.org/InStock"
+          }
         }
       },
       {
         "@type": "Offer",
         "itemOffered": {
           "@type": "Product",
-          "name": "Mulch"
+          "name": "Mulch",
+          "offers": {
+            "@type": "Offer",
+            "price": "35.00",
+            "priceCurrency": "USD",
+            "priceValidUntil": "2027-12-31",
+            "availability": "https://schema.org/InStock"
+          }
         }
       },
       {
         "@type": "Offer",
         "itemOffered": {
           "@type": "Product",
-          "name": "Decorative Rock"
+          "name": "Decorative Rock",
+          "offers": {
+            "@type": "Offer",
+            "price": "75.00",
+            "priceCurrency": "USD",
+            "priceValidUntil": "2027-12-31",
+            "availability": "https://schema.org/InStock"
+          }
         }
       }
     ]
