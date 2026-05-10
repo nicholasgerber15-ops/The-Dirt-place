@@ -1,18 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { Trash2, Plus, Minus, ShoppingCart, ArrowRight } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, Truck, Calculator, AlertTriangle } from 'lucide-react';
 import SEO from '../components/SEO';
+import DeliveryCalculator from '../components/DeliveryCalculator';
 
 const CartPage = () => {
-  const { cart, updateQuantity, removeFromCart, getCartTotal } = useCart();
+  const { cart, updateQuantity, removeFromCart, getCartTotal, getItemCount, needsDelivery, toggleDelivery } = useCart();
+  const [showCalc, setShowCalc] = useState(false);
+  const [calcError, setCalcError] = useState(null);
+
+  const handleCalcClick = () => {
+    if (cart.length === 0) {
+      setCalcError('Your cart is empty. Add materials first.');
+      setShowCalc(false);
+      return;
+    }
+    setCalcError(null);
+    setShowCalc(!showCalc);
+  };
 
   if (cart.length === 0) {
     return (
       <div className="min-h-screen bg-[#FAF9F6] pt-32 pb-24">
         <SEO 
           title="Shopping Cart | The Dirt Place"
-          description="View your cart and checkout for landscape materials delivery in Boerne, TX"
+          description="View your cart"
           url="https://earth-supply-1.preview.emergentagent.com/cart"
         />
         <div className="container mx-auto px-4">
@@ -42,7 +55,7 @@ const CartPage = () => {
     <div className="min-h-screen bg-[#FAF9F6] pt-32 pb-24">
       <SEO 
         title="Shopping Cart | The Dirt Place"
-        description="View your cart and checkout for landscape materials delivery in Boerne, TX"
+        description="View your cart"
         url="https://earth-supply-1.preview.emergentagent.com/cart"
       />
       <div className="container mx-auto px-4">
@@ -134,12 +147,47 @@ const CartPage = () => {
               </div>
 
               <div className="border-t-2 border-[#D9A441] pt-4 mb-6">
-                <div className="flex justify-between text-lg mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <div className="flex justify-between text-lg mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                   <span className="text-[#6B4F3F]">Subtotal:</span>
                   <span className="font-bold text-[#3B2F2F]">${getCartTotal().toFixed(2)}</span>
                 </div>
-                <p className="text-xs text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  Delivery fee calculated at checkout
+
+                <button
+                  onClick={handleCalcClick}
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-[#FAF9F6] border-2 border-[#6B4F3F]/20 rounded-lg hover:bg-[#f0eee7] hover:border-[#D9A441] transition-all duration-300 mb-3"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  <Calculator size={18} className="text-[#6B7A3A]" />
+                  <span className="font-semibold text-[#3B2F2F]">Calculate Your Delivery Cost</span>
+                </button>
+
+                {calcError && (
+                  <p className="text-xs text-red-600 mb-3 flex items-center space-x-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <AlertTriangle size={12} />
+                    <span>{calcError}</span>
+                  </p>
+                )}
+
+                {showCalc && cart.length > 0 && (
+                  <div className="mb-3">
+                    <DeliveryCalculator totalYards={getItemCount()} cartItems={cart} />
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between p-3 bg-[#FAF9F6] rounded-lg" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  <div className="flex items-center space-x-3">
+                    <Truck size={20} className={needsDelivery ? 'text-[#6B7A3A]' : 'text-[#6B4F3F]'} />
+                    <span className="font-semibold text-[#3B2F2F]">Delivery</span>
+                  </div>
+                  <div
+                    onClick={toggleDelivery}
+                    className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${needsDelivery ? 'bg-[#6B7A3A]' : 'bg-gray-300'}`}
+                  >
+                    <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${needsDelivery ? 'translate-x-6' : 'translate-x-0.5'}`}></div>
+                  </div>
+                </div>
+                <p className="text-xs text-[#6B4F3F] mt-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  We deliver to Boerne and the Texas Hill Country
                 </p>
               </div>
 

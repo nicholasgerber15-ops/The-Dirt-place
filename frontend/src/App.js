@@ -20,6 +20,7 @@ import OrdersManagementPage from "./pages/admin/OrdersManagementPage";
 import PricingManagementPage from "./pages/admin/PricingManagementPage";
 import InventoryPage from "./pages/admin/InventoryPage";
 import SiteSettingsPage from "./pages/admin/SiteSettingsPage";
+import DriverManagementPage from "./pages/admin/DriverManagementPage";
 
 function PageLoader() {
   return (
@@ -50,6 +51,7 @@ function AppContent() {
           <Route path="/admin/orders" element={<OrdersManagementPage />} />
           <Route path="/admin/pricing" element={<PricingManagementPage />} />
           <Route path="/admin/inventory" element={<InventoryPage />} />
+          <Route path="/admin/drivers" element={<DriverManagementPage />} />
           <Route path="/admin/settings" element={<SiteSettingsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

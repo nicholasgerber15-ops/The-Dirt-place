@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Package, DollarSign, Truck, LogOut, Menu, X, Home, List, Box } from 'lucide-react';
+import { Package, DollarSign, Truck, LogOut, Menu, X, Home, List, Box, Calendar } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
@@ -124,6 +124,9 @@ const AdminDashboard = () => {
             <Link to="/admin/pricing" className="block py-2 text-[#6B4F3F] hover:text-[#D9A441]" onClick={() => setMobileMenuOpen(false)}>
               Materials
             </Link>
+            <Link to="/admin/drivers" className="block py-2 text-[#6B4F3F] hover:text-[#D9A441]" onClick={() => setMobileMenuOpen(false)}>
+              Drivers
+            </Link>
             <Link to="/admin/inventory" className="block py-2 text-[#6B4F3F] hover:text-[#D9A441]" onClick={() => setMobileMenuOpen(false)}>
               Inventory
             </Link>
@@ -143,6 +146,9 @@ const AdminDashboard = () => {
             </Link>
             <Link to="/admin/pricing" className="px-4 py-4 text-[#6B4F3F] hover:text-[#D9A441] font-semibold">
               Materials
+            </Link>
+            <Link to="/admin/drivers" className="px-4 py-4 text-[#6B4F3F] hover:text-[#D9A441] font-semibold">
+              Drivers
             </Link>
             <Link to="/admin/inventory" className="px-4 py-4 text-[#6B4F3F] hover:text-[#D9A441] font-semibold">
               Inventory
@@ -268,6 +274,10 @@ const AdminDashboard = () => {
           <Link to="/admin/orders" className="flex flex-col items-center text-[#6B4F3F]">
             <List size={20} />
             <span className="text-xs">Orders</span>
+          </Link>
+          <Link to="/admin/drivers" className="flex flex-col items-center text-[#6B4F3F]">
+            <Calendar size={20} />
+            <span className="text-xs">Drivers</span>
           </Link>
           <Link to="/admin/inventory" className="flex flex-col items-center text-[#6B4F3F]">
             <Box size={20} />

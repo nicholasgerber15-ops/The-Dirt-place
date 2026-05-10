@@ -308,7 +308,7 @@ const MaterialCalculator = () => {
 
           <div className="mt-6 text-center">
             <p className="text-[#6B4F3F] mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Ready to order? Contact us for pricing and delivery!
+              Ready to order? Contact us for a quote!
             </p>
             <a
               href="/contact"

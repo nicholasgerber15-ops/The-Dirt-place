@@ -21,7 +21,6 @@ const Header = () => {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Materials', path: '/materials' },
-    { name: 'Delivery', path: '/delivery' },
     { name: 'Contact', path: '/contact' }
   ];
 
@@ -83,11 +82,11 @@ const Header = () => {
               )}
             </Link>
             <Link
-              to="/contact"
+              to="/materials"
               className="px-6 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#FAF9F6] hover:shadow-lg transform hover:scale-105 transition-all duration-300"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Request Delivery
+              Shop Our Yard
             </Link>
           </nav>
 
@@ -119,12 +118,12 @@ const Header = () => {
               </Link>
             ))}
             <Link
-              to="/contact"
+              to="/materials"
               onClick={() => setIsMobileMenuOpen(false)}
               className="block mt-4 px-6 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded text-center hover:bg-[#FAF9F6] transition-colors duration-300"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Request Delivery
+              Shop Our Yard
             </Link>
           </nav>
         )}

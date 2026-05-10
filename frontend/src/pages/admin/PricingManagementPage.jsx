@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { DollarSign, LogOut, Edit2, X, Check, Plus, Package } from 'lucide-react';
+import { DollarSign, LogOut, Edit2, X, Check, Plus, Package, Upload, Download as DownloadIcon } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -17,6 +17,10 @@ const PricingManagementPage = () => {
   const [editingDelivery, setEditingDelivery] = useState(null);
   const [savingId, setSavingId] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [csvText, setCsvText] = useState('');
+  const [importResult, setImportResult] = useState(null);
+  const [importing, setImporting] = useState(false);
   const [newMaterial, setNewMaterial] = useState({
     name: '',
     price_per_unit: '',
@@ -265,14 +269,24 @@ const PricingManagementPage = () => {
                     Material Pricing & Inventory
                   </h2>
                 </div>
-                <button
-                  onClick={() => setShowAddModal(true)}
-                  className="flex items-center space-x-2 px-4 py-2 bg-[#6B7A3A] text-white font-semibold rounded hover:bg-[#3B2F2F] transition-colors"
-                  style={{ fontFamily: 'Montserrat, sans-serif' }}
-                >
-                  <Plus size={18} />
-                  <span>Add Material</span>
-                </button>
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={() => setShowImportModal(true)}
+                    className="flex items-center space-x-2 px-4 py-2 bg-[#3B2F2F] text-white font-semibold rounded hover:bg-[#6B7A3A] transition-colors"
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                  >
+                    <Upload size={18} />
+                    <span>Import CSV</span>
+                  </button>
+                  <button
+                    onClick={() => setShowAddModal(true)}
+                    className="flex items-center space-x-2 px-4 py-2 bg-[#6B7A3A] text-white font-semibold rounded hover:bg-[#3B2F2F] transition-colors"
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                  >
+                    <Plus size={18} />
+                    <span>Add Material</span>
+                  </button>
+                </div>
               </div>
 
               <p className="text-[#6B4F3F] mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
@@ -524,6 +538,130 @@ const PricingManagementPage = () => {
           </div>
         )}
       </div>
+
+      {/* Import CSV Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-[#3B2F2F]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                  Import Materials from CSV
+                </h3>
+                <button
+                  onClick={() => { setShowImportModal(false); setCsvText(''); setImportResult(null); }}
+                  className="text-[#6B4F3F] hover:text-[#3B2F2F]"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <p className="text-[#6B4F3F] mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                Paste your CSV data below. Expected columns: <code className="bg-[#FAF9F6] px-1 rounded">name, price_per_unit, unit_type, min_order, stock_quantity, description</code>
+              </p>
+
+              <div className="bg-[#FAF9F6] rounded p-4 mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Example format:</p>
+                  <button
+                    onClick={() => {
+                      const csv = 'name,price_per_unit,unit_type,min_order,stock_quantity,description\nTopsoil,45.00,cubic yards,1,200,Premium garden topsoil\nGravel,55.00,cubic yards,2,150,Driveway gravel\nSand,40.00,cubic yards,1,180,Construction sand';
+                      const blob = new Blob([csv], { type: 'text/csv' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = 'materials_template.csv';
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                    className="flex items-center space-x-1 text-[#D9A441] hover:text-[#3B2F2F] transition-colors text-xs"
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                  >
+                    <Download size={14} />
+                    <span>Download Template</span>
+                  </button>
+                </div>
+                <pre className="text-xs text-[#3B2F2F] bg-white p-3 rounded border" style={{ fontFamily: 'monospace' }}>
+name,price_per_unit,unit_type,min_order,stock_quantity,description
+Topsoil,45.00,cubic yards,1,200,Premium garden topsoil
+Gravel,55.00,cubic yards,2,150,Driveway gravel
+Sand,40.00,cubic yards,1,180,Construction sand
+                </pre>
+              </div>
+
+              <textarea
+                value={csvText}
+                onChange={(e) => setCsvText(e.target.value)}
+                className="w-full h-48 px-4 py-3 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none font-mono text-sm"
+                style={{ fontFamily: 'monospace' }}
+                placeholder="Paste CSV data here..."
+              />
+
+              {importResult && (
+                <div className={`mt-4 p-4 rounded ${importResult.errors?.length ? 'bg-yellow-50 border border-yellow-200' : 'bg-green-50 border border-green-200'}`}>
+                  <p className="font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    Imported {importResult.imported} materials
+                  </p>
+                  {importResult.errors?.length > 0 && (
+                    <ul className="mt-2 text-sm text-red-600" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                      {importResult.errors.map((err, i) => (
+                        <li key={i}>{err}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+
+              <div className="flex space-x-4 pt-4">
+                <button
+                  onClick={async () => {
+                    if (!csvText.trim()) return;
+                    setImporting(true);
+                    setImportResult(null);
+                    try {
+                      const token = localStorage.getItem('admin_token');
+                      const res = await axios.post(
+                        `${API}/admin/materials/import-csv`,
+                        { csv_text: csvText },
+                        { headers: { Authorization: `Bearer ${token}` } }
+                      );
+                      setImportResult(res.data);
+                      setCsvText('');
+                      fetchAllPricing();
+                    } catch (error) {
+                      setImportResult({ imported: 0, errors: [error.response?.data?.detail || 'Import failed'] });
+                    } finally {
+                      setImporting(false);
+                    }
+                  }}
+                  disabled={!csvText.trim() || importing}
+                  className="flex items-center justify-center space-x-2 flex-1 px-6 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#3B2F2F] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  {importing ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                      <span>Importing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload size={18} />
+                      <span>Import CSV</span>
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => { setShowImportModal(false); setCsvText(''); setImportResult(null); }}
+                  className="flex-1 px-6 py-3 bg-gray-300 text-[#3B2F2F] font-bold rounded hover:bg-gray-400 transition-colors"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add Material Modal */}
       {showAddModal && (

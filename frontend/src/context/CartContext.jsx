@@ -12,6 +12,7 @@ export const useCart = () => {
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
+  const [needsDelivery, setNeedsDelivery] = useState(true);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -19,12 +20,24 @@ export const CartProvider = ({ children }) => {
     if (savedCart) {
       setCart(JSON.parse(savedCart));
     }
+    const savedDelivery = localStorage.getItem('dirtplace_delivery');
+    if (savedDelivery !== null) {
+      setNeedsDelivery(JSON.parse(savedDelivery));
+    }
   }, []);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('dirtplace_cart', JSON.stringify(cart));
   }, [cart]);
+
+  useEffect(() => {
+    localStorage.setItem('dirtplace_delivery', JSON.stringify(needsDelivery));
+  }, [needsDelivery]);
+
+  const toggleDelivery = () => {
+    setNeedsDelivery(prev => !prev);
+  };
 
   const addToCart = (material, quantity = 1) => {
     setCart(prevCart => {
@@ -80,7 +93,10 @@ export const CartProvider = ({ children }) => {
         updateQuantity,
         clearCart,
         getCartTotal,
-        getItemCount
+        getItemCount,
+        needsDelivery,
+        toggleDelivery,
+        setNeedsDelivery
       }}
     >
       {children}

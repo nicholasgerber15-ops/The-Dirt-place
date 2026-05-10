@@ -189,8 +189,9 @@ async def calculate_material(request: CalculatorRequest):
         # Calculate volume in cubic feet
         volume_cubic_feet = request.length * request.width * (request.depth / 12)  # depth is in inches
         
-        # Convert to cubic yards
-        volume_cubic_yards = volume_cubic_feet / 27
+        # Convert to cubic yards and round up to nearest half yard
+        import math
+        volume_cubic_yards = math.ceil((volume_cubic_feet / 27) * 2) / 2
         
         # Material-specific calculations and recommendations
         material_info = {

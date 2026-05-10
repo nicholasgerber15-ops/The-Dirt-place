@@ -44,12 +44,12 @@ const MaterialsPage = () => {
         name: m.name,
         description: m.description || `Premium ${m.name.toLowerCase()} for your landscaping needs.`,
         image: m.image_url || 'https://images.unsplash.com/photo-1591745287451-268db77122a9',
-        category: m.name,
-        pricePerCubicYard: m.price_per_unit || m.price_per_cubic_yard || 0,
-        unit: m.unit_type || 'cubic yard',
+        category: m.category || m.name,
+        pricePerCubicYard: parseFloat(m.price_per_unit || m.price_per_cubic_yard || m.price || 0),
+        unit: m.unit_type || m.unit || 'cubic yard',
         minOrder: m.min_order || 1,
-        stock_quantity: m.stock_quantity || 0,
-        in_stock: (m.stock_quantity || 0) > 0
+        stock_quantity: m.stock_quantity || 100,
+        in_stock: m.in_stock !== undefined ? m.in_stock : ((m.stock_quantity || 100) > 0)
       }));
       
       setMaterials(transformedMaterials);

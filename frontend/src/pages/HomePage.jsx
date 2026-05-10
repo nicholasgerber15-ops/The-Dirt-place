@@ -12,27 +12,15 @@ const API = `${BACKEND_URL}/api`;
 const DEFAULT_HERO_IMAGE = 'https://images.unsplash.com/photo-1632452888109-af6d83269329';
 
 // Static content (can be moved to API later if needed)
-const deliveryInfo = {
-  title: "Fast, Reliable Delivery",
-  description: "We deliver across the Texas Hill Country with professional service and careful handling.",
-  features: [
-    "Same-day delivery available",
-    "Experienced drivers and equipment",
-    "Flexible scheduling to fit your project",
-    "Direct placement where you need it",
-    "Serving Boerne and surrounding areas"
-  ],
-  image: "https://images.unsplash.com/photo-1672541298906-4aeb3edd3520"
-};
 
-const aboutText = "The Dirt Place has been serving Boerne and the Texas Hill Country for over 15 years. We're your trusted source for premium landscape materials, delivered with honest pricing and reliable service. Whether you're a homeowner, rancher, or contractor, we have the materials and expertise to support your project from start to finish.";
+const aboutText = "The Dirt Place has been serving Boerne and the Texas Hill Country for over 15 years. We're your trusted source for premium landscape materials with honest pricing and reliable service. Whether you're a homeowner, rancher, or contractor, we have the materials and expertise to support your project from start to finish.";
 
 const testimonials = [
   {
     id: 1,
     name: "Sarah Mitchell",
     location: "Boerne, TX",
-    text: "Outstanding service! The topsoil quality is excellent and delivery was right on time. Highly recommend.",
+    text: "Outstanding service! The topsoil quality is excellent and they delivered right on time. Highly recommend.",
     rating: 5
   },
   {
@@ -126,8 +114,8 @@ const HomePage = () => {
     <div className="homepage">
       <SEO 
         title="Landscape Materials in Boerne, TX | The Dirt Place"
-        description="The Dirt Place provides dirt, gravel, sand, and landscape materials in Boerne, Texas. Fast delivery across the Texas Hill Country. Premium quality guaranteed."
-        keywords="dirt delivery boerne, gravel boerne tx, landscape materials boerne, topsoil boerne, mulch boerne, texas hill country materials, sand delivery boerne, road base boerne"
+        description="The Dirt Place provides dirt, gravel, sand, and landscape materials in Boerne, Texas. We deliver across the Texas Hill Country. Premium quality guaranteed."
+        keywords="dirt boerne, gravel boerne tx, landscape materials boerne, topsoil boerne, mulch boerne, texas hill country materials, sand boerne, road base boerne"
         url="https://earth-supply-1.preview.emergentagent.com"
       />
       <LocalBusinessSchema />
@@ -160,7 +148,7 @@ const HomePage = () => {
             className="text-xl md:text-2xl text-[#FAF9F6] mb-12 animate-slide-up-delay"
             style={{ fontFamily: 'Montserrat, sans-serif', animationDelay: '200ms' }}
           >
-            Reliable service, honest pricing, and fast delivery across the Texas Hill Country.
+            Reliable service and honest pricing. We deliver across the Texas Hill Country.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center animate-slide-up-delay" style={{ animationDelay: '400ms' }}>
             <Link
@@ -172,11 +160,11 @@ const HomePage = () => {
               <ArrowRight size={20} />
             </Link>
             <Link
-              to="/contact"
+              to="/materials"
               className="px-8 py-4 bg-transparent border-2 border-[#FAF9F6] text-[#FAF9F6] text-lg font-bold rounded hover:bg-[#FAF9F6] hover:text-[#3B2F2F] hover:shadow-2xl transform hover:scale-105 hover:-translate-y-1 transition-all duration-300"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Request Delivery
+              Shop Our Yard
             </Link>
           </div>
         </div>
@@ -227,63 +215,6 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Delivery Information Section */}
-      <section className="py-24 bg-[#3B2F2F] relative overflow-hidden">
-        <div 
-          className="absolute inset-0 opacity-10 bg-cover bg-center"
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1519806390608-acf7ef9c8d1b')` }}
-        ></div>
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="scroll-animate">
-              <div className="relative">
-                <img
-                  src={deliveryInfo.image}
-                  alt="Delivery Service"
-                  className="rounded-lg shadow-2xl"
-                />
-                <div className="absolute inset-0 bg-gradient-to-tr from-[#3B2F2F]/60 to-transparent rounded-lg"></div>
-              </div>
-            </div>
-            
-            <div className="scroll-animate">
-              <h2 
-                className="text-5xl md:text-6xl font-bold text-[#FAF9F6] mb-6"
-                style={{ fontFamily: 'Bebas Neue, sans-serif' }}
-              >
-                {deliveryInfo.title}
-              </h2>
-              <p 
-                className="text-lg text-[#FAF9F6] mb-8 leading-relaxed"
-                style={{ fontFamily: 'Montserrat, sans-serif' }}
-              >
-                {deliveryInfo.description}
-              </p>
-              <ul className="space-y-4 mb-8">
-                {deliveryInfo.features.map((feature, index) => (
-                  <li 
-                    key={index}
-                    className="flex items-center space-x-3 text-[#FAF9F6] group"
-                    style={{ fontFamily: 'Montserrat, sans-serif' }}
-                  >
-                    <div className="w-2 h-2 bg-[#D9A441] rounded-full group-hover:scale-150 transition-transform duration-300"></div>
-                    <span className="group-hover:text-[#D9A441] transition-colors duration-300">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                to="/contact"
-                className="inline-flex items-center space-x-2 px-8 py-4 bg-[#D9A441] text-[#3B2F2F] text-lg font-bold rounded hover:bg-[#FAF9F6] hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-                style={{ fontFamily: 'Montserrat, sans-serif' }}
-              >
-                <span>Schedule Delivery</span>
-                <Truck size={20} />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Why Choose Us Section */}
       <section className="py-24 bg-[#FAF9F6]">
         <div className="container mx-auto px-4">
@@ -300,7 +231,7 @@ const HomePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               { icon: Shield, title: 'Quality Guaranteed', description: 'Every load meets our high standards' },
-              { icon: Clock, title: 'Fast Delivery', description: 'Same-day service available' },
+              { icon: Clock, title: 'Fast Turnaround', description: 'Quick service when you need it' },
               { icon: Award, title: '15+ Years Experience', description: 'Trusted by the community' },
               { icon: Truck, title: 'Professional Service', description: 'Expert drivers and equipment' }
             ].map((item, index) => (

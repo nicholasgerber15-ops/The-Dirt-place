@@ -83,8 +83,8 @@ const ContactPage = () => {
     <div className="contact-page">
       <SEO 
         title="Contact Us - Get a Quote | The Dirt Place Boerne, TX"
-        description="Contact The Dirt Place for landscape materials delivery in Boerne, TX. Call (830) 555-0198 or fill out our contact form for a free quote. Serving the Texas Hill Country."
-        keywords="contact the dirt place, landscape materials quote boerne, dirt delivery quote, material delivery boerne tx"
+        description="Contact The Dirt Place for landscape materials in Boerne, TX. Call (830) 555-0198 or fill out our contact form for a free quote. We deliver across the Texas Hill Country."
+        keywords="contact the dirt place, landscape materials quote boerne, dirt quote, materials boerne tx"
         url="https://earth-supply-1.preview.emergentagent.com/contact"
       />
       
@@ -119,7 +119,7 @@ const ContactPage = () => {
               className="text-xl text-[#FAF9F6] leading-relaxed animate-slide-up-delay"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Ready to start your project? Contact us for a quote or to schedule delivery.
+              Ready to start your project? Contact us for a quote.
             </p>
           </div>
         </div>

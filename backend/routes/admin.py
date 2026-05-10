@@ -1,8 +1,11 @@
 import os
+import uuid
+import csv
+import io
 import logging
 from datetime import datetime
 from typing import Optional
-from fastapi import APIRouter, HTTPException, Depends, Header
+from fastapi import APIRouter, HTTPException, Depends, Header, Request
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from pathlib import Path
@@ -541,6 +544,298 @@ async def get_inventory():
     except Exception as e:
         logger.error(f"Failed to fetch inventory: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/materials/import-csv", dependencies=[Depends(verify_admin)])
+async def import_materials_csv(request: Request):
+    """
+    Import materials from CSV data
+    """
+    try:
+        data = await request.json()
+        csv_text = data.get("csv_text", "")
+        if not csv_text:
+            raise HTTPException(status_code=400, detail="No CSV data provided")
+
+        reader = csv.DictReader(io.StringIO(csv_text))
+        imported = 0
+        errors = []
+
+        database = get_database()
+        if not database:
+            return {"success": True, "imported": len(list(reader)), "errors": []}
+
+        for row in reader:
+            try:
+                material_data = {
+                    "material_id": row.get("id", str(uuid.uuid4())),
+                    "name": row.get("name", ""),
+                    "price_per_unit": float(row.get("price_per_unit", row.get("price", 0))),
+                    "unit_type": row.get("unit_type", row.get("unit", "cubic yards")),
+                    "min_order": int(row.get("min_order", row.get("minOrder", 1))),
+                    "stock_quantity": int(row.get("stock_quantity", row.get("stock", 100))),
+                    "description": row.get("description", ""),
+                    "image_url": row.get("image_url", ""),
+                    "created_at": datetime.utcnow(),
+                    "updated_at": datetime.utcnow()
+                }
+
+                existing = await database.material_pricing.find_one({"material_id": material_data["material_id"]})
+                if existing:
+                    await database.material_pricing.update_one(
+                        {"material_id": material_data["material_id"]},
+                        {"$set": {k: v for k, v in material_data.items() if k != "created_at"}}
+                    )
+                else:
+                    await database.material_pricing.insert_one(material_data)
+
+                imported += 1
+            except Exception as row_error:
+                errors.append(f"Row {imported + 1}: {str(row_error)}")
+
+        return {
+            "success": True,
+            "imported": imported,
+            "errors": errors
+        }
+
+    except Exception as e:
+        logger.error(f"CSV import failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+UNLOAD_MINUTES = 20
+FILLUP_MINUTES = 15
+WORK_START_HOUR = 8
+
+def get_delivery_times(distance_miles: float, duration_minutes: float) -> dict:
+    one_way_min = duration_minutes or 15
+    round_trip_min = one_way_min * 2
+    total_min = round_trip_min + UNLOAD_MINUTES + FILLUP_MINUTES
+    return {
+        "travel_one_way_min": one_way_min,
+        "round_trip_min": round_trip_min,
+        "unload_min": UNLOAD_MINUTES,
+        "fill_up_min": FILLUP_MINUTES,
+        "total_min": total_min,
+    }
+
+# ============== DRIVER / DELIVERY MANAGEMENT ==============
+
+class DeliveryDateRange(BaseModel):
+    start: str
+    end: str
+
+@router.get("/driver/deliveries", dependencies=[Depends(verify_admin)])
+async def get_driver_deliveries(date: Optional[str] = None):
+    """
+    Get deliveries for a specific date, or today if no date provided.
+    Includes Sunday blocking, 5 PM cut-off, and travel time calculations.
+    """
+    if not date:
+        date = datetime.now().strftime("%Y-%m-%d")
+
+    try:
+        dt = datetime.fromisoformat(date)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD.")
+
+    day_name = dt.strftime("%A")
+    if dt.weekday() == 6:
+        return {
+            "date": date, "day": day_name, "closed": True,
+            "message": "We are closed on Sundays. No deliveries.",
+            "deliveries": []
+        }
+
+    from routes.ecommerce import get_distance_google_maps, DIRTPLACE_ADDRESS
+
+    db = get_database()
+    if db is None:
+        from datetime import timedelta
+        import random
+        names = ["John Smith", "Maria Garcia", "Tom Johnson", "Sarah Williams", "Mike Brown"]
+        materials = ["Topsoil", "Gravel", "Sand", "Road Base", "Mulch"]
+        deliveries = []
+        running_min = 0
+        for i in range(random.randint(1, 3)):
+            travel_min = random.randint(10, 30)
+            rt = travel_min * 2
+            total = rt + UNLOAD_MINUTES + FILLUP_MINUTES
+            running_min += total
+            start_time = WORK_START_HOUR + running_min // 60
+            end_hour = WORK_START_HOUR + (running_min + total) // 60
+            deliveries.append({
+                "_id": f"demo_del_{i+1}",
+                "order_number": f"ORD-2024-{2000+i}",
+                "customer": {"name": names[i], "phone": f"(830) 555-{2000+i:04d}"},
+                "delivery": {
+                    "address": f"{random.randint(100, 999)} Main St, Boerne, TX",
+                    "date": date,
+                    "time": f"{random.randint(8, 11)}:00 AM - {random.randint(1, 4)}:00 PM"
+                },
+                "cart_items": [{"name": random.choice(materials), "quantity": round(random.uniform(1, 8), 1)}],
+                "notes": "" if i > 0 else "Gate code: 1234",
+                "status": "in_delivery" if i < 2 else "processing",
+                "time_estimate": get_delivery_times(travel_min, travel_min),
+                "completes_by": f"{end_hour}:00 PM" if end_hour < 12 else f"{end_hour - 12}:00 PM" if end_hour > 12 else "12:00 PM",
+                "cut_off_warning": (running_min + total) > (17 - WORK_START_HOUR) * 60
+            })
+        return {
+            "date": date, "day": day_name, "closed": False,
+            "cut_off": "5:00 PM", "deliveries": deliveries,
+            "total_yards": sum(d["cart_items"][0]["quantity"] for d in deliveries if d["cart_items"]),
+            "total_time_min": sum(d.get("time_estimate", {}).get("total_min", 0) for d in deliveries)
+        }
+
+    try:
+        query = {
+            "delivery.date": date,
+            "status": {"$in": ["processing", "in_delivery", "scheduled"]}
+        }
+        deliveries_cursor = db.orders.find(query).sort("delivery.time", 1)
+        deliveries = await deliveries_cursor.to_list(100)
+
+        enriched = []
+        running_min = 0
+        for d in deliveries:
+            d["_id"] = str(d["_id"])
+            address = d.get("delivery", {}).get("address", "")
+            distance, duration, gm_error = None, None, None
+            if address:
+                distance, duration, gm_error = await get_distance_google_maps(address)
+
+            time_est = get_delivery_times(distance or 15, duration or 15)
+            running_min += time_est["total_min"]
+            completions_min = WORK_START_HOUR * 60 + running_min
+            completes_by_h = completions_min // 60
+            completes_by_m = completions_min % 60
+            ampm = "AM" if completes_by_h < 12 else "PM"
+            display_h = completes_by_h if completes_by_h <= 12 else completes_by_h - 12
+            if display_h == 0:
+                display_h = 12
+
+            d["time_estimate"] = time_est
+            d["completes_by"] = f"{display_h}:{completes_by_m:02d} {ampm}"
+            d["cut_off_warning"] = completions_min > 17 * 60
+            enriched.append(d)
+
+        total_yards = sum(
+            item.get("quantity", 0) for d in enriched for item in d.get("cart_items", [])
+        )
+
+        return {
+            "date": date, "day": day_name, "closed": False,
+            "cut_off": "5:00 PM",
+            "deliveries": enriched,
+            "total_yards": round(total_yards, 1),
+            "total_time_min": sum(d["time_estimate"]["total_min"] for d in enriched)
+        }
+
+    except Exception as e:
+        logger.error(f"Failed to fetch driver deliveries: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/driver/deliveries/range", dependencies=[Depends(verify_admin)])
+async def get_driver_deliveries_range(start: str, end: str):
+    """
+    Get deliveries within a date range (for calendar view).
+    Returns a summary per day with delivery count and total yards.
+    """
+    try:
+        start_dt = datetime.fromisoformat(start)
+        end_dt = datetime.fromisoformat(end)
+    except:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD.")
+
+    db = get_database()
+    if db is None:
+        import random
+        from datetime import timedelta
+        days = []
+        current = start_dt
+        while current <= end_dt:
+            if current.weekday() != 6:  # Skip Sundays
+                days.append({
+                    "date": current.strftime("%Y-%m-%d"),
+                    "day": current.strftime("%A"),
+                    "delivery_count": random.randint(0, 3),
+                    "total_yards": round(random.uniform(0, 20), 1),
+                    "closed": False
+                })
+            else:
+                days.append({
+                    "date": current.strftime("%Y-%m-%d"),
+                    "day": current.strftime("%A"),
+                    "delivery_count": 0,
+                    "total_yards": 0,
+                    "closed": True
+                })
+            current += timedelta(days=1)
+        return {"days": days}
+
+    try:
+        days = []
+        from datetime import timedelta
+        current = start_dt
+        while current <= end_dt:
+            date_str = current.strftime("%Y-%m-%d")
+            if current.weekday() == 6:
+                days.append({"date": date_str, "day": current.strftime("%A"), "delivery_count": 0, "total_yards": 0, "closed": True})
+            else:
+                count = await db.orders.count_documents({
+                    "delivery.date": date_str,
+                    "status": {"$in": ["processing", "in_delivery", "scheduled"]}
+                })
+                pipeline = [
+                    {"$match": {"delivery.date": date_str, "status": {"$in": ["processing", "in_delivery", "scheduled"]}}},
+                    {"$unwind": "$cart_items"},
+                    {"$group": {"_id": None, "total": {"$sum": "$cart_items.quantity"}}}
+                ]
+                result = await db.orders.aggregate(pipeline).to_list(1)
+                total_yards = round(result[0]["total"], 1) if result else 0
+                days.append({"date": date_str, "day": current.strftime("%A"), "delivery_count": count, "total_yards": total_yards, "closed": False})
+            current += timedelta(days=1)
+
+        return {"days": days}
+
+    except Exception as e:
+        logger.error(f"Failed to fetch delivery range: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.patch("/driver/deliveries/{order_id}/status", dependencies=[Depends(verify_admin)])
+async def update_delivery_status(order_id: str, update: OrderStatusUpdate):
+    """
+    Update delivery order status (mark as in_delivery, delivered, etc.)
+    """
+    try:
+        if not ObjectId.is_valid(order_id):
+            raise HTTPException(status_code=400, detail="Invalid order ID format")
+
+        valid_statuses = ["processing", "in_delivery", "delivered", "cancelled"]
+        if update.status not in valid_statuses:
+            raise HTTPException(status_code=400, detail="Invalid status")
+
+        db = get_database()
+        if db is None:
+            return {"success": True, "message": "Delivery status updated (demo mode)"}
+
+        result = await db.orders.update_one(
+            {"_id": ObjectId(order_id)},
+            {"$set": {"status": update.status, "updated_at": datetime.utcnow()}}
+        )
+
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Order not found")
+
+        return {"success": True, "message": "Delivery status updated"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to update delivery status: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 # Site Settings
 
