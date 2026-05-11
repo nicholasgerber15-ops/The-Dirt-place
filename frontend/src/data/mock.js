@@ -92,7 +92,7 @@ export const businessInfo = {
   }
 };
 
-export const aboutText = "The Dirt Place has been serving Boerne and the Texas Hill Country for over 15 years. We're your trusted source for premium landscape materials, delivered with honest pricing and reliable service. Whether you're a homeowner, rancher, or contractor, we have the materials and expertise to support your project from start to finish.";
+export const aboutText = "The Dirt Place has been serving Boerne and the Texas Hill Country since 2022. We're your trusted source for premium landscape materials, delivered with honest pricing and reliable service. Whether you're a homeowner, rancher, or contractor, we have the materials and expertise to support your project from start to finish.";
 
 export const testimonials = [
   {

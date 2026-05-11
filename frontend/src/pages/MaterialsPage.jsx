@@ -195,9 +195,9 @@ const MaterialsPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
               <div className="group">
                 <div className="text-6xl font-bold text-[#D9A441] mb-2 group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
-                  15+
+                  Since 2022
                 </div>
-                <p className="text-[#FAF9F6]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Years in Business</p>
+                <p className="text-[#FAF9F6]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Serving Boerne & the Hill Country</p>
               </div>
               <div className="group">
                 <div className="text-6xl font-bold text-[#D9A441] mb-2 group-hover:scale-110 transition-transform duration-300" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>

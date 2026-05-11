@@ -13,7 +13,7 @@ const DEFAULT_HERO_IMAGE = 'https://images.unsplash.com/photo-1632452888109-af6d
 
 // Static content (can be moved to API later if needed)
 
-const aboutText = "The Dirt Place has been serving Boerne and the Texas Hill Country for over 15 years. We're your trusted source for premium landscape materials with honest pricing and reliable service. Whether you're a homeowner, rancher, or contractor, we have the materials and expertise to support your project from start to finish.";
+const aboutText = "The Dirt Place has been serving Boerne and the Texas Hill Country since 2022. We're your trusted source for premium landscape materials with honest pricing and reliable service. Whether you're a homeowner, rancher, or contractor, we have the materials and expertise to support your project from start to finish.";
 
 const testimonials = [
   {
