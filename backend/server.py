@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.gzip import GZipMiddleware
 from dotenv import load_dotenv
@@ -15,6 +15,8 @@ from datetime import datetime, timezone
 from routes.contact import router as contact_router
 from routes.ecommerce import router as ecommerce_router
 from routes.admin import router as admin_router
+from routes.auth import router as auth_router
+from routes.scheduling import router as scheduling_router
 
 
 ROOT_DIR = Path(__file__).parent
@@ -31,7 +33,8 @@ def get_db():
     if db is not None:
         return db
     
-    mongo_url = os.environ.get('MONGO_URL')
+    # Check for both spellings (MONGO_URL vs MONGO_URL)
+    mongo_url = os.environ.get('MONGO_URL') or os.environ.get('MONGO_URL')
     db_name = os.environ.get('DB_NAME')
     
     if not mongo_url or not db_name:
@@ -39,6 +42,7 @@ def get_db():
         return None
     
     try:
+        # Standard username/password authentication only
         client = AsyncIOMotorClient(mongo_url)
         db = client[db_name]
         # Test connection
@@ -59,8 +63,27 @@ app = FastAPI(
 # Add GZip compression for faster responses
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
+# Add security middleware
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    response = await call_next(request)
+    # Security headers
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    # CSP - Allow Cloudflare scripts and inline styles
+    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://theboernedirtplace.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://theboernedirtplace.com https://the-dirt-place-backend.onrender.com; worker-src 'self' blob:;"
+    return response
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
+
+
+@api_router.get("/health")
+async def health_check():
+    return {"status": "ok", "service": "dirt-place-api"}
 
 
 # Define Models
@@ -115,13 +138,53 @@ app.include_router(api_router)
 app.include_router(contact_router, prefix="/api")
 app.include_router(ecommerce_router, prefix="/api/ecommerce")
 app.include_router(admin_router, prefix="/api/admin")
+app.include_router(auth_router)  # Already has /api/auth prefix
+app.include_router(scheduling_router)  # Already has /api/scheduling prefix
+
+# Security middleware for headers
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    # Security headers
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    # HSTS (only in production with HTTPS)
+    if not os.environ.get('DEV_MODE'):
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
+
+# HTTPS redirect middleware
+@app.middleware("http")
+async def https_redirect(request: Request, call_next):
+    # Only redirect in production (not local development)
+    if not os.environ.get('DEV_MODE'):
+        if request.url.scheme == "http":
+            https_url = request.url.replace(scheme="https")
+            from fastapi.responses import RedirectResponse
+            return RedirectResponse(url=str(https_url), status_code=301)
+    return await call_next(request)
+
+# Always include necessary origins, merge with env var if set
+_default_origins = [
+    'https://theboernedirtplace.com',
+    'https://the-dirt-place.onrender.com',
+    'https://the-dirt-place-frontend.onrender.com',
+    'https://the-dirt-place-backend.onrender.com',
+]
+_env_origins = os.environ.get('CORS_ORIGINS', '').split(',') if os.environ.get('CORS_ORIGINS') else []
+_cors_origins = list(dict.fromkeys(_default_origins + _env_origins))  # deduplicate, preserve order
 
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=_cors_origins,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
+    expose_headers=["Authorization"],
+    max_age=86400
 )
 
 # Configure logging

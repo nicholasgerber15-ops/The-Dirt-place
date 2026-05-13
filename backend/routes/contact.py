@@ -3,7 +3,7 @@ import asyncio
 import logging
 import resend
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -27,6 +27,20 @@ class ContactFormRequest(BaseModel):
     email: EmailStr
     material: str = ""
     message: str
+    
+    @field_validator('phone')
+    def validate_phone(cls, v):
+        # Remove common formatting characters
+        cleaned = ''.join(c for c in v if c.isdigit() or c == '+')
+        if len(cleaned) < 10:
+            raise ValueError('Invalid phone number')
+        return v
+    
+    @field_validator('message')
+    def validate_message(cls, v):
+        if len(v) > 2000:
+            raise ValueError('Message too long (max 2000 characters)')
+        return v
 
 @router.post("/contact")
 async def submit_contact_form(request: ContactFormRequest):
@@ -150,6 +164,164 @@ async def submit_contact_form(request: ContactFormRequest):
         
         logger.info(f"Contact form email sent successfully. Email ID: {email_response.get('id')}")
 
+        # ============================================
+        # AUTO-REPLY SECTION - START
+        # Send auto-reply to customer (non-blocking)
+        # Wrapped in separate try/except to prevent breaking main submission
+        # ============================================
+        try:
+            auto_reply_html = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {{
+                        font-family: 'Montserrat', Arial, sans-serif;
+                        line-height: 1.6;
+                        color: #3B2F2F;
+                    }}
+                    .container {{
+                        max-width: 600px;
+                        margin: 0 auto;
+                        padding: 20px;
+                    }}
+                    .header {{
+                        background: linear-gradient(135deg, #3B2F2F 0%, #6B4F3F 100%);
+                        color: #FAF9F6;
+                        padding: 30px;
+                        text-align: center;
+                        border-radius: 8px 8px 0 0;
+                    }}
+                    .header h1 {{
+                        margin: 0;
+                        font-size: 28px;
+                        font-weight: bold;
+                    }}
+                    .header p {{
+                        margin: 5px 0 0 0;
+                        color: #D9A441;
+                        font-size: 16px;
+                    }}
+                    .content {{
+                        background-color: #FAF9F6;
+                        padding: 30px;
+                        border: 2px solid #6B4F3F;
+                        border-top: none;
+                        border-radius: 0 0 8px 8px;
+                    }}
+                    .welcome {{
+                        font-size: 18px;
+                        margin-bottom: 20px;
+                        color: #3B2F2F;
+                    }}
+                    .info-box {{
+                        background-color: white;
+                        padding: 20px;
+                        margin: 15px 0;
+                        border-left: 4px solid #D9A441;
+                        border-radius: 4px;
+                    }}
+                    .info-box h3 {{
+                        margin: 0 0 10px 0;
+                        color: #3B2F2F;
+                        font-size: 18px;
+                    }}
+                    .info-box p {{
+                        margin: 5px 0;
+                        color: #6B4F3F;
+                    }}
+                    .cta-section {{
+                        text-align: center;
+                        margin: 25px 0;
+                        padding: 20px;
+                        background-color: #D9A441;
+                        border-radius: 8px;
+                    }}
+                    .cta-button {{
+                        display: inline-block;
+                        background-color: #3B2F2F;
+                        color: #FAF9F6;
+                        padding: 15px 30px;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        font-weight: bold;
+                        font-size: 16px;
+                    }}
+                    .footer {{
+                        text-align: center;
+                        margin-top: 30px;
+                        padding: 20px;
+                        color: #6B4F3F;
+                        font-size: 12px;
+                        border-top: 2px solid #D9A441;
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>THE DIRT PLACE</h1>
+                        <p>Thank You for Contacting Us!</p>
+                    </div>
+                    <div class="content">
+                        <p class="welcome">Dear {request.name},</p>
+                        
+                        <p>We've received your message and appreciate you reaching out to us. Our team will review your inquiry and get back to you as soon as possible.</p>
+                        
+                        <div class="info-box">
+                            <h3>📞 Contact Information</h3>
+                            <p><strong>Phone:</strong> (830) 555-0198</p>
+                            <p><strong>Email:</strong> info@thedirtplace.com</p>
+                            <p><strong>Address:</strong> 240 TX-46, Boerne, TX 78006</p>
+                        </div>
+                        
+                        <div class="info-box">
+                            <h3>🕒 Business Hours</h3>
+                            <p><strong>Monday - Friday:</strong> 8 AM – 5 PM</p>
+                            <p><strong>Saturday:</strong> 8 AM – 3 PM</p>
+                            <p><strong>Sunday:</strong> Closed</p>
+                        </div>
+                        
+                        <div class="cta-section">
+                            <p style="margin: 0 0 15px 0; color: #3B2F2F; font-size: 18px; font-weight: bold;">
+                                Need to calculate materials?
+                            </p>
+                            <a href="https://earth-supply-1.preview.emergentagent.com/materials" class="cta-button">
+                                Try Our Material Calculator
+                            </a>
+                        </div>
+                        
+                        <p>Thank you for choosing The Dirt Place for your landscape material needs!</p>
+                    </div>
+                    <div class="footer">
+                        <p><strong>The Dirt Place Team</strong></p>
+                        <p>240 TX-46, Boerne, TX 78006</p>
+                        <p>Phone: (830) 555-0198 | Email: info@thedirtplace.com</p>
+                        <p style="margin-top: 15px;">Serving the Texas Hill Country with quality materials since 2010</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            auto_reply_params = {
+                "from": SENDER_EMAIL,
+                "to": [request.email],
+                "subject": "Thank You for Contacting The Dirt Place",
+                "html": auto_reply_html
+            }
+            
+            # Send auto-reply asynchronously (non-blocking)
+            auto_reply_response = await asyncio.to_thread(resend.Emails.send, auto_reply_params)
+            logger.info(f"Auto-reply sent successfully to {request.email}. Email ID: {auto_reply_response.get('id')}")
+            
+        except Exception as auto_reply_error:
+            # Log warning but DO NOT raise exception - auto-reply failure shouldn't break main submission
+            logger.warning(f"Auto-reply email failed to send to {request.email}: {str(auto_reply_error)}")
+        # ============================================
+        # AUTO-REPLY SECTION - END
+        # ============================================
+
         return {
             "status": "success",
             "message": "Thank you - we'll contact you shortly."
@@ -189,9 +361,8 @@ async def calculate_material(request: CalculatorRequest):
         # Calculate volume in cubic feet
         volume_cubic_feet = request.length * request.width * (request.depth / 12)  # depth is in inches
         
-        # Convert to cubic yards and round up to nearest half yard
-        import math
-        volume_cubic_yards = math.ceil((volume_cubic_feet / 27) * 2) / 2
+        # Convert to cubic yards
+        volume_cubic_yards = volume_cubic_feet / 27
         
         # Material-specific calculations and recommendations
         material_info = {
@@ -436,3 +607,4 @@ async def email_calculation(request: EmailCalculationRequest):
             status_code=500,
             detail="Failed to send email. Please try again."
         )
+# Force clean rebuild Sat May  2 20:41:36 CDT 2026

@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
 import { businessInfo } from '../data/mock';
 import SEO from '../components/SEO';
+import { trackContactFormSubmit, trackPhoneClick } from '../utils/analytics';
+import RecommendedPros from '../components/RecommendedPros';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -20,7 +22,6 @@ const ContactPage = () => {
   const [submitMessage, setSubmitMessage] = useState('');
 
   useEffect(() => {
-    // Scroll animations
     const handleScroll = () => {
       const elements = document.querySelectorAll('.scroll-animate');
       elements.forEach(el => {
@@ -33,7 +34,7 @@ const ContactPage = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Check on mount
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -48,7 +49,7 @@ const ContactPage = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitMessage('');
-    
+
     try {
       const response = await axios.post(`${API}/contact`, {
         name: formData.name,
@@ -59,6 +60,12 @@ const ContactPage = () => {
       });
 
       setSubmitMessage(response.data.message);
+
+      trackContactFormSubmit({
+        type: 'homeowner',
+        material: formData.material
+      });
+
       setFormData({
         name: '',
         phone: '',
@@ -66,11 +73,8 @@ const ContactPage = () => {
         material: '',
         message: ''
       });
-      
-      // Clear success message after 5 seconds
-      setTimeout(() => {
-        setSubmitMessage('');
-      }, 5000);
+
+      setTimeout(() => setSubmitMessage(''), 5000);
     } catch (error) {
       console.error('Form submission error:', error);
       setSubmitMessage(error.response?.data?.detail || 'Failed to send message. Please try again or call us directly.');
@@ -83,11 +87,11 @@ const ContactPage = () => {
     <div className="contact-page">
       <SEO 
         title="Contact Us - Get a Quote | The Dirt Place Boerne, TX"
-        description="Contact The Dirt Place for landscape materials in Boerne, TX. Call (830) 555-0198 or fill out our contact form for a free quote. We deliver across the Texas Hill Country."
-        keywords="contact the dirt place, landscape materials quote boerne, dirt quote, materials boerne tx"
+        description="Contact The Dirt Place for landscape materials delivery in Boerne, TX. Call (830) 336-3713 or fill out our contact form for a free quote. Serving the Texas Hill Country."
+        keywords="contact the dirt place, landscape materials quote boerne, dirt delivery quote, material delivery boerne tx"
         url="https://theboernedirtplace.com/contact"
       />
-      
+
       {/* Hero Section */}
       <section className="relative py-32 overflow-hidden">
         <div 
@@ -119,7 +123,7 @@ const ContactPage = () => {
               className="text-xl text-[#FAF9F6] leading-relaxed animate-slide-up-delay"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Ready to start your project? Contact us for a quote.
+              Ready to start your project? Contact us for a quote or to schedule delivery.
             </p>
           </div>
         </div>
@@ -142,7 +146,7 @@ const ContactPage = () => {
                   <div>
                     <label 
                       htmlFor="name" 
-                      className="block text-[#3B2F2F] font-semibold mb-2"
+                      className="block text-[#3B2F2F] font-bold mb-2"
                       style={{ fontFamily: 'Montserrat, sans-serif' }}
                     >
                       Name *
@@ -155,6 +159,7 @@ const ContactPage = () => {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none transition-colors duration-300"
+                      placeholder="John Smith"
                       style={{ fontFamily: 'Montserrat, sans-serif' }}
                     />
                   </div>
@@ -162,7 +167,7 @@ const ContactPage = () => {
                   <div>
                     <label 
                       htmlFor="phone" 
-                      className="block text-[#3B2F2F] font-semibold mb-2"
+                      className="block text-[#3B2F2F] font-bold mb-2"
                       style={{ fontFamily: 'Montserrat, sans-serif' }}
                     >
                       Phone *
@@ -175,6 +180,7 @@ const ContactPage = () => {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none transition-colors duration-300"
+                      placeholder="(830) 336-3713"
                       style={{ fontFamily: 'Montserrat, sans-serif' }}
                     />
                   </div>
@@ -182,7 +188,7 @@ const ContactPage = () => {
                   <div>
                     <label 
                       htmlFor="email" 
-                      className="block text-[#3B2F2F] font-semibold mb-2"
+                      className="block text-[#3B2F2F] font-bold mb-2"
                       style={{ fontFamily: 'Montserrat, sans-serif' }}
                     >
                       Email *
@@ -195,17 +201,18 @@ const ContactPage = () => {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none transition-colors duration-300"
+                      placeholder="john@email.com"
                       style={{ fontFamily: 'Montserrat, sans-serif' }}
                     />
                   </div>
 
                   <div>
                     <label 
-                      htmlFor="material" 
-                      className="block text-[#3B2F2F] font-semibold mb-2"
+                      htmlFor="material"
+                      className="block text-[#3B2F2F] font-bold mb-2"
                       style={{ fontFamily: 'Montserrat, sans-serif' }}
                     >
-                      Material Requested
+                      What material do you need?
                     </label>
                     <select
                       id="material"
@@ -216,23 +223,23 @@ const ContactPage = () => {
                       style={{ fontFamily: 'Montserrat, sans-serif' }}
                     >
                       <option value="">Select a material...</option>
-                      <option value="Topsoil">Topsoil</option>
-                      <option value="Gravel">Gravel</option>
-                      <option value="Sand">Sand</option>
-                      <option value="Road Base">Road Base</option>
-                      <option value="Mulch">Mulch</option>
-                      <option value="Decorative Rock">Decorative Rock</option>
-                      <option value="Other">Other</option>
+                      <option value="Topsoil">Topsoil (for gardens & lawns)</option>
+                      <option value="Gravel">Gravel (for driveways)</option>
+                      <option value="Sand">Sand (for pavers & play)</option>
+                      <option value="Road Base">Road Base (for foundations)</option>
+                      <option value="Mulch">Mulch (for flower beds)</option>
+                      <option value="Decorative Rock">Decorative Rock (for landscaping)</option>
+                      <option value="Other">Not sure / Other</option>
                     </select>
                   </div>
 
                   <div>
                     <label 
-                      htmlFor="message" 
-                      className="block text-[#3B2F2F] font-semibold mb-2"
+                      htmlFor="message"
+                      className="block text-[#3B2F2F] font-bold mb-2"
                       style={{ fontFamily: 'Montserrat, sans-serif' }}
                     >
-                      Message *
+                      Tell us about your project *
                     </label>
                     <textarea
                       id="message"
@@ -240,15 +247,21 @@ const ContactPage = () => {
                       value={formData.message}
                       onChange={handleChange}
                       required
-                      rows="5"
+                      rows="4"
                       className="w-full px-4 py-3 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none transition-colors duration-300 resize-none"
+                      placeholder="Describe your project... (e.g., I need topsoil for my garden, about 10 yards)"
                       style={{ fontFamily: 'Montserrat, sans-serif' }}
-                      placeholder="Tell us about your project..."
                     ></textarea>
                   </div>
 
                   {submitMessage && (
-                    <div className="p-4 bg-[#6B7A3A] text-white rounded animate-fade-in" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    <div className={`p-4 rounded-lg animate-fade-in ${
+                      submitMessage.includes('successfully') || submitMessage.includes('got it') 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                    >
                       {submitMessage}
                     </div>
                   )}
@@ -266,89 +279,101 @@ const ContactPage = () => {
               </div>
             </div>
 
-            {/* Business Info */}
+            {/* Contact Information */}
             <div className="scroll-animate">
-              <div className="space-y-8">
-                {/* Contact Details */}
-                <div className="bg-white p-8 rounded-lg shadow-xl">
-                  <h3 
-                    className="text-3xl font-bold text-[#3B2F2F] mb-6"
-                    style={{ fontFamily: 'Bebas Neue, sans-serif' }}
-                  >
-                    Contact Information
-                  </h3>
-                  <div className="space-y-6">
-                    <div className="flex items-start space-x-4 group">
-                      <div className="w-12 h-12 bg-[#D9A441] rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                        <MapPin size={24} className="text-[#3B2F2F]" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-[#3B2F2F] mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>Address</h4>
-                        <p className="text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>{businessInfo.address}</p>
-                      </div>
-                    </div>
+              <div className="bg-[#3B2F2F] p-8 md:p-12 rounded-lg text-[#FAF9F6] h-full">
+                <h2 
+                  className="text-4xl font-bold mb-8"
+                  style={{ fontFamily: 'Bebas Neue, sans-serif' }}
+                >
+                  Contact Information
+                </h2>
 
-                    <div className="flex items-start space-x-4 group">
-                      <div className="w-12 h-12 bg-[#D9A441] rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                        <Phone size={24} className="text-[#3B2F2F]" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-[#3B2F2F] mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>Phone</h4>
-                        <a href={`tel:${businessInfo.phone}`} className="text-[#6B4F3F] hover:text-[#D9A441] transition-colors duration-300" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                          {businessInfo.phone}
-                        </a>
-                      </div>
+                <div className="space-y-8">
+                  <div className="flex items-start space-x-4 group">
+                    <div className="w-12 h-12 bg-[#D9A441] rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                      <MapPin size={24} className="text-[#3B2F2F]" />
                     </div>
-
-                    <div className="flex items-start space-x-4 group">
-                      <div className="w-12 h-12 bg-[#D9A441] rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                        <Mail size={24} className="text-[#3B2F2F]" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-[#3B2F2F] mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>Email</h4>
-                        <a href={`mailto:${businessInfo.email}`} className="text-[#6B4F3F] hover:text-[#D9A441] transition-colors duration-300" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                          {businessInfo.email}
-                        </a>
-                      </div>
+                    <div>
+                      <h4 className="font-bold text-[#FAF9F6] mb-1" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>Visit Us</h4>
+                      <p className="text-[#FAF9F6]/90" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        {businessInfo.address}
+                      </p>
                     </div>
+                  </div>
 
-                    <div className="flex items-start space-x-4 group">
-                      <div className="w-12 h-12 bg-[#D9A441] rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
-                        <Clock size={24} className="text-[#3B2F2F]" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-[#3B2F2F] mb-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>Hours</h4>
-                        <div className="text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                          <p>{businessInfo.hours.weekday}</p>
-                          <p>{businessInfo.hours.saturday}</p>
-                          <p className="text-[#D9A441] font-semibold">{businessInfo.hours.sunday}</p>
-                        </div>
-                      </div>
+                  <div className="flex items-start space-x-4 group">
+                    <div className="w-12 h-12 bg-[#D9A441] rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                      <Phone size={24} className="text-[#3B2F2F]" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[#FAF9F6] mb-1" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>Call Us</h4>
+                      <a 
+                        href={`tel:${businessInfo.phone}`} 
+                        onClick={() => trackPhoneClick('contact_page')}
+                        className="text-[#FAF9F6]/90 hover:text-[#D9A441] transition-colors duration-300"
+                        style={{ fontFamily: 'Montserrat, sans-serif' }}
+                      >
+                        {businessInfo.phone}
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-4 group">
+                    <div className="w-12 h-12 bg-[#D9A441] rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                      <Mail size={24} className="text-[#3B2F2F]" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[#FAF9F6] mb-1" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>Email Us</h4>
+                      <a 
+                        href={`mailto:${businessInfo.email}`}
+                        className="text-[#FAF9F6]/90 hover:text-[#D9A441] transition-colors duration-300"
+                        style={{ fontFamily: 'Montserrat, sans-serif' }}
+                      >
+                        {businessInfo.email}
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-4 group">
+                    <div className="w-12 h-12 bg-[#D9A441] rounded-full flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                      <Clock size={24} className="text-[#3B2F2F]" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[#FAF9F6] mb-1" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>Hours</h4>
+                      <p className="text-[#FAF9F6]/90" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        {businessInfo.hours.weekday}<br />
+                        {businessInfo.hours.saturday}<br />
+                        {businessInfo.hours.sunday}
+                      </p>
                     </div>
                   </div>
                 </div>
 
-                {/* Map */}
-                <div className="bg-white p-4 rounded-lg shadow-xl overflow-hidden">
-                  <iframe
-                    src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3445.5!2d${businessInfo.mapCoordinates.lng}!3d${businessInfo.mapCoordinates.lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjnCsDQ3JzIzLjUiTiA5OMKwNDInMDkuMSJX!5e0!3m2!1sen!2sus!4v1234567890`}
-                    width="100%"
-                    height="350"
-                    style={{ border: 0 }}
-                    allowFullScreen=""
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="The Dirt Place Location"
-                    className="rounded"
-                  ></iframe>
+                {/* Contractor Link */}
+                <div className="mt-12 pt-8 border-t border-[#FAF9F6]/20">
+                  <p className="text-[#FAF9F6]/70 mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    Are you a contractor?
+                  </p>
+                  <Link
+                    to="/contractor-portal"
+                    className="inline-flex items-center space-x-2 px-6 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#FAF9F6] hover:text-[#3B2F2F] transition-colors duration-300"
+                    style={{ fontFamily: 'Montserrat, sans-serif' }}
+                  >
+                    <span>Access Contractor Portal</span>
+                    <ArrowLeft size={16} className="rotate-180" />
+                  </Link>
+                </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
-    </div>
-  );
-};
+        </section>
+
+        {/* Recommended Pros Section */}
+        <RecommendedPros />
+      </div>
+    );
+  };
 
 export default ContactPage;

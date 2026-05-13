@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Calculator, Info, Mail } from 'lucide-react';
+import { trackCalculatorUse, trackCalculatorEmailCapture } from '../utils/analytics';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -16,6 +17,7 @@ const MaterialCalculator = () => {
 
   const [result, setResult] = useState(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [emailCheckbox, setEmailCheckbox] = useState(false); // Checkbox state
   const [userEmail, setUserEmail] = useState('');
   const [isEmailingSending, setIsEmailSending] = useState(false);
   const [emailMessage, setEmailMessage] = useState('');
@@ -45,6 +47,12 @@ const MaterialCalculator = () => {
       });
 
       setResult(response.data);
+      
+      // Track calculator use in GA4 and Facebook Pixel
+      trackCalculatorUse(response.data);
+      
+      // Auto-expand email section for aggressive lead capture
+      setEmailCheckbox(true);
     } catch (error) {
       console.error('Calculator error:', error);
       alert('Error calculating material. Please check your inputs and try again.');
@@ -68,6 +76,9 @@ const MaterialCalculator = () => {
         calculation: result
       });
 
+      // Track email capture
+      trackCalculatorEmailCapture(userEmail, result?.project_type);
+      
       setEmailMessage('Calculation results sent to your email!');
       setTimeout(() => setEmailMessage(''), 5000);
     } catch (error) {
@@ -273,42 +284,71 @@ const MaterialCalculator = () => {
             </div>
           </div>
 
-          <div className="mt-6 p-6 bg-[#FAF9F6] border-2 border-[#D9A441] rounded">
-            <h4 className="text-lg font-bold text-[#3B2F2F] mb-3" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              📧 Email These Results
-            </h4>
-            <p className="text-sm text-[#6B4F3F] mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Save your calculation for later or share it with your contractor
-            </p>
-            <div className="flex gap-3">
-              <input
-                type="email"
-                value={userEmail}
-                onChange={(e) => setUserEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="flex-1 px-4 py-3 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none transition-colors duration-300"
-                style={{ fontFamily: 'Montserrat, sans-serif' }}
-              />
-              <button
-                onClick={handleEmailResults}
-                disabled={isEmailingSending}
-                className="px-6 py-3 bg-[#6B7A3A] text-white font-semibold rounded hover:bg-[#3B2F2F] transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                style={{ fontFamily: 'Montserrat, sans-serif' }}
-              >
-                <Mail size={18} />
-                <span>{isEmailingSending ? 'Sending...' : 'Email Me'}</span>
-              </button>
-            </div>
-            {emailMessage && (
-              <p className={`mt-3 text-sm ${emailMessage.includes('sent') ? 'text-[#6B7A3A]' : 'text-red-600'}`} style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                {emailMessage}
-              </p>
-            )}
-          </div>
+           <div className="mt-6 p-6 bg-[#FAF9F6] border-2 border-[#D9A441] rounded">
+             <label className="flex items-center space-x-3 cursor-pointer group" htmlFor="emailCheckbox">
+               <input
+                 type="checkbox"
+                 id="emailCheckbox"
+                 checked={emailCheckbox}
+                 onChange={(e) => {
+                   setEmailCheckbox(e.target.checked);
+                   if (!e.target.checked) {
+                     setEmailMessage(''); // Clear message when unchecked
+                   }
+                 }}
+                 className="w-5 h-5 rounded border-2 border-[#6B4F3F] text-[#D9A441] focus:ring-[#D9A441] focus:ring-2 cursor-pointer"
+                 aria-label="Email me the calculation results with pro tips"
+               />
+               <span className="text-lg font-bold text-[#3B2F2F] group-hover:text-[#D9A441] transition-colors duration-300" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                 📧 Email me these results + Pro Tips for my project
+               </span>
+             </label>
+             
+             {emailCheckbox && (
+               <div className="mt-4 animate-fade-in">
+                 <div className="bg-[#D9A441]/20 p-4 rounded-lg mb-4">
+                   <p className="text-sm text-[#3B2F2F] font-semibold mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                     🎁 What you'll get:
+                   </p>
+                   <ul className="text-sm text-[#3B2F2F] space-y-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                     <li>✓ Your calculation results saved for reference</li>
+                     <li>✓ Pro tips specific to your project type ({result?.project_type})</li>
+                     <li>✓ Current pricing for {result?.material || 'materials'} in Boerne</li>
+                     <li>✓ 10% off your first order (new customers only)</li>
+                   </ul>
+                 </div>
+                 <div className="flex flex-col sm:flex-row gap-3">
+                   <input
+                     type="email"
+                     value={userEmail}
+                     onChange={(e) => setUserEmail(e.target.value)}
+                     placeholder="your@email.com"
+                     className="flex-1 px-4 py-3 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none transition-colors duration-300"
+                     style={{ fontFamily: 'Montserrat, sans-serif' }}
+                     aria-label="Your email address"
+                   />
+                   <button
+                     onClick={handleEmailResults}
+                     disabled={isEmailingSending || !userEmail}
+                     className="px-6 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#c48f35] transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                     style={{ fontFamily: 'Montserrat, sans-serif' }}
+                   >
+                     <Mail size={18} />
+                     <span>{isEmailingSending ? 'Sending...' : 'Get My Pro Tips'}</span>
+                   </button>
+                 </div>
+                 {emailMessage && (
+                   <p className={`mt-3 text-sm ${emailMessage.includes('sent') ? 'text-[#6B7A3A]' : 'text-red-600'}`} style={{ fontFamily: 'Montserrat, sans-serif' }} role="alert">
+                     {emailMessage}
+                   </p>
+                 )}
+               </div>
+             )}
+           </div>
 
           <div className="mt-6 text-center">
             <p className="text-[#6B4F3F] mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Ready to order? Contact us for a quote!
+              Ready to order? Contact us for pricing and delivery!
             </p>
             <a
               href="/contact"

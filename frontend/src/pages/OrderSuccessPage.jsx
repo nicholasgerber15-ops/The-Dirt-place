@@ -1,64 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { CheckCircle, Package, Truck, Mail, Phone, AlertTriangle } from 'lucide-react';
-import { loadStripe } from '@stripe/stripe-js';
+import { CheckCircle, Package, Truck, Mail, Phone } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import axios from 'axios';
 import SEO from '../components/SEO';
+import RecommendedPros from '../components/RecommendedPros';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
-const stripePublishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY;
 
 const OrderSuccessPage = () => {
   const [searchParams] = useSearchParams();
-  const paymentIntentClientSecret = searchParams.get('payment_intent_client_secret') || searchParams.get('session_id');
-  const orderNumber = searchParams.get('order_number');
+  const sessionId = searchParams.get('session_id');
   const { clearCart } = useCart();
   const [orderStatus, setOrderStatus] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (paymentIntentClientSecret) {
-      confirmAndCheckOrder();
-      clearCart();
-    } else {
-      setLoading(false);
-      setError('No payment information found.');
-    }
-  }, [paymentIntentClientSecret]);
-
-  const confirmAndCheckOrder = async () => {
-    try {
-      if (stripePublishableKey && paymentIntentClientSecret?.startsWith('pi_')) {
-        const stripe = await loadStripe(stripePublishableKey);
-        const { paymentIntent } = await stripe.retrievePaymentIntent(paymentIntentClientSecret);
-        if (paymentIntent && paymentIntent.status === 'succeeded') {
-          setOrderStatus({
-            status: 'processing',
-            payment_status: 'paid',
-            order_number: orderNumber || paymentIntent.metadata?.order_number || 'Confirmed',
-          });
+    if (sessionId) {
+      const checkOrderStatus = async () => {
+        try {
+          const response = await axios.get(`${API}/ecommerce/checkout/status/${sessionId}`);
+          setOrderStatus(response.data);
+        } catch (error) {
+          console.error('Failed to fetch order status:', error);
+        } finally {
           setLoading(false);
-          return;
         }
-      }
-
-      const piId = paymentIntentClientSecret?.split('_secret_')[0] || paymentIntentClientSecret;
-      const response = await axios.get(`${API}/ecommerce/checkout/status/${piId}`);
-      setOrderStatus(response.data);
-    } catch (err) {
-      console.error('Failed to confirm order:', err);
-      setOrderStatus({
-        status: 'processing',
-        payment_status: 'paid',
-        order_number: orderNumber || 'Confirmed',
-      });
-    } finally {
-      setLoading(false);
+      };
+      
+      checkOrderStatus();
+      clearCart();
     }
-  };
+  }, [sessionId, clearCart]);
 
   if (loading) {
     return (
@@ -73,56 +47,31 @@ const OrderSuccessPage = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-[#FAF9F6] pt-32 pb-24">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <AlertTriangle size={64} className="text-red-500" />
-            </div>
-            <h1 className="text-5xl font-bold text-[#3B2F2F] mb-4" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
-              Something Went Wrong
-            </h1>
-            <p className="text-lg text-[#6B4F3F] mb-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Please contact us at (830) 555-0198 to complete your order.
-            </p>
-            <Link
-              to="/contact"
-              className="inline-block px-8 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#3B2F2F] hover:text-white transition-colors"
-              style={{ fontFamily: 'Montserrat, sans-serif' }}
-            >
-              Contact Us
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-[#FAF9F6] pt-32 pb-24">
-      <SEO
+      <SEO 
         title="Order Confirmed | The Dirt Place"
         description="Your order has been confirmed - thank you for choosing The Dirt Place!"
+        url="https://theboernedirtplace.com/order-success"
       />
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
+          {/* Success Message */}
           <div className="bg-white rounded-lg shadow-2xl p-8 md:p-12 text-center mb-8">
             <div className="w-24 h-24 bg-[#6B7A3A] rounded-full flex items-center justify-center mx-auto mb-6">
               <CheckCircle size={64} className="text-white" />
             </div>
-
+            
             <h1 className="text-5xl md:text-6xl font-bold text-[#3B2F2F] mb-4" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
               Order Confirmed!
             </h1>
-
-            {orderStatus?.order_number && (
+            
+            {orderStatus && (
               <p className="text-2xl text-[#6B4F3F] mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 Order #{orderStatus.order_number}
               </p>
             )}
-
+            
             <p className="text-lg text-[#6B4F3F] mb-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
               Thank you for your order! We've received your payment and will begin processing your delivery right away.
             </p>
@@ -140,11 +89,12 @@ const OrderSuccessPage = () => {
             </div>
           </div>
 
+          {/* What's Next */}
           <div className="bg-white rounded-lg shadow-xl p-8 mb-8">
             <h2 className="text-3xl font-bold text-[#3B2F2F] mb-6" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
               What Happens Next?
             </h2>
-
+            
             <div className="space-y-6">
               <div className="flex items-start space-x-4">
                 <div className="w-12 h-12 bg-[#D9A441] rounded-full flex items-center justify-center flex-shrink-0">
@@ -190,6 +140,7 @@ const OrderSuccessPage = () => {
             </div>
           </div>
 
+          {/* Contact Info */}
           <div className="bg-[#3B2F2F] rounded-lg shadow-xl p-8 text-center">
             <h2 className="text-3xl font-bold text-[#FAF9F6] mb-4" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
               Questions About Your Order?
@@ -216,6 +167,7 @@ const OrderSuccessPage = () => {
             </div>
           </div>
 
+          {/* Continue Shopping */}
           <div className="text-center mt-8">
             <Link
               to="/materials"
@@ -227,6 +179,9 @@ const OrderSuccessPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Recommended Pros Section */}
+      <RecommendedPros variant="full" />
     </div>
   );
 };

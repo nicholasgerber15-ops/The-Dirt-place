@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from 'lucide-react';
 import { businessInfo } from '../data/mock';
+import RecommendedPros from './RecommendedPros';
 
 const Footer = () => {
   return (
@@ -69,12 +70,27 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/delivery" className="hover:text-[#D9A441] transition-colors duration-300 flex items-center group">
+                  <span className="w-0 h-0.5 bg-[#D9A441] transition-all duration-300 group-hover:w-4 mr-0 group-hover:mr-2"></span>
+                  Delivery
+                </Link>
+              </li>
+              <li>
                 <Link to="/contact" className="hover:text-[#D9A441] transition-colors duration-300 flex items-center group">
                   <span className="w-0 h-0.5 bg-[#D9A441] transition-all duration-300 group-hover:w-4 mr-0 group-hover:mr-2"></span>
                   Contact
                 </Link>
               </li>
             </ul>
+            
+            {/* Contractor CTA in Footer */}
+            <Link
+              to="/contact?type=contractor"
+              className="mt-6 inline-block px-6 py-3 bg-transparent border-2 border-[#D9A441] text-[#D9A441] text-sm font-bold rounded hover:bg-[#D9A441] hover:text-[#3B2F2F] transition-all duration-300"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Contractor? Get Business Pricing
+            </Link>
           </div>
 
           {/* Contact Info */}
@@ -110,6 +126,9 @@ const Footer = () => {
             </ul>
           </div>
         </div>
+
+        {/* Recommended Pros Banner */}
+        <RecommendedPros variant="banner" className="mb-8" />
 
         {/* Bottom Bar */}
         <div className="border-t border-[#6B4F3F] pt-8 text-center">

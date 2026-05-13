@@ -38,8 +38,8 @@ const Gallery = () => {
     {
       id: 6,
       url: 'https://images.unsplash.com/photo-1558904541-efa843a96f01',
-      title: 'Material Transport',
-      category: 'Transport'
+      title: 'Material Delivery',
+      category: 'Delivery'
     }
   ];
 
