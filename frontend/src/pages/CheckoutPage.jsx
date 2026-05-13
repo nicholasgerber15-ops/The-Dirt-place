@@ -213,7 +213,6 @@ const CheckoutPage = () => {
         customer_email: formData.customerEmail,
         customer_phone: formData.customerPhone,
         delivery_address: needsDelivery ? formData.deliveryAddress : '',
-        delivery_zip: '',
         delivery_date: '',
         delivery_time: '',
         needs_delivery: needsDelivery,

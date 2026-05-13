@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Truck, Shield, Clock, Award, Star } from 'lucide-react';
+import { ArrowRight, Truck, Shield, Clock, Award, Star, Settings, Phone } from 'lucide-react';
 import MaterialCard from '../components/MaterialCard';
 import Gallery from '../components/Gallery';
 import SEO from '../components/SEO';
@@ -150,7 +150,7 @@ const HomePage = () => {
           >
             Reliable service and honest pricing. We deliver across the Texas Hill Country.
           </p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center animate-slide-up-delay" style={{ animationDelay: '400ms' }}>
+          <div className="flex justify-center animate-slide-up-delay" style={{ animationDelay: '400ms' }}>
             <Link
               to="/materials"
               className="px-8 py-4 bg-[#D9A441] text-[#3B2F2F] text-lg font-bold rounded hover:bg-[#FAF9F6] hover:shadow-2xl transform hover:scale-105 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center space-x-2"
@@ -158,13 +158,6 @@ const HomePage = () => {
             >
               <span>View Materials</span>
               <ArrowRight size={20} />
-            </Link>
-            <Link
-              to="/materials"
-              className="px-8 py-4 bg-transparent border-2 border-[#FAF9F6] text-[#FAF9F6] text-lg font-bold rounded hover:bg-[#FAF9F6] hover:text-[#3B2F2F] hover:shadow-2xl transform hover:scale-105 hover:-translate-y-1 transition-all duration-300"
-              style={{ fontFamily: 'Montserrat, sans-serif' }}
-            >
-              Shop Our Yard
             </Link>
           </div>
         </div>
@@ -339,6 +332,100 @@ const HomePage = () => {
 
       {/* Gallery Section */}
       <Gallery />
+
+      {/* Need Installation? - Revenue Pipeline Section */}
+      <section className="py-24 bg-[#FAF9F6]">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center scroll-animate">
+            <h2
+              className="text-5xl font-bold text-[#3B2F2F] mb-4"
+              style={{ fontFamily: 'Bebas Neue, sans-serif' }}
+            >
+              Need Installation Too?
+            </h2>
+            <div className="w-24 h-1 bg-[#D9A441] mx-auto mb-6"></div>
+            <p
+              className="text-xl text-[#6B4F3F] mb-8"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              We deliver the materials — Juan's Lawn, Trees & Landscaping installs them.
+              From dirt delivery to finished landscape, we've got you covered.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white p-6 rounded-lg shadow-lg">
+                <div className="w-16 h-16 bg-[#D9A441] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Truck size={32} className="text-[#3B2F2F]" />
+                </div>
+                <h3 className="text-xl font-bold text-[#3B2F2F] mb-2" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                  1. Order Materials
+                </h3>
+                <p className="text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  Order from The Dirt Place — fast delivery across Boerne
+                </p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-lg">
+                <div className="w-16 h-16 bg-[#D9A441] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Settings size={32} className="text-[#3B2F2F]" />
+                </div>
+                <h3 className="text-xl font-bold text-[#3B2F2F] mb-2" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                  2. Professional Installation
+                </h3>
+                <p className="text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  Juan's team handles design, installation, and cleanup
+                </p>
+              </div>
+              <div className="bg-white p-6 rounded-lg shadow-lg">
+                <div className="w-16 h-16 bg-[#D9A441] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Star size={32} className="text-[#3B2F2F]" />
+                </div>
+                <h3 className="text-xl font-bold text-[#3B2F2F] mb-2" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                  3. Enjoy Your New Landscape
+                </h3>
+                <p className="text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  Step back and enjoy your transformed outdoor space
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-[#3B2F2F] p-8 rounded-lg text-[#FAF9F6] mb-8">
+              <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                Juan's Lawn, Trees & Landscaping
+              </h3>
+              <p className="text-lg mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                Full-service landscaping, tree care, lawn maintenance, and outdoor living spaces.
+                Serving Boerne and the Texas Hill Country.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href="tel:8303363713"
+                  aria-label="Call The Dirt Place for a quote at (830) 336-3713"
+                  className="inline-flex items-center space-x-2 px-8 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#FAF9F6] transition-colors"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  <Phone size={20} aria-hidden="true" />
+                  <span>Call for Quote: (830) 336-3713</span>
+                </a>
+                <a
+                  href="https://juans-landscaping.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Visit Juan's Landscaping website (opens in new tab)"
+                  className="inline-flex items-center space-x-2 px-8 py-3 bg-transparent border-2 border-[#FAF9F6] text-[#FAF9F6] font-bold rounded hover:bg-[#FAF9F6] hover:text-[#3B2F2F] transition-colors"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  <span>Visit Juan's Website</span>
+                  <ArrowRight size={20} aria-hidden="true" />
+                </a>
+              </div>
+            </div>
+
+            <p className="text-[#6B4F3F] text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              🤝 Partnership: The Dirt Place + Juan's Lawn, Trees & Landscaping
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

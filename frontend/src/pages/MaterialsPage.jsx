@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import MaterialCard from '../components/MaterialCard';
 import MaterialCalculator from '../components/MaterialCalculator';
 import SEO from '../components/SEO';
+import ProductSchema from '../components/ProductSchema';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -126,6 +127,7 @@ const MaterialsPage = () => {
               {materials.map((material, index) => (
                 <div key={material.id} className="scroll-animate">
                   <MaterialCard material={material} index={index} />
+                  <ProductSchema key={`schema-${material.id}`} product={material} />
                 </div>
               ))}
             </div>

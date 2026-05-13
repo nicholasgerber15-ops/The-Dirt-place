@@ -1,42 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 const Header = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { getItemCount } = useCart();
   const cartCount = getItemCount();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Materials', path: '/materials' },
-    { name: 'Contact', path: '/contact' }
+    { name: 'Contact', path: '/contact' },
+    { name: 'Service Areas', path: '/service-area/boerne' }
   ];
 
   return (
-    <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-[#3B2F2F] shadow-lg py-3' 
-          : 'bg-transparent py-5'
-      }`}
-    >
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#3B2F2F] shadow-lg py-3">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3 group">
-            <div className={`transition-all duration-300 ${isScrolled ? 'w-16 h-16' : 'w-20 h-20'}`}>
+            <div className="w-16 h-16 transition-all duration-300">
               <img 
                 src="https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/pl8t7hjh_Final%20logo.png" 
                 alt="The Dirt Place Logo"
@@ -81,13 +67,6 @@ const Header = () => {
                 </span>
               )}
             </Link>
-            <Link
-              to="/materials"
-              className="px-6 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#FAF9F6] hover:shadow-lg transform hover:scale-105 transition-all duration-300"
-              style={{ fontFamily: 'Montserrat, sans-serif' }}
-            >
-              Shop Our Yard
-            </Link>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -117,14 +96,6 @@ const Header = () => {
                 {link.name}
               </Link>
             ))}
-            <Link
-              to="/materials"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block mt-4 px-6 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded text-center hover:bg-[#FAF9F6] transition-colors duration-300"
-              style={{ fontFamily: 'Montserrat, sans-serif' }}
-            >
-              Shop Our Yard
-            </Link>
           </nav>
         )}
       </div>

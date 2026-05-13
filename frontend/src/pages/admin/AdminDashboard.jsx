@@ -130,6 +130,12 @@ const AdminDashboard = () => {
             <Link to="/admin/inventory" className="block py-2 text-[#6B4F3F] hover:text-[#D9A441]" onClick={() => setMobileMenuOpen(false)}>
               Inventory
             </Link>
+            <Link to="/admin/leads" className="block py-2 text-[#6B4F3F] hover:text-[#D9A441]" onClick={() => setMobileMenuOpen(false)}>
+              Leads
+            </Link>
+            <Link to="/admin/notifications" className="block py-2 text-[#6B4F3F] hover:text-[#D9A441]" onClick={() => setMobileMenuOpen(false)}>
+              Notifications
+            </Link>
           </div>
         </nav>
       )}
@@ -152,6 +158,12 @@ const AdminDashboard = () => {
             </Link>
             <Link to="/admin/inventory" className="px-4 py-4 text-[#6B4F3F] hover:text-[#D9A441] font-semibold">
               Inventory
+            </Link>
+            <Link to="/admin/leads" className="px-4 py-4 text-[#6B4F3F] hover:text-[#D9A441] font-semibold">
+              Leads
+            </Link>
+            <Link to="/admin/notifications" className="px-4 py-4 text-[#6B4F3F] hover:text-[#D9A441] font-semibold">
+              Notifications
             </Link>
           </div>
         </div>

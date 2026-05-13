@@ -61,20 +61,48 @@ DEMO_MATERIALS = [
 PALLET_ITEMS = ["Pallets", "Butter Blocks", "Bags", "Piggyback"]
 PALLET_FEE = 100
 
-ZIP_DISTANCES = {
-    "78006": 0,
-    "78015": 5,
-    "78070": 8,
-    "78163": 12,
-    "78255": 10,
-}
 
 def round_up_half_yard(volume):
     import math
     return math.ceil(volume * 2) / 2
 
+DIRT_SAND_KEYWORDS = ['topsoil', 'sand', 'soil', 'dirt', 'loam', 'compost']
+MULCH_KEYWORDS = ['mulch']
+ROCK_KEYWORDS = ['gravel', 'rock', 'stone', 'road base', 'decorative', 'limestone', 'crushed']
+
+SMALL_TRUCK_MAX = 5
+BIG_TRUCK_DIRT_SAND_MAX = 10
+BIG_TRUCK_MULCH_MAX = 12
+BIG_TRUCK_ROCK_MAX = 15
+
+def calculate_trucks_needed(cart_items: list) -> int:
+    dirt_sand = 0
+    mulch = 0
+    rocks = 0
+    for item in cart_items or []:
+        name = (item.get('name', '') or '').lower()
+        qty = float(item.get('quantity', 0))
+        if any(k in name for k in DIRT_SAND_KEYWORDS):
+            dirt_sand += qty
+        elif any(k in name for k in MULCH_KEYWORDS):
+            mulch += qty
+        elif any(k in name for k in ROCK_KEYWORDS):
+            rocks += qty
+        else:
+            rocks += qty
+
+    total = dirt_sand + mulch + rocks
+    if total <= SMALL_TRUCK_MAX:
+        return 1
+
+    dirt_sand_trucks = math.ceil(dirt_sand / BIG_TRUCK_DIRT_SAND_MAX) if dirt_sand > 0 else 0
+    mulch_trucks = math.ceil(mulch / BIG_TRUCK_MULCH_MAX) if mulch > 0 else 0
+    rocks_trucks = math.ceil(rocks / BIG_TRUCK_ROCK_MAX) if rocks > 0 else 0
+    total_trucks = max(dirt_sand_trucks + mulch_trucks + rocks_trucks, 1)
+    return total_trucks
+
 async def get_distance_google_maps(delivery_address: str) -> tuple:
-    """Returns (distance_miles, duration_minutes, error_message). ZIP fallback if no API key."""
+    """Returns (distance_miles, duration_minutes, error_message)."""
     if not GOOGLE_MAPS_API_KEY:
         return None, None, None
 
@@ -113,16 +141,10 @@ async def get_distance_google_maps(delivery_address: str) -> tuple:
         logger.error(f"Google Maps API request failed: {e}")
         return None, None, None
 
-def get_distance_for_zip(zip_code: str) -> float:
-    return ZIP_DISTANCES.get(zip_code, 15)
-
-async def calculate_delivery_fee(delivery_address: str, date_str: str, total_yards: float, zip_code: str = ""):
+async def calculate_delivery_fee(delivery_address: str, date_str: str, total_yards: float, cart_items: list = None):
     distance = None
     duration = None
-    if delivery_address:
-        distance, duration, error = await get_distance_google_maps(delivery_address)
-    if distance is None:
-        distance = get_distance_for_zip(zip_code)
+    distance, duration, error = await get_distance_google_maps(delivery_address)
 
     try:
         dt = datetime.fromisoformat(date_str)
@@ -137,8 +159,10 @@ async def calculate_delivery_fee(delivery_address: str, date_str: str, total_yar
     if total_yards < MIN_ORDER_YARDS:
         return None, f"Minimum order is {MIN_ORDER_YARDS} yard(s) for delivery (1/2 yard for pickup).", distance or 0
 
-    fee = DELIVERY_FEE_BASE + ((distance or 0) * DELIVERY_FEE_PER_MILE)
-    return round(fee, 2), None, distance or 0
+    num_trucks = calculate_trucks_needed(cart_items or [])
+    per_truck_fee = DELIVERY_FEE_BASE + ((distance or 0) * DELIVERY_FEE_PER_MILE)
+    fee = per_truck_fee * num_trucks
+    return round(fee, 2), None, distance or 0, num_trucks
 
 class CheckoutCreateRequest(BaseModel):
     cart_items: list
@@ -146,7 +170,6 @@ class CheckoutCreateRequest(BaseModel):
     customer_email: str
     customer_phone: str
     delivery_address: str = ""
-    delivery_zip: str = ""
     delivery_date: str = ""
     delivery_time: str = ""
     needs_delivery: bool = True
@@ -161,8 +184,8 @@ async def create_payment_intent(request: CheckoutCreateRequest):
         delivery_fee = 0
         distance = 0
         if request.needs_delivery:
-            delivery_fee, error, distance = await calculate_delivery_fee(
-                request.delivery_address, request.delivery_date or datetime.now().isoformat(), total_material_yards, request.delivery_zip
+            delivery_fee, error, distance, num_trucks = await calculate_delivery_fee(
+                request.delivery_address, request.delivery_date or datetime.now().isoformat(), total_material_yards, request.cart_items
             )
             if error:
                 raise HTTPException(status_code=400, detail=error)
@@ -200,7 +223,6 @@ async def create_payment_intent(request: CheckoutCreateRequest):
             "cart_items": request.cart_items,
             "delivery": {
                 "address": request.delivery_address,
-                "zip": request.delivery_zip,
                 "date": request.delivery_date,
                 "time": request.delivery_time
             },
@@ -463,67 +485,4 @@ async def get_delivery_fee(address: str = ""):
         "total_delivery_fee": total_fee
     }
 
-@router.get("/delivery-fee/{zip_code}")
-async def get_delivery_fee_by_zip(zip_code: str):
-    areas = {
-        "78006": {"area": "Boerne", "distance_miles": 0},
-        "78015": {"area": "Boerne Area", "distance_miles": 5},
-        "78070": {"area": "Fair Oaks Ranch", "distance_miles": 8},
-        "78163": {"area": "Comfort", "distance_miles": 12},
-        "78255": {"area": "Leon Springs", "distance_miles": 10},
-    }
-    info = areas.get(zip_code, {"area": "Extended Area", "distance_miles": 15})
-    total_fee = round(DELIVERY_FEE_BASE + (info["distance_miles"] * DELIVERY_FEE_PER_MILE), 2)
-    return {
-        "zip_code": zip_code,
-        "area": info["area"],
-        "base_fee": DELIVERY_FEE_BASE,
-        "per_mile_rate": DELIVERY_FEE_PER_MILE,
-        "distance_miles": info["distance_miles"],
-        "total_delivery_fee": total_fee
-    }
 
-class CheckoutRequest(BaseModel):
-    material: str
-    quantity: int
-    name: str
-    email: EmailStr
-    phone: str
-    delivery_address: str
-    zip_code: str
-    project_type: str = "residential"
-
-@router.post("/checkout")
-async def create_checkout(request: CheckoutRequest):
-    material = next((m for m in DEMO_MATERIALS if m["name"] == request.material), None)
-    if not material:
-        raise HTTPException(status_code=400, detail="Material not found")
-
-    delivery_fee = 25 if request.zip_code != "78006" else 0
-    total = material["price"] * request.quantity + delivery_fee
-
-    order = {
-        "order_number": f"ORD-{datetime.now().strftime('%Y%m%d')}-{datetime.now().timestamp():.0f}",
-        "customer": {
-            "name": request.name,
-            "email": request.email,
-            "phone": request.phone
-        },
-        "material": request.material,
-        "quantity": request.quantity,
-        "delivery_address": request.delivery_address,
-        "zip_code": request.zip_code,
-        "pricing": {
-            "material": material["price"] * request.quantity,
-            "delivery": delivery_fee,
-            "total": total
-        },
-        "status": "pending_payment",
-        "created_at": datetime.now().isoformat()
-    }
-
-    return {
-        "status": "success",
-        "order": order,
-        "checkout_url": f"/order-success?order={order['order_number']}"
-    }

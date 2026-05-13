@@ -9,12 +9,28 @@ const DIRT_SAND_KEYWORDS = ['topsoil', 'sand', 'soil', 'dirt', 'loam', 'compost'
 const MULCH_KEYWORDS = ['mulch'];
 const ROCK_KEYWORDS = ['gravel', 'rock', 'stone', 'road base', 'decorative', 'limestone', 'crushed'];
 
-const CAPACITY = {
-  small: 5,
-  dirt_sand: 10,
-  mulch: 12,
-  rocks: 15,
-};
+const SMALL_TRUCK_MAX = 5;
+const BIG_TRUCK_DIRT_SAND_MAX = 10;
+const BIG_TRUCK_MULCH_MAX = 12;
+const BIG_TRUCK_ROCK_MAX = 15;
+
+function calculateTrucksNeeded(items) {
+  let dirtSand = 0, mulch = 0, rocks = 0;
+  for (const item of items || []) {
+    const name = (item.name || '').toLowerCase();
+    const qty = item.quantity || 0;
+    if (DIRT_SAND_KEYWORDS.some(k => name.includes(k))) dirtSand += qty;
+    else if (MULCH_KEYWORDS.some(k => name.includes(k))) mulch += qty;
+    else if (ROCK_KEYWORDS.some(k => name.includes(k))) rocks += qty;
+    else rocks += qty;
+  }
+  const total = dirtSand + mulch + rocks;
+  if (total <= SMALL_TRUCK_MAX) return 1;
+  const dsTrucks = dirtSand > 0 ? Math.ceil(dirtSand / BIG_TRUCK_DIRT_SAND_MAX) : 0;
+  const mTrucks = mulch > 0 ? Math.ceil(mulch / BIG_TRUCK_MULCH_MAX) : 0;
+  const rTrucks = rocks > 0 ? Math.ceil(rocks / BIG_TRUCK_ROCK_MAX) : 0;
+  return Math.max(dsTrucks + mTrucks + rTrucks, 1);
+}
 
 function categorizeMaterials(items) {
   let dirtSandYards = 0;
@@ -83,48 +99,21 @@ const DeliveryCalculator = ({ totalYards = 0, cartItems = [] }) => {
         warnings.push('Minimum 1 yard for delivery (1/2 yard for pickup).');
       }
 
-      const totalLooseYards = cats.dirtSandYards + cats.mulchYards + cats.rocksYards + cats.otherYards;
+      const numTrucks = calculateTrucksNeeded(cartItems);
+      const perTruckFee = 70 + (distance * 5);
+      const totalFee = perTruckFee * numTrucks;
 
-      if (totalLooseYards <= CAPACITY.small) {
-        truckType = 'Small Truck (max 5 yd)';
-        maxYards = CAPACITY.small;
-      } else {
-        truckType = 'Big Truck';
-        maxYards = CAPACITY.rocks;
-
-        const overDirtSand = cats.dirtSandYards > CAPACITY.dirt_sand ? cats.dirtSandYards - CAPACITY.dirt_sand : 0;
-        const overMulch = cats.mulchYards > CAPACITY.mulch ? cats.mulchYards - CAPACITY.mulch : 0;
-        const overRocks = cats.rocksYards > CAPACITY.rocks ? cats.rocksYards - CAPACITY.rocks : 0;
-
-        if (overDirtSand > 0 || overMulch > 0 || overRocks > 0) {
-          tripsNote = 'Multiple trips required';
-          truckType = 'Big Truck (multiple trips)';
-        }
-
-        let limits = [];
-        if (cats.dirtSandYards > 0) limits.push(`Dirt/Sand: ${CAPACITY.dirt_sand} yd`);
-        if (cats.mulchYards > 0) limits.push(`Mulch: ${CAPACITY.mulch} yd`);
-        if (cats.rocksYards > 0) limits.push(`Rocks: ${CAPACITY.rocks} yd`);
-        if (cats.otherYards > 0) limits.push(`Other: ${CAPACITY.rocks} yd`);
-
-        if (tripsNote) {
-          let breakdown = [];
-          if (cats.dirtSandYards > 0) breakdown.push(`${cats.dirtSandYards} yd dirt/sand (max ${CAPACITY.dirt_sand})`);
-          if (cats.mulchYards > 0) breakdown.push(`${cats.mulchYards} yd mulch (max ${CAPACITY.mulch})`);
-          if (cats.rocksYards > 0) breakdown.push(`${cats.rocksYards} yd rocks (max ${CAPACITY.rocks})`);
-          if (cats.otherYards > 0) breakdown.push(`${cats.otherYards} yd other (max ${CAPACITY.rocks})`);
-          warnings.push(`Order exceeds capacity: ${breakdown.join(', ')}. ${tripsNote}.`);
-        }
-      }
+      const truckLabel = numTrucks === 1 ? '1 truck' : `${numTrucks} trucks`;
 
       setResult({
         address,
         distance,
-        baseFee: data.base_fee || 70,
-        perMileRate: data.per_mile_rate || 5,
-        totalFee: deliveryFee,
-        truckType,
-        maxYards,
+        baseFee: 70,
+        perMileRate: 5,
+        totalFee,
+        numTrucks,
+        perTruckFee,
+        truckLabel,
         warnings,
         yards,
         materialBreakdown: cats,

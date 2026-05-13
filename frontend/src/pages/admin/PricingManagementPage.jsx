@@ -11,10 +11,8 @@ const UNIT_TYPES = ['cubic yards', 'tons', 'bags', 'pallets', 'square feet'];
 const PricingManagementPage = () => {
   const navigate = useNavigate();
   const [materials, setMaterials] = useState([]);
-  const [deliveryFees, setDeliveryFees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingMaterial, setEditingMaterial] = useState(null);
-  const [editingDelivery, setEditingDelivery] = useState(null);
   const [savingId, setSavingId] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
@@ -45,17 +43,11 @@ const PricingManagementPage = () => {
       setLoading(true);
       const token = localStorage.getItem('admin_token');
       
-      const [materialsRes, deliveryRes] = await Promise.all([
-        axios.get(`${API}/admin/pricing`, {
-          headers: { Authorization: `Bearer ${token}` }
-        }),
-        axios.get(`${API}/admin/delivery-fees`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-      ]);
+      const materialsRes = await axios.get(`${API}/admin/pricing`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
       setMaterials(materialsRes.data.pricing);
-      setDeliveryFees(deliveryRes.data.delivery_fees);
     } catch (error) {
       console.error('Failed to fetch pricing:', error);
       if (error.response?.status === 401) {
@@ -128,35 +120,6 @@ const PricingManagementPage = () => {
     }
   };
 
-  const updateDeliveryFee = async (zipCode) => {
-    if (!editingDelivery) return;
-
-    try {
-      setSavingId(zipCode);
-      const token = localStorage.getItem('admin_token');
-      
-      await axios.put(
-        `${API}/admin/delivery-fees/${zipCode}`,
-        editingDelivery,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      setDeliveryFees(prev =>
-        prev.map(d =>
-          d.zip_code === zipCode ? editingDelivery : d
-        )
-      );
-      
-      setEditingDelivery(null);
-      alert('Delivery fee updated successfully!');
-    } catch (error) {
-      console.error('Failed to update delivery fee:', error);
-      alert('Failed to update delivery fee');
-    } finally {
-      setSavingId(null);
-    }
-  };
-
   const handleLogout = () => {
     localStorage.removeItem('admin_token');
     navigate('/admin/login');
@@ -168,14 +131,6 @@ const PricingManagementPage = () => {
 
   const cancelEditMaterial = () => {
     setEditingMaterial(null);
-  };
-
-  const startEditDelivery = (delivery) => {
-    setEditingDelivery({ ...delivery });
-  };
-
-  const cancelEditDelivery = () => {
-    setEditingDelivery(null);
   };
 
   const getStockColor = (stock) => {
@@ -426,115 +381,6 @@ const PricingManagementPage = () => {
               </div>
             </div>
 
-            {/* Delivery Fees */}
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex items-center mb-6">
-                <DollarSign size={32} className="text-[#6B7A3A] mr-3" />
-                <h2 className="text-3xl font-bold text-[#3B2F2F]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
-                  Delivery Fees by ZIP Code
-                </h2>
-              </div>
-
-              <p className="text-[#6B4F3F] mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                Configure delivery charges based on ZIP codes. Changes apply to new orders.
-              </p>
-
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b-2 border-[#6B4F3F]/20">
-                      <th className="text-left py-3 px-4 font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>ZIP Code</th>
-                      <th className="text-left py-3 px-4 font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Area</th>
-                      <th className="text-left py-3 px-4 font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Delivery Fee</th>
-                      <th className="text-center py-3 px-4 font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {deliveryFees.map((delivery) => {
-                      const isEditing = editingDelivery?.zip_code === delivery.zip_code;
-                      const isSaving = savingId === delivery.zip_code;
-
-                      return (
-                        <tr key={delivery.zip_code} className="border-b border-[#6B4F3F]/10 hover:bg-[#FAF9F6]">
-                          <td className="py-3 px-4 font-semibold text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                            {delivery.zip_code}
-                          </td>
-                          <td className="py-3 px-4">
-                            {isEditing ? (
-                              <input
-                                type="text"
-                                value={editingDelivery.area}
-                                onChange={(e) => setEditingDelivery({ ...editingDelivery, area: e.target.value })}
-                                className="w-full px-2 py-1 border-2 border-[#D9A441] rounded focus:outline-none"
-                                style={{ fontFamily: 'Montserrat, sans-serif' }}
-                              />
-                            ) : (
-                              <span className="text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                                {delivery.area}
-                              </span>
-                            )}
-                          </td>
-                          <td className="py-3 px-4">
-                            {isEditing ? (
-                              <div className="flex items-center">
-                                <span className="mr-2 text-[#6B4F3F]">$</span>
-                                <input
-                                  type="number"
-                                  step="0.01"
-                                  value={editingDelivery.fee}
-                                  onChange={(e) => setEditingDelivery({ ...editingDelivery, fee: e.target.value })}
-                                  className="w-24 px-2 py-1 border-2 border-[#D9A441] rounded focus:outline-none"
-                                  style={{ fontFamily: 'Montserrat, sans-serif' }}
-                                />
-                              </div>
-                            ) : (
-                              <span className="text-[#3B2F2F] font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                                ${Number(delivery.fee).toFixed(2)}
-                                {Number(delivery.fee) === 0 && <span className="ml-2 text-green-600 text-xs">(FREE)</span>}
-                              </span>
-                            )}
-                          </td>
-                          <td className="py-3 px-4 text-center">
-                            {isEditing ? (
-                              <div className="flex items-center justify-center space-x-2">
-                                <button
-                                  onClick={() => updateDeliveryFee(delivery.zip_code)}
-                                  disabled={isSaving}
-                                  className="p-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors disabled:opacity-50"
-                                  title="Save"
-                                >
-                                  {isSaving ? (
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                                  ) : (
-                                    <Check size={16} />
-                                  )}
-                                </button>
-                                <button
-                                  onClick={cancelEditDelivery}
-                                  disabled={isSaving}
-                                  className="p-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors disabled:opacity-50"
-                                  title="Cancel"
-                                >
-                                  <X size={16} />
-                                </button>
-                              </div>
-                            ) : (
-                              <button
-                                onClick={() => startEditDelivery(delivery)}
-                                className="p-2 bg-[#D9A441] text-[#3B2F2F] rounded hover:bg-[#3B2F2F] hover:text-white transition-colors"
-                                title="Edit"
-                              >
-                                <Edit2 size={16} />
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
           </div>
         )}
       </div>

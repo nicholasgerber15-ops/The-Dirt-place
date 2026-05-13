@@ -116,13 +116,6 @@ class TestDeliveryFees:
 
 # ======= Ecommerce =======
 class TestEcommerce:
-    def test_delivery_fee_public(self):
-        r = requests.get(f"{BASE_URL}/api/ecommerce/delivery-fee/78006", timeout=30)
-        assert r.status_code == 200
-        d = r.json()
-        assert d["zip_code"] == "78006"
-        assert "delivery_fee" in d
-
     def test_create_checkout_session(self):
         """Creates Stripe session - also seeds an order visible in admin."""
         payload = {
@@ -131,7 +124,6 @@ class TestEcommerce:
             "customer_email": "test@example.com",
             "customer_phone": "555-0100",
             "delivery_address": "123 Main St",
-            "delivery_zip": "78006",
             "delivery_date": "2026-01-20",
             "delivery_time": "morning",
             "notes": "test",
@@ -157,7 +149,6 @@ class TestEcommerce:
             "customer_email": "test@example.com",
             "customer_phone": "555-0100",
             "delivery_address": "123 Main",
-            "delivery_zip": "78006",
             "delivery_date": "2026-01-20",
             "delivery_time": "morning",
             "origin_url": BASE_URL

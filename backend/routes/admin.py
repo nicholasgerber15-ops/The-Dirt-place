@@ -118,15 +118,37 @@ def get_demo_pricing():
         {"material_id": "6", "name": "Decorative Rock", "price_per_cubic_yard": 75.00, "min_order": 1},
     ]
 
+DELIVERY_FEE_BASE = float(os.environ.get('DELIVERY_FEE_BASE', '70'))
+DELIVERY_FEE_PER_MILE = float(os.environ.get('DELIVERY_FEE_PER_MILE', '5'))
+
 def get_demo_delivery_fees():
-    return [
-        {"zip_code": "78006", "fee": 0, "area": "Boerne"},
-        {"zip_code": "78015", "fee": 15, "area": "Boerne Area"},
-        {"zip_code": "78070", "fee": 20, "area": "Fair Oaks Ranch"},
-        {"zip_code": "78163", "fee": 25, "area": "Comfort"},
-        {"zip_code": "78255", "fee": 30, "area": "Leon Springs"},
-        {"zip_code": "default", "fee": 40, "area": "Extended Area"},
+    result = []
+    areas = [
+        {"zip": "78006", "miles": 0, "area_name": "Boerne"},
+        {"zip": "78015", "miles": 5, "area_name": "Boerne Area"},
+        {"zip": "78070", "miles": 8, "area_name": "Fair Oaks Ranch"},
+        {"zip": "78163", "miles": 12, "area_name": "Comfort"},
+        {"zip": "78255", "miles": 10, "area_name": "Leon Springs"},
     ]
+    for a in areas:
+        fee = round(DELIVERY_FEE_BASE + (a["miles"] * DELIVERY_FEE_PER_MILE), 2)
+        result.append({
+            "zip_code": a["zip"],
+            "distance_miles": a["miles"],
+            "base_fee": DELIVERY_FEE_BASE,
+            "per_mile_rate": DELIVERY_FEE_PER_MILE,
+            "fee": fee,
+            "area": a["area_name"]
+        })
+    result.append({
+        "zip_code": "default",
+        "distance_miles": 15,
+        "base_fee": DELIVERY_FEE_BASE,
+        "per_mile_rate": DELIVERY_FEE_PER_MILE,
+        "fee": round(DELIVERY_FEE_BASE + (15 * DELIVERY_FEE_PER_MILE), 2),
+        "area": "Extended Area"
+    })
+    return result
 
 def get_demo_inventory():
     return [
@@ -897,62 +919,6 @@ async def update_hero_image(update: HeroImageUpdate):
 @router.get("/delivery-fees", dependencies=[Depends(verify_admin)])
 async def get_delivery_fees():
     """
-    Get delivery fee structure
+    Get delivery fee structure (calculated using $70 base + $5/mile formula)
     """
-    db = get_database()
-    if db is None:
-        return {"delivery_fees": get_demo_delivery_fees()}
-    
-    try:
-        fees = await db.delivery_fees.find().to_list(100)
-        
-        # Initialize if not exists
-        if not fees:
-            default_fees = [
-                {"zip_code": "78006", "fee": 0.00, "area": "Boerne"},
-                {"zip_code": "78015", "fee": 15.00, "area": "Boerne Area"},
-                {"zip_code": "78070", "fee": 20.00, "area": "Fair Oaks Ranch"},
-                {"zip_code": "78163", "fee": 25.00, "area": "Comfort"},
-                {"zip_code": "78255", "fee": 30.00, "area": "Leon Springs"},
-                {"zip_code": "default", "fee": 40.00, "area": "Extended Area"}
-            ]
-            await db.delivery_fees.insert_many(default_fees)
-            fees = await db.delivery_fees.find().to_list(100)
-        
-        for fee in fees:
-            fee["_id"] = str(fee["_id"])
-        
-        return {"delivery_fees": fees}
-        
-    except Exception as e:
-        logger.error(f"Failed to fetch delivery fees: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-class DeliveryFeeUpdate(BaseModel):
-    zip_code: str
-    fee: float
-    area: str
-
-@router.put("/delivery-fees/{zip_code}", dependencies=[Depends(verify_admin)])
-async def update_delivery_fee(zip_code: str, fee_update: DeliveryFeeUpdate):
-    """
-    Update delivery fee for a ZIP code
-    """
-    try:
-        result = await db.delivery_fees.update_one(
-            {"zip_code": zip_code},
-            {
-                "$set": {
-                    "fee": fee_update.fee,
-                    "area": fee_update.area,
-                    "updated_at": datetime.utcnow()
-                }
-            },
-            upsert=True
-        )
-        
-        return {"success": True, "message": "Delivery fee updated successfully"}
-        
-    except Exception as e:
-        logger.error(f"Failed to update delivery fee: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+    return {"delivery_fees": get_demo_delivery_fees()}
