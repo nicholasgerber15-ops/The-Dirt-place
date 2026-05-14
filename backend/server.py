@@ -46,9 +46,7 @@ def get_db():
         # Standard username/password authentication only
         client = AsyncIOMotorClient(mongo_url)
         db = client[db_name]
-        # Test connection
-        client.admin.command('ping')
-        logger.info(f"Connected to MongoDB: {db_name}")
+        logger.info(f"MongoDB configured for: {db_name}")
         return db
     except Exception as e:
         logger.error(f"MongoDB connection failed: {e}")

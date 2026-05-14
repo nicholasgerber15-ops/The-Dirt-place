@@ -37,8 +37,7 @@ def get_database():
     try:
         _client = AsyncIOMotorClient(mongo_url)
         _db = _client[db_name]
-        _client.admin.command('ping')
-        logger.info(f"Connected to MongoDB: {db_name}")
+        logger.info(f"MongoDB configured for: {db_name}")
         return _db
     except Exception as e:
         logger.error(f"MongoDB connection failed: {e}")
