@@ -35,7 +35,7 @@ async def get_database():
         return None
     
     try:
-        _client = AsyncIOMotorClient(mongo_url)
+        _client = AsyncIOMotorClient(mongo_url, tlsAllowInvalidCertificates=True)
         _db = _client[db_name]
         await _client.admin.command('ping')
         logger.info(f"Connected to MongoDB: {db_name}")
