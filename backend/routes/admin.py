@@ -36,12 +36,14 @@ async def get_database():
     
     try:
         _client = AsyncIOMotorClient(mongo_url)
-        _db = _client[db_name]
         await _client.admin.command('ping')
+        _db = _client[db_name]
         logger.info(f"Connected to MongoDB: {db_name}")
         return _db
     except Exception as e:
         logger.error(f"MongoDB connection failed: {e}")
+        _db = None
+        _client = None
         return None
 
 # Simple admin password

@@ -43,12 +43,14 @@ async def get_db():
     
     try:
         client = AsyncIOMotorClient(mongo_url)
-        db = client[db_name]
         await client.admin.command('ping')
+        db = client[db_name]
         logger.info(f"Connected to MongoDB: {db_name}")
         return db
     except Exception as e:
         logger.error(f"MongoDB connection failed: {e}")
+        client = None
+        db = None
         return None
 
 # Create the main app without a prefix
