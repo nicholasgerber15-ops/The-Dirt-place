@@ -1,4 +1,5 @@
 # Render Blueprint - The Dirt Place
+# Fix: MongoDB SSL fallback to demo mode
 # Import: render blueprint apply render.yaml
 
 previewsEnabled: true

@@ -17,7 +17,10 @@ from routes.ecommerce import router as ecommerce_router
 from routes.admin import router as admin_router
 from routes.auth import router as auth_router
 from routes.scheduling import router as scheduling_router
-from routes.upload import router as upload_router
+try:
+    from routes.upload import router as upload_router
+except Exception:
+    upload_router = None
 
 
 ROOT_DIR = Path(__file__).parent
@@ -28,9 +31,12 @@ logger = logging.getLogger(__name__)
 # MongoDB connection with error handling
 db = None
 client = None
+demo_mode = False
 
 async def get_db():
-    global db, client
+    global db, client, demo_mode
+    if demo_mode:
+        return None
     if db is not None:
         return db
     
@@ -39,6 +45,7 @@ async def get_db():
     
     if not mongo_url or not db_name:
         logger.warning("MONGO_URL or DB_NAME not set - running in demo mode")
+        demo_mode = True
         return None
     
     try:
@@ -51,6 +58,7 @@ async def get_db():
         logger.error(f"MongoDB connection failed: {e}")
         client = None
         db = None
+        demo_mode = True
         return None
 
 # Create the main app without a prefix
@@ -141,7 +149,8 @@ app.include_router(ecommerce_router, prefix="/api/ecommerce")
 app.include_router(admin_router, prefix="/api/admin")
 app.include_router(auth_router)  # Already has /api/auth prefix
 app.include_router(scheduling_router)  # Already has /api/scheduling prefix
-app.include_router(upload_router, prefix="/api/admin")
+if upload_router:
+    app.include_router(upload_router, prefix="/api/admin")
 
 # Security middleware for headers
 @app.middleware("http")
@@ -196,6 +205,25 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+@app.on_event("startup")
+async def startup_db_check():
+    global db, client, demo_mode
+    mongo_url = os.environ.get('MONGO_URL')
+    if not mongo_url:
+        demo_mode = True
+        return
+    try:
+        test_client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=5000)
+        await test_client.admin.command('ping')
+        logger.info("MongoDB connection verified at startup")
+    except Exception as e:
+        logger.warning(f"MongoDB unavailable at startup: {e} - running in demo mode")
+        os.environ['FORCE_DEMO'] = 'true'
+        demo_mode = True
+        db = None
+        client = None
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
-    client.close()
+    if client:
+        client.close()

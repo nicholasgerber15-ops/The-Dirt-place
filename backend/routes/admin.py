@@ -24,6 +24,8 @@ _client = None
 
 async def get_database():
     global _db, _client
+    if os.environ.get('FORCE_DEMO'):
+        return None
     if _db is not None:
         return _db
     
@@ -44,6 +46,7 @@ async def get_database():
         logger.error(f"MongoDB connection failed: {e}")
         _db = None
         _client = None
+        os.environ['FORCE_DEMO'] = 'true'
         return None
 
 # Simple admin password
