@@ -43,7 +43,7 @@ def get_database():
         return None
     try:
         from motor.motor_asyncio import AsyncIOMotorClient
-        mongo_client = AsyncIOMotorClient(MONGO_URL)
+        mongo_client = AsyncIOMotorClient(MONGO_URL, serverSelectionTimeoutMS=5000)
         db = mongo_client[DB_NAME]
         return db
     except Exception as e:
