@@ -22,8 +22,8 @@ const LocalBusinessSchema = () => {
       "longitude": -98.702540
     },
     "url": "https://theboernedirtplace.com",
-    "telephone": "(830) 555-0198",
-    "email": "info@thedirtplace.com",
+    "telephone": "(830) 336-3713",
+    "email": "info@theboernedirtplace.com",
     "openingHoursSpecification": [
       {
         "@type": "OpeningHoursSpecification",

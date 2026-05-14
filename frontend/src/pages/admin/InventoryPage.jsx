@@ -6,8 +6,8 @@ import axios from 'axios';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const UNIT_TYPES = ['1/2 yard', 'cubic yards', 'tons', 'bags', 'pallets', 'square feet', 'half yard'];
-const CATEGORIES = ['Aggregate', 'Soil', 'Mulch', 'Decorative Stone', 'Sand', 'Gravel', 'Concrete', 'Other'];
+const UNIT_TYPES = ['yard', 'half-yard', 'ton', 'bag', 'each', 'pallet', 'basket', 'gallon', 'pound', 'set', 'flat', 'mile', 'day', 'rental', 'percentage'];
+const CATEGORIES = ['Aggregate & Stone', 'Blocks & Pavers', 'Chemicals & Treatments', 'Concrete & Cement', 'Decorative Stone', 'Edging & Borders', 'Garden Decor', 'Grass & Turf', 'Landscaping Supplies', 'Mulch', 'Pipes & Fittings', 'Planters & Pots', 'Sand & Gravel', 'Services & Fees', 'Soil & Compost', 'Tools & Equipment'];
 
 const InventoryPage = () => {
   const navigate = useNavigate();
@@ -33,6 +33,9 @@ const InventoryPage = () => {
     is_visible: true
   });
   const [uploadingImage, setUploadingImage] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const perPage = 20;
 
   const fetchInventory = useCallback(async () => {
     try {
@@ -333,7 +336,13 @@ const InventoryPage = () => {
     if (filter === 'low_stock') return (item.stock_quantity || 0) > 0 && (item.stock_quantity || 0) < 20;
     if (filter === 'in_stock') return (item.stock_quantity || 0) >= 20;
     return true;
-  });
+  }).filter(m =>
+    !searchQuery || m.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    m.material_id?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredInventory.length / perPage);
+  const pagedInventory = filteredInventory.slice((currentPage - 1) * perPage, currentPage * perPage);
 
   const renderCell = (item, field) => {
     const isEditing = editingCell?.material_id === item.material_id && editingCell?.field === field;
@@ -547,6 +556,7 @@ const InventoryPage = () => {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-3xl font-bold text-[#3B2F2F]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
                 Materials & Inventory
+                <span className="ml-3 text-lg text-[#6B4F3F]">({filteredInventory.length} shown / {inventory.length} total)</span>
               </h2>
               <div className="flex items-center space-x-4">
                 {saveMessage && (
@@ -554,9 +564,17 @@ const InventoryPage = () => {
                     {saveMessage}
                   </span>
                 )}
+                <input
+                  type="text"
+                  placeholder="Search by name or ID..."
+                  value={searchQuery}
+                  onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                  className="px-4 py-2 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none w-48"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                />
                 <select
                   value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  onChange={(e) => { setCategoryFilter(e.target.value); setCurrentPage(1); }}
                   className="px-4 py-2 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
                   style={{ fontFamily: 'Montserrat, sans-serif' }}
                 >
@@ -567,7 +585,7 @@ const InventoryPage = () => {
                 </select>
                 <select
                   value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
+                  onChange={(e) => { setFilter(e.target.value); setCurrentPage(1); }}
                   className="px-4 py-2 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
                   style={{ fontFamily: 'Montserrat, sans-serif' }}
                 >
@@ -591,12 +609,12 @@ const InventoryPage = () => {
                   <input type="file" accept=".csv" className="hidden" onChange={importCSV} />
                 </label>
                 <button
-                  onClick={() => setShowAddRow(!showAddRow)}
+                  onClick={() => setShowAddRow(true)}
                   className="flex items-center space-x-2 px-4 py-2 bg-[#6B7A3A] text-white font-bold rounded hover:bg-[#3B2F2F] transition-colors"
                   style={{ fontFamily: 'Montserrat, sans-serif' }}
                 >
-                  {showAddRow ? <X size={18} /> : <Plus size={18} />}
-                  <span>{showAddRow ? 'Cancel' : 'Add Material'}</span>
+                  <Plus size={18} />
+                  <span>Add Material</span>
                 </button>
               </div>
             </div>
@@ -621,7 +639,7 @@ const InventoryPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredInventory.map((item) => (
+                    {pagedInventory.map((item) => (
                       <tr key={item.material_id} className="border-b border-[#6B4F3F]/10 hover:bg-[#FAF9F6]">
                         <td className="py-2 px-3 font-semibold text-[#3B2F2F]">{renderCell(item, 'name')}</td>
                         <td className="py-2 px-3">{renderCell(item, 'category')}</td>
@@ -644,138 +662,28 @@ const InventoryPage = () => {
                       </tr>
                     ))}
 
-                    {/* Add New Row */}
-                    {showAddRow && (
-                      <tr className="bg-[#FAF9F6] border-b-2 border-[#D9A441]">
-                        <td className="py-2 px-3">
-                          <input
-                            type="text"
-                            placeholder="Material name"
-                            value={newRow.name}
-                            onChange={(e) => setNewRow({...newRow, name: e.target.value})}
-                            className="w-full px-2 py-1 border rounded text-sm"
-                            autoFocus
-                          />
-                        </td>
-                        <td className="py-2 px-3">
-                          <select
-                            value={newRow.category}
-                            onChange={(e) => setNewRow({...newRow, category: e.target.value})}
-                            className="w-full px-2 py-1 border rounded text-sm"
-                          >
-                            {CATEGORIES.map(cat => (
-                              <option key={cat} value={cat}>{cat}</option>
-                            ))}
-                          </select>
-                        </td>
-                        <td className="py-2 px-3">
-                          <input
-                            type="text"
-                            placeholder="tag1, tag2"
-                            value={newRow.tags}
-                            onChange={(e) => setNewRow({...newRow, tags: e.target.value})}
-                            className="w-full px-2 py-1 border rounded text-sm"
-                          />
-                        </td>
-                        <td className="py-2 px-3">
-                          <div className="flex items-center space-x-1">
-                            <input
-                              type="text"
-                              placeholder="Image URL"
-                              value={newRow.image_url}
-                              onChange={(e) => setNewRow({...newRow, image_url: e.target.value})}
-                              className="flex-1 px-2 py-1 border rounded text-sm"
-                            />
-                            <label className="cursor-pointer">
-                              <Upload size={14} className="text-[#6B4F3F] hover:text-[#D9A441]" />
-                              <input
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={async (e) => {
-                                  const file = e.target.files[0];
-                                  if (!file) return;
-                                  const token = localStorage.getItem('admin_token');
-                                  const formData = new FormData();
-                                  formData.append('file', file);
-                                  try {
-                                    const res = await axios.post(`${API}/admin/upload-image`, formData, {
-                                      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
-                                    });
-                                    if (res.data.success) {
-                                      setNewRow({...newRow, image_url: res.data.url});
-                                    }
-                                  } catch (err) {
-                                    console.error('Upload failed', err);
-                                  }
-                                }}
-                              />
-                            </label>
-                          </div>
-                        </td>
-                        <td className="py-2 px-3">
-                          <input
-                            type="text"
-                            placeholder="Instructions"
-                            value={newRow.product_details}
-                            onChange={(e) => setNewRow({...newRow, product_details: e.target.value})}
-                            className="w-full px-2 py-1 border rounded text-sm"
-                          />
-                        </td>
-                        <td className="py-2 px-3">
-                          <select
-                            value={newRow.unit_type}
-                            onChange={(e) => setNewRow({...newRow, unit_type: e.target.value})}
-                            className="w-full px-2 py-1 border rounded text-sm"
-                          >
-                            {UNIT_TYPES.map(unit => (
-                              <option key={unit} value={unit}>{unit}</option>
-                            ))}
-                          </select>
-                        </td>
-                        <td className="py-2 px-3">
-                          <input
-                            type="number"
-                            placeholder="0"
-                            value={newRow.stock_quantity}
-                            onChange={(e) => setNewRow({...newRow, stock_quantity: e.target.value})}
-                            className="w-full px-2 py-1 border rounded text-sm text-right"
-                          />
-                        </td>
-                        <td className="py-2 px-3">
-                          <input
-                            type="number"
-                            step="0.01"
-                            placeholder="0.00"
-                            value={newRow.price_per_unit}
-                            onChange={(e) => setNewRow({...newRow, price_per_unit: e.target.value})}
-                            className="w-full px-2 py-1 border rounded text-sm text-right"
-                          />
-                        </td>
-                        <td className="py-2 px-3">
-                          <input
-                            type="number"
-                            placeholder="1"
-                            value={newRow.min_order}
-                            onChange={(e) => setNewRow({...newRow, min_order: e.target.value})}
-                            className="w-full px-2 py-1 border rounded text-sm text-right"
-                          />
-                        </td>
-                        <td className="py-2 px-3 text-center">
-                          <button
-                            onClick={handleAddNewRow}
-                            disabled={saving}
-                            className="px-3 py-1 bg-[#D9A441] text-[#3B2F2F] text-xs font-bold rounded hover:bg-[#3B2F2F] hover:text-white transition-colors disabled:opacity-50"
-                          >
-                            {saving ? '...' : 'Add'}
-                          </button>
-                        </td>
-                        <td className="py-2 px-3"></td>
-                      </tr>
-                    )}
+
                   </tbody>
                 </table>
               </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between px-3 py-3 border-t border-[#6B4F3F]/20" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  <span className="text-sm text-[#6B4F3F]">
+                    Showing {(currentPage - 1) * perPage + 1}–{Math.min(currentPage * perPage, filteredInventory.length)} of {filteredInventory.length}
+                  </span>
+                  <div className="flex space-x-2">
+                    <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}
+                      className="px-3 py-1 rounded border border-[#6B4F3F]/20 text-sm disabled:opacity-30 hover:bg-[#FAF9F6]">Prev</button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                      <button key={p} onClick={() => setCurrentPage(p)}
+                        className={`px-3 py-1 rounded text-sm ${p === currentPage ? 'bg-[#D9A441] text-[#3B2F2F] font-bold' : 'border border-[#6B4F3F]/20 hover:bg-[#FAF9F6]'}`}>{p}</button>
+                    ))}
+                    <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages}
+                      className="px-3 py-1 rounded border border-[#6B4F3F]/20 text-sm disabled:opacity-30 hover:bg-[#FAF9F6]">Next</button>
+                  </div>
+                </div>
+              )}
 
               {filteredInventory.length === 0 && !showAddRow && (
                 <div className="text-center py-12">
@@ -786,6 +694,168 @@ const InventoryPage = () => {
                 </div>
               )}
             </div>
+
+            {/* Add Material Modal */}
+            {showAddRow && (
+              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                  <div className="bg-[#3B2F2F] px-6 py-4 flex items-center justify-between rounded-t-lg">
+                    <h3 className="text-xl font-bold text-white" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                      Add New Material
+                    </h3>
+                    <button onClick={() => setShowAddRow(false)} className="text-white hover:text-[#D9A441]">
+                      <X size={24} />
+                    </button>
+                  </div>
+
+                  <div className="p-6 space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-[#3B2F2F] mb-1">Name *</label>
+                        <input
+                          type="text"
+                          placeholder="Material name"
+                          value={newRow.name}
+                          onChange={(e) => setNewRow({...newRow, name: e.target.value})}
+                          className="w-full px-3 py-2 border border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-[#3B2F2F] mb-1">Category</label>
+                        <select
+                          value={newRow.category}
+                          onChange={(e) => setNewRow({...newRow, category: e.target.value})}
+                          className="w-full px-3 py-2 border border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                        >
+                          {CATEGORIES.map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-[#3B2F2F] mb-1">Unit Type</label>
+                        <select
+                          value={newRow.unit_type}
+                          onChange={(e) => setNewRow({...newRow, unit_type: e.target.value})}
+                          className="w-full px-3 py-2 border border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                        >
+                          {UNIT_TYPES.map(unit => (
+                            <option key={unit} value={unit}>{unit}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-[#3B2F2F] mb-1">Price per Unit *</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          value={newRow.price_per_unit}
+                          onChange={(e) => setNewRow({...newRow, price_per_unit: e.target.value})}
+                          className="w-full px-3 py-2 border border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-[#3B2F2F] mb-1">Stock Quantity</label>
+                        <input
+                          type="number"
+                          placeholder="0"
+                          value={newRow.stock_quantity}
+                          onChange={(e) => setNewRow({...newRow, stock_quantity: e.target.value})}
+                          className="w-full px-3 py-2 border border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-[#3B2F2F] mb-1">Min Order</label>
+                        <input
+                          type="number"
+                          placeholder="1"
+                          value={newRow.min_order}
+                          onChange={(e) => setNewRow({...newRow, min_order: e.target.value})}
+                          className="w-full px-3 py-2 border border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-[#3B2F2F] mb-1">Tags</label>
+                        <input
+                          type="text"
+                          placeholder="tag1, tag2"
+                          value={newRow.tags}
+                          onChange={(e) => setNewRow({...newRow, tags: e.target.value})}
+                          className="w-full px-3 py-2 border border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-[#3B2F2F] mb-1">Image</label>
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="text"
+                            placeholder="Image URL"
+                            value={newRow.image_url}
+                            onChange={(e) => setNewRow({...newRow, image_url: e.target.value})}
+                            className="flex-1 px-3 py-2 border border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                          />
+                          <label className="cursor-pointer p-2 bg-gray-100 rounded hover:bg-gray-200">
+                            <Upload size={18} className="text-[#6B4F3F]" />
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={async (e) => {
+                                const file = e.target.files[0];
+                                if (!file) return;
+                                const token = localStorage.getItem('admin_token');
+                                const formData = new FormData();
+                                formData.append('file', file);
+                                try {
+                                  const res = await axios.post(`${API}/admin/upload-image`, formData, {
+                                    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
+                                  });
+                                  if (res.data.success) {
+                                    setNewRow({...newRow, image_url: res.data.url});
+                                  }
+                                } catch (err) {
+                                  console.error('Upload failed', err);
+                                }
+                              }}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-[#3B2F2F] mb-1">Product Details / Instructions</label>
+                      <textarea
+                        placeholder="Instructions, details, notes..."
+                        value={newRow.product_details}
+                        onChange={(e) => setNewRow({...newRow, product_details: e.target.value})}
+                        className="w-full px-3 py-2 border border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                        rows={3}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="px-6 py-4 bg-gray-50 flex items-center justify-end space-x-3 rounded-b-lg">
+                    <button
+                      onClick={() => setShowAddRow(false)}
+                      className="px-4 py-2 border border-[#6B4F3F]/20 text-[#6B4F3F] rounded hover:bg-gray-100 transition-colors"
+                      style={{ fontFamily: 'Montserrat, sans-serif' }}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleAddNewRow}
+                      disabled={saving}
+                      className="flex items-center space-x-2 px-6 py-2 bg-[#6B7A3A] text-white font-bold rounded hover:bg-[#3B2F2F] transition-colors disabled:opacity-50"
+                      style={{ fontFamily: 'Montserrat, sans-serif' }}
+                    >
+                      <Check size={18} />
+                      <span>{saving ? 'Saving...' : 'Save Material'}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>

@@ -35,12 +35,22 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://theboernedirtplace.com/service-area/bergheim</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://theboernedirtplace.com/service-area/comfort</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://theboernedirtplace.com/service-area/fair-oaks-ranch</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://theboernedirtplace.com/service-area/comfort</loc>
+    <loc>https://theboernedirtplace.com/service-area/kendall-county</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

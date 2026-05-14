@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, LogOut, Truck, Phone, Navigation, Clock } from 'lucide-react';
+import { MapPin, LogOut, Truck, Phone, Navigation, Clock, Check, Play, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -66,6 +66,20 @@ const DriverDashboard = () => {
       case 'in_progress': return 'bg-yellow-100 text-yellow-800';
       case 'delivered': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const updateStatus = async (slotId, newStatus) => {
+    try {
+      const token = localStorage.getItem('driver_token');
+      await axios.patch(
+        `${API}/admin/driver/deliveries/${slotId}/status`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setSlots(prev => prev.map(s => s.id === slotId ? { ...s, status: newStatus } : s));
+    } catch (err) {
+      console.error('Failed to update status:', err);
     }
   };
 
@@ -272,6 +286,30 @@ const DriverDashboard = () => {
                         <span>Directions</span>
                       </a>
                     </div>
+                    {slot.status !== 'delivered' && (
+                      <div className="mt-3 flex space-x-2">
+                        {slot.status === 'scheduled' && (
+                          <button
+                            onClick={() => updateStatus(slot.id, 'in_progress')}
+                            className="flex items-center space-x-1 px-4 py-2 bg-yellow-500 text-white text-sm font-bold rounded hover:bg-yellow-600 transition-colors"
+                            style={{ fontFamily: 'Montserrat, sans-serif' }}
+                          >
+                            <Play size={14} />
+                            <span>Start Delivery</span>
+                          </button>
+                        )}
+                        {slot.status === 'in_progress' && (
+                          <button
+                            onClick={() => updateStatus(slot.id, 'delivered')}
+                            className="flex items-center space-x-1 px-4 py-2 bg-green-600 text-white text-sm font-bold rounded hover:bg-green-700 transition-colors"
+                            style={{ fontFamily: 'Montserrat, sans-serif' }}
+                          >
+                            <Check size={14} />
+                            <span>Mark Delivered</span>
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
 

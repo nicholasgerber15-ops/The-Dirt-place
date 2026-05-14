@@ -9,6 +9,7 @@ from pydantic import BaseModel, EmailStr
 from dotenv import load_dotenv
 from pathlib import Path
 from bson import ObjectId
+from backend.data.products import PRODUCTS
 
 ROOT_DIR = Path(__file__).parent.parent
 load_dotenv(ROOT_DIR / '.env')
@@ -49,14 +50,22 @@ def get_database():
         logger.error(f"MongoDB connection failed: {e}")
         return None
 
-DEMO_MATERIALS = [
-    {"id": "1", "name": "Topsoil", "price": 45, "description": "Premium garden topsoil", "unit": "cubic yard"},
-    {"id": "2", "name": "Gravel", "price": 55, "description": "Driveway gravel", "unit": "cubic yard"},
-    {"id": "3", "name": "Sand", "price": 40, "description": "Construction sand", "unit": "cubic yard"},
-    {"id": "4", "name": "Road Base", "price": 50, "description": "Crushed limestone", "unit": "cubic yard"},
-    {"id": "5", "name": "Mulch", "price": 35, "description": "Natural wood chips", "unit": "cubic yard"},
-    {"id": "6", "name": "Decorative Rock", "price": 75, "description": "Landscape stones", "unit": "cubic yard"},
-]
+def get_all_materials():
+    return [
+        {
+            "material_id": p.get("material_id", ""),
+            "name": p.get("name", ""),
+            "price_per_unit": float(p.get("price_per_unit", 0)),
+            "unit_type": p.get("unit_type", "each"),
+            "category": p.get("category", ""),
+            "description": p.get("description", ""),
+            "image_url": p.get("image_url", ""),
+            "min_order": p.get("min_order", 1),
+            "stock_quantity": p.get("stock_quantity", 0),
+            "product_details": p.get("product_details", ""),
+        }
+        for p in PRODUCTS
+    ]
 
 PALLET_ITEMS = ["Pallets", "Butter Blocks", "Bags", "Piggyback"]
 PALLET_FEE = 100
@@ -454,7 +463,7 @@ async def get_checkout_status(session_id: str):
 
 @router.get("/materials")
 async def get_materials():
-    return {"materials": DEMO_MATERIALS}
+    return {"materials": get_all_materials()}
 
 @router.get("/delivery-fee")
 async def get_delivery_fee(address: str = ""):

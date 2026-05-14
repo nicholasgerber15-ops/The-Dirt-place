@@ -27,6 +27,7 @@ const SEO = ({
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image || defaultImage} />
       <meta property="og:site_name" content={siteName} />
+      <meta property="og:locale" content="en_US" />
       
       {/* Twitter */}
       <meta property="twitter:card" content="summary_large_image" />
@@ -34,6 +35,7 @@ const SEO = ({
       <meta property="twitter:title" content={title} />
       <meta property="twitter:description" content={description} />
       <meta property="twitter:image" content={image || defaultImage} />
+      <meta name="twitter:site" content="@TheDirtPlaceTX" />
       
       {/* Canonical URL */}
       <link rel="canonical" href={url} />

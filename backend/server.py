@@ -17,6 +17,7 @@ from routes.ecommerce import router as ecommerce_router
 from routes.admin import router as admin_router
 from routes.auth import router as auth_router
 from routes.scheduling import router as scheduling_router
+from routes.upload import router as upload_router
 
 
 ROOT_DIR = Path(__file__).parent
@@ -74,7 +75,8 @@ async def security_headers(request: Request, call_next):
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
     # CSP - Allow Cloudflare scripts and inline styles
-    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://theboernedirtplace.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://theboernedirtplace.com https://the-dirt-place-backend.onrender.com; worker-src 'self' blob:;"
+    r2_domain = os.environ.get('R2_PUBLIC_URL', '').split('//')[-1].split('/')[0] if os.environ.get('R2_PUBLIC_URL') else ''
+    response.headers["Content-Security-Policy"] = f"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://theboernedirtplace.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.r2.cloudflarestorage.com {r2_domain}; connect-src 'self' https://theboernedirtplace.com https://the-dirt-place-backend.onrender.com; worker-src 'self' blob:;"
     return response
 
 # Create a router with the /api prefix
@@ -140,6 +142,7 @@ app.include_router(ecommerce_router, prefix="/api/ecommerce")
 app.include_router(admin_router, prefix="/api/admin")
 app.include_router(auth_router)  # Already has /api/auth prefix
 app.include_router(scheduling_router)  # Already has /api/scheduling prefix
+app.include_router(upload_router, prefix="/api/admin")
 
 # Security middleware for headers
 @app.middleware("http")

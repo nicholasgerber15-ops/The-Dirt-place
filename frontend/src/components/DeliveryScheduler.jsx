@@ -25,6 +25,12 @@ const DeliveryScheduler = ({ onSelectSlot, initialAddress = '' }) => {
     libraries,
   });
 
+  useEffect(() => {
+    if (loadError) {
+      console.warn('Google Maps failed to load (missing or invalid API key)');
+    }
+  }, [loadError]);
+
   const fetchSlots = useCallback(async () => {
     if (!date || !address) return;
     
@@ -190,7 +196,7 @@ const DeliveryScheduler = ({ onSelectSlot, initialAddress = '' }) => {
             <DirectionsService
               options={{
                 destination: address,
-                origin: '411 SA-Evans Rd, Boerne, TX 78006',
+                origin: '240 TX-46, Boerne, TX 78006',
                 travelMode: 'DRIVING',
               }}
               callback={directionsCallback}

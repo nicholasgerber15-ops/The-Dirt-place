@@ -5,6 +5,7 @@ import MaterialCard from '../components/MaterialCard';
 import MaterialCalculator from '../components/MaterialCalculator';
 import SEO from '../components/SEO';
 import ProductSchema from '../components/ProductSchema';
+import { businessInfo } from '../data/mock';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -161,11 +162,11 @@ const MaterialsPage = () => {
                   Contact Us
                 </Link>
                 <a
-                  href="tel:(830) 555-0198"
+                  href={`tel:${businessInfo.phone.replace(/[^0-9]/g, '')}`}
                   className="px-8 py-4 bg-transparent border-2 border-[#3B2F2F] text-[#3B2F2F] text-lg font-bold rounded hover:bg-[#3B2F2F] hover:text-[#FAF9F6] hover:shadow-xl transform hover:scale-105 transition-all duration-300 text-center"
                   style={{ fontFamily: 'Montserrat, sans-serif' }}
                 >
-                  Call Now: (830) 555-0198
+                  Call Now: {businessInfo.phone}
                 </a>
               </div>
             </div>

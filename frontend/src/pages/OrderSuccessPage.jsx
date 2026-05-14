@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { CheckCircle, Package, Truck, Mail, Phone } from 'lucide-react';
+import { CheckCircle, Package, Truck, Mail, Phone, AlertTriangle } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { businessInfo } from '../data/mock';
 import axios from 'axios';
 import SEO from '../components/SEO';
 import RecommendedPros from '../components/RecommendedPros';
@@ -15,6 +16,7 @@ const OrderSuccessPage = () => {
   const { clearCart } = useCart();
   const [orderStatus, setOrderStatus] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
 
   useEffect(() => {
     if (sessionId) {
@@ -24,6 +26,7 @@ const OrderSuccessPage = () => {
           setOrderStatus(response.data);
         } catch (error) {
           console.error('Failed to fetch order status:', error);
+          setFetchError(true);
         } finally {
           setLoading(false);
         }
@@ -31,6 +34,9 @@ const OrderSuccessPage = () => {
       
       checkOrderStatus();
       clearCart();
+    } else {
+      setLoading(false);
+      setFetchError(true);
     }
   }, [sessionId, clearCart]);
 
@@ -42,6 +48,38 @@ const OrderSuccessPage = () => {
           <p className="text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             Confirming your order...
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="min-h-screen bg-[#FAF9F6] pt-32 pb-24 flex items-center justify-center">
+        <div className="text-center max-w-lg mx-auto px-4">
+          <AlertTriangle size={48} className="text-yellow-500 mx-auto mb-4" />
+          <h1 className="text-4xl font-bold text-[#3B2F2F] mb-4" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+            Order Status Unavailable
+          </h1>
+          <p className="text-[#6B4F3F] mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            We couldn't confirm your order status. If you completed payment, your order should still be processing. Please contact us at {businessInfo.phone} to verify.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href={`tel:${businessInfo.phone.replace(/[^0-9]/g, '')}`}
+              className="px-6 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#3B2F2F] hover:text-[#FAF9F6] transition-colors"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Call {businessInfo.phone}
+            </a>
+            <Link
+              to="/"
+              className="px-6 py-3 bg-[#3B2F2F] text-[#FAF9F6] font-bold rounded hover:bg-[#D9A441] hover:text-[#3B2F2F] transition-colors"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Return Home
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -150,12 +188,12 @@ const OrderSuccessPage = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="tel:(830) 555-0198"
+                href={`tel:${businessInfo.phone.replace(/[^0-9]/g, '')}`}
                 className="inline-flex items-center justify-center space-x-2 px-6 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#FAF9F6] transition-colors duration-300"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
                 <Phone size={20} />
-                <span>(830) 555-0198</span>
+                <span>{businessInfo.phone}</span>
               </a>
               <Link
                 to="/contact"

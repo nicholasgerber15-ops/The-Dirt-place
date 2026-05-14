@@ -104,7 +104,7 @@ function AppContent() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/contractor-portal" element={<ContractorPortalPage />} />
           <Route path="/service-area/:areaSlug" element={<ServiceAreaPage />} />
-          <Route path="/admin/pricing" element={<PricingManagementPage />} />
+          <Route path="/admin/pricing" element={<Navigate to="/admin/inventory" replace />} />
           <Route path="/admin/inventory" element={<InventoryPage />} />
           <Route path="/admin/drivers" element={<DriverManagementPage />} />
           <Route path="/admin/settings" element={<SiteSettingsPage />} />

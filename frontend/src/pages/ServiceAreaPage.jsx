@@ -16,7 +16,7 @@ const ServiceAreaPage = () => {
     const area = serviceAreas.find(a => a.slug === areaSlug);
     if (area) {
       setServiceArea(area);
-      const popular = materials.filter(m => area.popularMaterials.includes(m.name));
+      const popular = products.filter(m => area.popularMaterials.includes(m.name));
       setPopularMats(popular);
     }
   }, [areaSlug]);
@@ -104,7 +104,7 @@ const ServiceAreaPage = () => {
             <div className="flex flex-col items-center space-y-3">
               <Clock size={48} className="text-[#3B2F2F]" />
               <h3 className="text-2xl font-bold text-[#3B2F2F]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
-                15+ Years
+                Since 2022
               </h3>
               <p className="text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 Serving the Hill Country

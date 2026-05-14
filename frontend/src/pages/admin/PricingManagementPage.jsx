@@ -6,7 +6,7 @@ import axios from 'axios';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const UNIT_TYPES = ['cubic yards', 'tons', 'bags', 'pallets', 'square feet'];
+const UNIT_TYPES = ['yard', 'half-yard', 'ton', 'bag', 'each', 'pallet', 'basket', 'gallon', 'pound', 'set', 'flat', 'mile', 'day', 'rental', 'percentage'];
 
 const PricingManagementPage = () => {
   const navigate = useNavigate();
@@ -19,6 +19,9 @@ const PricingManagementPage = () => {
   const [csvText, setCsvText] = useState('');
   const [importResult, setImportResult] = useState(null);
   const [importing, setImporting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const perPage = 20;
   const [newMaterial, setNewMaterial] = useState({
     name: '',
     price_per_unit: '',
@@ -139,6 +142,13 @@ const PricingManagementPage = () => {
     return 'text-green-600';
   };
 
+  const filtered = materials.filter(m =>
+    !searchQuery || m.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    m.material_id?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const totalPages = Math.ceil(filtered.length / perPage);
+  const paged = filtered.slice((currentPage - 1) * perPage, currentPage * perPage);
+
   return (
     <div className="min-h-screen bg-[#FAF9F6]">
       {/* Admin Header */}
@@ -217,14 +227,23 @@ const PricingManagementPage = () => {
           <div className="space-y-8">
             {/* Material Pricing */}
             <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center">
-                  <DollarSign size={32} className="text-[#D9A441] mr-3" />
-                  <h2 className="text-3xl font-bold text-[#3B2F2F]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
-                    Material Pricing & Inventory
-                  </h2>
-                </div>
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center">
+                    <DollarSign size={32} className="text-[#D9A441] mr-3" />
+                    <h2 className="text-3xl font-bold text-[#3B2F2F]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                      Material Pricing & Inventory
+                      <span className="ml-3 text-lg text-[#6B4F3F]">({materials.length} materials)</span>
+                    </h2>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="text"
+                      placeholder="Search by name or ID..."
+                      value={searchQuery}
+                      onChange={e => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+                      className="px-4 py-2 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none w-64"
+                      style={{ fontFamily: 'Montserrat, sans-serif' }}
+                    />
                   <button
                     onClick={() => setShowImportModal(true)}
                     className="flex items-center space-x-2 px-4 py-2 bg-[#3B2F2F] text-white font-semibold rounded hover:bg-[#6B7A3A] transition-colors"
@@ -261,7 +280,7 @@ const PricingManagementPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {materials.map((material) => {
+                    {paged.map((material) => {
                       const isEditing = editingMaterial?.material_id === material.material_id;
                       const isSaving = savingId === material.material_id;
 
@@ -379,6 +398,33 @@ const PricingManagementPage = () => {
                   </tbody>
                 </table>
               </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#6B4F3F]/20" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  <span className="text-sm text-[#6B4F3F]">
+                    Showing {(currentPage - 1) * perPage + 1}–{Math.min(currentPage * perPage, filtered.length)} of {filtered.length}
+                  </span>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="px-3 py-1 rounded border border-[#6B4F3F]/20 text-sm disabled:opacity-30 hover:bg-[#FAF9F6]"
+                    >Prev</button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                      <button
+                        key={p}
+                        onClick={() => setCurrentPage(p)}
+                        className={`px-3 py-1 rounded text-sm ${p === currentPage ? 'bg-[#D9A441] text-[#3B2F2F] font-bold' : 'border border-[#6B4F3F]/20 hover:bg-[#FAF9F6]'}`}
+                      >{p}</button>
+                    ))}
+                    <button
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="px-3 py-1 rounded border border-[#6B4F3F]/20 text-sm disabled:opacity-30 hover:bg-[#FAF9F6]"
+                    >Next</button>
+                  </div>
+                </div>
+              )}
             </div>
 
           </div>

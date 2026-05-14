@@ -248,7 +248,7 @@ const AdminDashboard = () => {
             <Link to="/admin/orders" className="block py-2 px-4 rounded-lg text-[#6B4F3F] hover:bg-[#FAF9F6] font-semibold" onClick={() => setMobileMenuOpen(false)}>
               <List size={16} className="inline mr-2" /> Orders
             </Link>
-            <Link to="/admin/pricing" className="block py-2 px-4 rounded-lg text-[#6B4F3F] hover:bg-[#FAF9F6] font-semibold" onClick={() => setMobileMenuOpen(false)}>
+            <Link to="/admin/inventory" className="block py-2 px-4 rounded-lg text-[#6B4F3F] hover:bg-[#FAF9F6] font-semibold" onClick={() => setMobileMenuOpen(false)}>
               <Package size={16} className="inline mr-2" /> Materials
             </Link>
              <Link to="/admin/inventory" className="block py-2 px-4 rounded-lg text-[#6B4F3F] hover:bg-[#FAF9F6] font-semibold" onClick={() => setMobileMenuOpen(false)}>
@@ -294,7 +294,7 @@ const AdminDashboard = () => {
                 <List size={20} />
                 <span>Orders</span>
               </Link>
-              <Link to="/admin/pricing" className="flex items-center space-x-3 py-3 px-4 rounded-lg text-[#6B4F3F] hover:bg-[#FAF9F6] transition-colors" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <Link to="/admin/inventory" className="flex items-center space-x-3 py-3 px-4 rounded-lg text-[#6B4F3F] hover:bg-[#FAF9F6] transition-colors" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 <Package size={20} />
                 <span>Materials</span>
               </Link>

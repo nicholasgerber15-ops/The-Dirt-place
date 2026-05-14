@@ -1701,6 +1701,9 @@ export const businessInfo = {
   phone: "(830) 336-3713",
   email: "info@theboernedirtplace.com",
   hours: {
+    weekday: "Mon–Fri: 7:00 AM – 5:00 PM",
+    saturday: "Sat: 7:00 AM – 3:00 PM",
+    sunday: "Sun: Closed",
     Monday: "7:00 AM - 5:00 PM",
     Tuesday: "7:00 AM - 5:00 PM",
     Wednesday: "7:00 AM - 5:00 PM",
@@ -1711,7 +1714,7 @@ export const businessInfo = {
   }
 };
 
-export const aboutText = "The Dirt Place has been serving Boerne and the Texas Hill Country for over 15 years. We're your trusted source for premium landscape materials, delivered with honest pricing and reliable service. Whether you're a homeowner, rancher, or contractor, we have the materials and expertise to support your project from start to finish.";
+export const aboutText = "The Dirt Place has been serving Boerne and the Texas Hill Country since 2022. We're your trusted source for premium landscape materials, delivered with honest pricing and reliable service. Whether you're a homeowner, rancher, or contractor, we have the materials and expertise to support your project from start to finish.";
 
 export const testimonials = [
   {

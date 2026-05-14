@@ -8,6 +8,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends, Header, Request
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from backend.data.products import PRODUCTS
 from pathlib import Path
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
@@ -109,14 +110,22 @@ def get_demo_orders():
     return demo_orders
 
 def get_demo_pricing():
-    return [
-        {"material_id": "1", "name": "Topsoil", "price_per_cubic_yard": 45.00, "min_order": 1},
-        {"material_id": "2", "name": "Gravel", "price_per_cubic_yard": 55.00, "min_order": 2},
-        {"material_id": "3", "name": "Sand", "price_per_cubic_yard": 40.00, "min_order": 1},
-        {"material_id": "4", "name": "Road Base", "price_per_cubic_yard": 50.00, "min_order": 2},
-        {"material_id": "5", "name": "Mulch", "price_per_cubic_yard": 35.00, "min_order": 1},
-        {"material_id": "6", "name": "Decorative Rock", "price_per_cubic_yard": 75.00, "min_order": 1},
-    ]
+    result = []
+    for p in PRODUCTS:
+        price = float(p.get("price_per_unit", 0))
+        result.append({
+            "material_id": p.get("material_id", ""),
+            "name": p.get("name", ""),
+            "price_per_unit": price,
+            "price_per_cubic_yard": price,
+            "unit_type": p.get("unit_type", "each"),
+            "category": p.get("category", ""),
+            "description": p.get("description", ""),
+            "min_order": p.get("min_order", 1),
+            "stock_quantity": p.get("stock_quantity", 0),
+            "product_details": p.get("product_details", ""),
+        })
+    return result
 
 DELIVERY_FEE_BASE = float(os.environ.get('DELIVERY_FEE_BASE', '70'))
 DELIVERY_FEE_PER_MILE = float(os.environ.get('DELIVERY_FEE_PER_MILE', '5'))
@@ -231,6 +240,14 @@ async def get_order_details(order_id: str):
     Get specific order details
     """
     try:
+        db = get_database()
+        if db is None:
+            demo = get_demo_orders()
+            for o in demo:
+                if o["_id"] == order_id:
+                    return o
+            raise HTTPException(status_code=404, detail="Order not found")
+        
         # Validate ObjectId format
         if not ObjectId.is_valid(order_id):
             raise HTTPException(status_code=400, detail="Invalid order ID format")
@@ -254,6 +271,10 @@ async def update_order_status(order_id: str, update: OrderStatusUpdate):
     Update order status
     """
     try:
+        db = get_database()
+        if db is None:
+            return {"success": True, "message": "Order status updated (demo mode)"}
+        
         # Validate ObjectId format
         if not ObjectId.is_valid(order_id):
             raise HTTPException(status_code=400, detail="Invalid order ID format")
@@ -396,20 +417,13 @@ async def get_all_pricing():
         return {"pricing": get_demo_pricing()}
     
     try:
-        pricing = await db.material_pricing.find().to_list(100)
+        pricing = await db.material_pricing.find().to_list(500)
         
         # If no pricing exists, initialize with defaults
         if not pricing:
-            default_pricing = [
-                {"material_id": "1", "name": "Topsoil", "price_per_cubic_yard": 45.00, "min_order": 1},
-                {"material_id": "2", "name": "Gravel", "price_per_cubic_yard": 55.00, "min_order": 2},
-                {"material_id": "3", "name": "Sand", "price_per_cubic_yard": 40.00, "min_order": 1},
-                {"material_id": "4", "name": "Road Base", "price_per_cubic_yard": 50.00, "min_order": 2},
-                {"material_id": "5", "name": "Mulch", "price_per_cubic_yard": 35.00, "min_order": 1},
-                {"material_id": "6", "name": "Decorative Rock", "price_per_cubic_yard": 75.00, "min_order": 1},
-            ]
+            default_pricing = get_demo_pricing()
             await db.material_pricing.insert_many(default_pricing)
-            pricing = await db.material_pricing.find().to_list(100)
+            pricing = await db.material_pricing.find().to_list(500)
         
         for item in pricing:
             item["_id"] = str(item["_id"])
@@ -454,6 +468,12 @@ async def create_material(material: MaterialCreate):
     Create a new material
     """
     try:
+        db = get_database()
+        if db is None:
+            import random
+            new_id = str(random.randint(1000, 9999))
+            return {"success": True, "message": "Material created (demo mode)", "material_id": new_id}
+        
         # Generate new material_id
         existing_materials = await db.material_pricing.find().sort("material_id", -1).limit(1).to_list(1)
         if existing_materials:
@@ -489,6 +509,10 @@ async def update_material(material_id: str, material: MaterialUpdate):
     Update material details including inventory
     """
     try:
+        db = get_database()
+        if db is None:
+            return {"success": True, "message": "Material updated (demo mode)"}
+        
         update_data = {
             "name": material.name,
             "price_per_unit": material.price_per_unit,
@@ -522,6 +546,10 @@ async def delete_material(material_id: str):
     Delete a material
     """
     try:
+        db = get_database()
+        if db is None:
+            return {"success": True, "message": "Material deleted (demo mode)"}
+        
         result = await db.material_pricing.delete_one({"material_id": material_id})
         
         if result.deleted_count == 0:
@@ -922,3 +950,102 @@ async def get_delivery_fees():
     Get delivery fee structure (calculated using $70 base + $5/mile formula)
     """
     return {"delivery_fees": get_demo_delivery_fees()}
+
+
+# ============== POPUP SETTINGS ==============
+
+DEFAULT_POPUP_SETTINGS = {
+    "popup_active": False,
+    "popup_title": "",
+    "popup_message": "",
+    "popup_image_url": "",
+    "popup_cta_text": "",
+    "popup_cta_link": "",
+    "show_on_homepage": True,
+    "show_on_materials": False,
+    "show_on_delivery": False,
+    "show_on_contact": False,
+    "display_timing": "after_3_seconds",
+    "start_date": "",
+    "end_date": ""
+}
+
+class PopupSettingsUpdate(BaseModel):
+    popup_active: bool = False
+    popup_title: str = ""
+    popup_message: str = ""
+    popup_image_url: str = ""
+    popup_cta_text: str = ""
+    popup_cta_link: str = ""
+    show_on_homepage: bool = True
+    show_on_materials: bool = False
+    show_on_delivery: bool = False
+    show_on_contact: bool = False
+    display_timing: str = "after_3_seconds"
+    start_date: str = ""
+    end_date: str = ""
+
+def get_demo_popup_settings():
+    return dict(DEFAULT_POPUP_SETTINGS)
+
+@router.get("/popup-settings", dependencies=[Depends(verify_admin)])
+async def get_popup_settings():
+    """
+    Get popup/seasonal settings (admin)
+    """
+    db = get_database()
+    if db is None:
+        return get_demo_popup_settings()
+    
+    try:
+        settings = await db.site_settings.find_one({"setting_type": "popup"})
+        if not settings:
+            return DEFAULT_POPUP_SETTINGS
+        settings["_id"] = str(settings["_id"])
+        return settings
+    except Exception as e:
+        logger.error(f"Failed to fetch popup settings: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/popup-settings", dependencies=[Depends(verify_admin)])
+async def update_popup_settings(settings: PopupSettingsUpdate):
+    """
+    Update popup/seasonal settings (admin)
+    """
+    db = get_database()
+    if db is None:
+        return {"success": True, "message": "Popup settings updated (demo mode)"}
+    
+    try:
+        update_data = settings.model_dump()
+        update_data["updated_at"] = datetime.utcnow()
+        
+        await db.site_settings.update_one(
+            {"setting_type": "popup"},
+            {"$set": update_data},
+            upsert=True
+        )
+        
+        return {"success": True, "message": "Popup settings updated successfully"}
+    except Exception as e:
+        logger.error(f"Failed to update popup settings: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/popup-public")
+async def get_popup_settings_public():
+    """
+    Get popup/seasonal settings (public, no auth required)
+    """
+    db = get_database()
+    if db is None:
+        return get_demo_popup_settings()
+    
+    try:
+        settings = await db.site_settings.find_one({"setting_type": "popup"})
+        if not settings:
+            return DEFAULT_POPUP_SETTINGS
+        settings["_id"] = str(settings["_id"])
+        return settings
+    except Exception as e:
+        logger.error(f"Failed to fetch popup settings: {str(e)}")
+        return DEFAULT_POPUP_SETTINGS

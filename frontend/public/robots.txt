@@ -12,9 +12,8 @@ Disallow: /api/contact/
 Disallow: /api/scheduling/
 Disallow: /api/auth/
 
-# Block checkout and form submission pages
+# Block checkout page (no SEO value)
 Disallow: /checkout
-Disallow: /contact
 
 # Block admin or private areas
 Disallow: /admin/
@@ -36,6 +35,9 @@ Disallow: /
 
 # Allow sitemap
 Sitemap: https://theboernedirtplace.com/sitemap.xml
+
+# Security
+# https://theboernedirtplace.com/.well-known/security.txt
 
 # Crawl delay to be nice to server
 Crawl-delay: 1

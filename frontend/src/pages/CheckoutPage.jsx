@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { Loader, Calendar, Clock, MapPin, CreditCard, CheckCircle, AlertTriangle, ChevronLeft } from 'lucide-react';
+import { Loader, Calendar, Clock, MapPin, CreditCard, CheckCircle, AlertTriangle, ChevronLeft, RefreshCw } from 'lucide-react';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 import SEO from '../components/SEO';
+import { businessInfo } from '../data/mock';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -144,6 +145,7 @@ const CheckoutPage = () => {
   const { cart, getCartTotal, clearCart, needsDelivery, toggleDelivery } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
   const [deliveryFee, setDeliveryFee] = useState(0);
+  const [deliveryFeeLoading, setDeliveryFeeLoading] = useState(false);
   const [clientSecret, setClientSecret] = useState(null);
   const [orderNumber, setOrderNumber] = useState(null);
   const [pricing, setPricing] = useState(null);
@@ -172,6 +174,7 @@ const CheckoutPage = () => {
   }, [formData.deliveryAddress, needsDelivery]);
 
   const fetchDeliveryFee = async (address) => {
+    setDeliveryFeeLoading(true);
     try {
       const response = await axios.get(`${API}/ecommerce/delivery-fee`, {
         params: { address }
@@ -184,6 +187,8 @@ const CheckoutPage = () => {
     } catch (error) {
       console.error('Failed to fetch delivery fee:', error);
       setDeliveryFee(70);
+    } finally {
+      setDeliveryFeeLoading(false);
     }
   };
 
@@ -228,7 +233,7 @@ const CheckoutPage = () => {
 
     } catch (error) {
       console.error('Checkout failed:', error);
-      const msg = error.response?.data?.detail || 'Checkout failed. Please try again or call us at (830) 555-0198';
+      const msg = error.response?.data?.detail || `Checkout failed. Please try again or call us at ${businessInfo.phone}`;
       setSubmitError(msg);
       setIsProcessing(false);
     }
@@ -242,6 +247,29 @@ const CheckoutPage = () => {
   };
 
   const totalAmount = getCartTotal() + deliveryFee;
+
+  if (clientSecret && !stripePromise) {
+    return (
+      <div className="min-h-screen bg-[#FAF9F6] pt-32 pb-24 flex items-center justify-center">
+        <div className="text-center max-w-lg mx-auto px-4">
+          <AlertTriangle size={48} className="text-red-500 mx-auto mb-4" />
+          <h1 className="text-4xl font-bold text-[#3B2F2F] mb-4" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+            Payment Unavailable
+          </h1>
+          <p className="text-[#6B4F3F] mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            Our payment system is not configured. Please call {businessInfo.phone} to complete your order.
+          </p>
+          <Link
+            to="/contact"
+            className="inline-block px-8 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#3B2F2F] hover:text-[#FAF9F6] transition-colors"
+            style={{ fontFamily: 'Montserrat, sans-serif' }}
+          >
+            Contact Us
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (clientSecret && stripePromise) {
     const options = {
@@ -264,6 +292,7 @@ const CheckoutPage = () => {
         <SEO
           title="Complete Payment | The Dirt Place"
           description="Complete your secure payment for landscape materials"
+          url="https://theboernedirtplace.com/checkout"
         />
         <div className="container mx-auto px-4">
           <h1 className="text-6xl font-bold text-[#3B2F2F] mb-12" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
@@ -417,8 +446,12 @@ const CheckoutPage = () => {
                       style={{ fontFamily: 'Montserrat, sans-serif' }}
                     />
                     {needsDelivery && formData.deliveryAddress.length > 5 && (
-                      <p className="text-sm text-[#6B7A3A] mt-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                        Delivery fee: ${deliveryFee.toFixed(2)}
+                      <p className="text-sm text-[#6B7A3A] mt-2 flex items-center" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        {deliveryFeeLoading ? (
+                          <><Loader size={14} className="animate-spin mr-2" /> Calculating...</>
+                        ) : (
+                          <>Delivery fee: ${deliveryFee.toFixed(2)}</>
+                        )}
                       </p>
                     )}
                   </div>
