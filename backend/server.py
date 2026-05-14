@@ -29,13 +29,12 @@ logger = logging.getLogger(__name__)
 db = None
 client = None
 
-def get_db():
+async def get_db():
     global db, client
     if db is not None:
         return db
     
-    # Check for both spellings (MONGO_URL vs MONGO_URL)
-    mongo_url = os.environ.get('MONGO_URL') or os.environ.get('MONGO_URL')
+    mongo_url = os.environ.get('MONGO_URL')
     db_name = os.environ.get('DB_NAME')
     
     if not mongo_url or not db_name:
@@ -43,10 +42,10 @@ def get_db():
         return None
     
     try:
-        # Standard username/password authentication only
         client = AsyncIOMotorClient(mongo_url)
         db = client[db_name]
-        logger.info(f"MongoDB configured for: {db_name}")
+        await client.admin.command('ping')
+        logger.info(f"Connected to MongoDB: {db_name}")
         return db
     except Exception as e:
         logger.error(f"MongoDB connection failed: {e}")
@@ -104,7 +103,7 @@ async def root():
 
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
-    database = get_db()
+    database = await get_db()
     if database is None:
         return StatusCheck(id=str(uuid.uuid4()), client_name=input.client_name, timestamp=datetime.now(timezone.utc))
     
@@ -120,7 +119,7 @@ async def create_status_check(input: StatusCheckCreate):
 
 @api_router.get("/status", response_model=List[StatusCheck])
 async def get_status_checks():
-    database = get_db()
+    database = await get_db()
     if database is None:
         return []
     # Exclude MongoDB's _id field from the query results

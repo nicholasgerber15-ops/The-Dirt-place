@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 _db = None
 _client = None
 
-def get_database():
+async def get_database():
     global _db, _client
     if _db is not None:
         return _db
@@ -37,7 +37,8 @@ def get_database():
     try:
         _client = AsyncIOMotorClient(mongo_url)
         _db = _client[db_name]
-        logger.info(f"MongoDB configured for: {db_name}")
+        await _client.admin.command('ping')
+        logger.info(f"Connected to MongoDB: {db_name}")
         return _db
     except Exception as e:
         logger.error(f"MongoDB connection failed: {e}")
@@ -205,7 +206,7 @@ async def get_all_orders(
     """
     Get all orders with optional filtering
     """
-    db = get_database()
+    db = await get_database()
     if db is None:
         orders = get_demo_orders()[:limit]
         return {"orders": orders, "total": len(orders), "limit": limit, "skip": skip}
@@ -239,7 +240,7 @@ async def get_order_details(order_id: str):
     Get specific order details
     """
     try:
-        db = get_database()
+        db = await get_database()
         if db is None:
             demo = get_demo_orders()
             for o in demo:
@@ -270,7 +271,7 @@ async def update_order_status(order_id: str, update: OrderStatusUpdate):
     Update order status
     """
     try:
-        db = get_database()
+        db = await get_database()
         if db is None:
             return {"success": True, "message": "Order status updated (demo mode)"}
         
@@ -308,7 +309,7 @@ async def get_dashboard_stats():
     """
     Get admin dashboard statistics
     """
-    db = get_database()
+    db = await get_database()
     if db is None:
         logger.info("MongoDB not available - returning demo stats")
         return get_demo_stats()
@@ -411,7 +412,7 @@ async def get_all_pricing():
     """
     Get all material pricing
     """
-    db = get_database()
+    db = await get_database()
     if db is None:
         return {"pricing": get_demo_pricing()}
     
@@ -467,7 +468,7 @@ async def create_material(material: MaterialCreate):
     Create a new material
     """
     try:
-        db = get_database()
+        db = await get_database()
         if db is None:
             import random
             new_id = str(random.randint(1000, 9999))
@@ -508,7 +509,7 @@ async def update_material(material_id: str, material: MaterialUpdate):
     Update material details including inventory
     """
     try:
-        db = get_database()
+        db = await get_database()
         if db is None:
             return {"success": True, "message": "Material updated (demo mode)"}
         
@@ -545,7 +546,7 @@ async def delete_material(material_id: str):
     Delete a material
     """
     try:
-        db = get_database()
+        db = await get_database()
         if db is None:
             return {"success": True, "message": "Material deleted (demo mode)"}
         
@@ -565,7 +566,7 @@ async def get_inventory():
     """
     Get inventory status for all materials
     """
-    db = get_database()
+    db = await get_database()
     if db is None:
         return {"inventory": get_demo_inventory()}
     
@@ -609,7 +610,7 @@ async def import_materials_csv(request: Request):
         imported = 0
         errors = []
 
-        database = get_database()
+        database = await get_database()
         if not database:
             return {"success": True, "imported": len(list(reader)), "errors": []}
 
@@ -697,7 +698,7 @@ async def get_driver_deliveries(date: Optional[str] = None):
 
     from routes.ecommerce import get_distance_google_maps, DIRTPLACE_ADDRESS
 
-    db = get_database()
+    db = await get_database()
     if db is None:
         from datetime import timedelta
         import random
@@ -796,7 +797,7 @@ async def get_driver_deliveries_range(start: str, end: str):
     except:
         raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD.")
 
-    db = get_database()
+    db = await get_database()
     if db is None:
         import random
         from datetime import timedelta
@@ -865,7 +866,7 @@ async def update_delivery_status(order_id: str, update: OrderStatusUpdate):
         if update.status not in valid_statuses:
             raise HTTPException(status_code=400, detail="Invalid status")
 
-        db = get_database()
+        db = await get_database()
         if db is None:
             return {"success": True, "message": "Delivery status updated (demo mode)"}
 
@@ -896,7 +897,7 @@ async def get_site_settings():
     """
     Get site settings
     """
-    db = get_database()
+    db = await get_database()
     if db is None:
         return get_demo_settings()
     
@@ -992,7 +993,7 @@ async def get_popup_settings():
     """
     Get popup/seasonal settings (admin)
     """
-    db = get_database()
+    db = await get_database()
     if db is None:
         return get_demo_popup_settings()
     
@@ -1011,7 +1012,7 @@ async def update_popup_settings(settings: PopupSettingsUpdate):
     """
     Update popup/seasonal settings (admin)
     """
-    db = get_database()
+    db = await get_database()
     if db is None:
         return {"success": True, "message": "Popup settings updated (demo mode)"}
     
@@ -1035,7 +1036,7 @@ async def get_popup_settings_public():
     """
     Get popup/seasonal settings (public, no auth required)
     """
-    db = get_database()
+    db = await get_database()
     if db is None:
         return get_demo_popup_settings()
     
