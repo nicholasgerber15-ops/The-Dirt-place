@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Search, X } from 'lucide-react';
 import MaterialCard from '../components/MaterialCard';
 import MaterialCalculator from '../components/MaterialCalculator';
 import SEO from '../components/SEO';
@@ -14,6 +14,22 @@ const API = `${BACKEND_URL}/api`;
 const MaterialsPage = () => {
   const [materials, setMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+
+  const categories = useMemo(() => {
+    const cats = [...new Set(materials.map(m => m.category).filter(Boolean))];
+    return cats.sort();
+  }, [materials]);
+
+  const filteredMaterials = useMemo(() => {
+    return materials.filter(m => {
+      if (categoryFilter !== 'all' && m.category !== categoryFilter) return false;
+      if (!searchQuery) return true;
+      const q = searchQuery.toLowerCase();
+      return m.name?.toLowerCase().includes(q) || m.description?.toLowerCase().includes(q) || m.category?.toLowerCase().includes(q);
+    });
+  }, [materials, searchQuery, categoryFilter]);
 
   useEffect(() => {
     fetchMaterials();
@@ -113,19 +129,66 @@ const MaterialsPage = () => {
       {/* Materials Grid */}
       <section className="py-24 bg-[#FAF9F6]">
         <div className="container mx-auto px-4">
+          {/* Search & Filter Bar */}
+          {!loading && materials.length > 0 && (
+            <div className="mb-8 flex flex-col sm:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B4F3F]" />
+                <input
+                  type="text"
+                  placeholder="Search materials..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-10 py-3 border-2 border-[#6B4F3F]/20 rounded-lg focus:border-[#D9A441] focus:outline-none text-[#3B2F2F] bg-white"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6B4F3F] hover:text-[#D9A441]">
+                    <X size={18} />
+                  </button>
+                )}
+              </div>
+              <select
+                value={categoryFilter}
+                onChange={e => setCategoryFilter(e.target.value)}
+                className="px-4 py-3 border-2 border-[#6B4F3F]/20 rounded-lg focus:border-[#D9A441] focus:outline-none text-[#3B2F2F] bg-white min-w-[180px]"
+                style={{ fontFamily: 'Montserrat, sans-serif' }}
+              >
+                <option value="all">All Categories</option>
+                {categories.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+              {filteredMaterials.length < materials.length && (
+                <div className="flex items-center text-sm text-[#6B4F3F] whitespace-nowrap" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  {filteredMaterials.length} of {materials.length}
+                </div>
+              )}
+            </div>
+          )}
+
           {loading ? (
             <div className="flex justify-center items-center py-20">
               <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[#D9A441]"></div>
             </div>
-          ) : materials.length === 0 ? (
+          ) : filteredMaterials.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-2xl text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                No materials available at the moment.
+                {searchQuery || categoryFilter !== 'all' ? 'No materials match your search.' : 'No materials available at the moment.'}
               </p>
+              {(searchQuery || categoryFilter !== 'all') && (
+                <button
+                  onClick={() => { setSearchQuery(''); setCategoryFilter('all'); }}
+                  className="mt-4 px-6 py-2 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#3B2F2F] hover:text-white transition-colors"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  Clear Filters
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {materials.map((material, index) => (
+              {filteredMaterials.map((material, index) => (
                 <div key={material.id} className="scroll-animate">
                   <MaterialCard material={material} index={index} />
                   <ProductSchema key={`schema-${material.id}`} product={material} />
