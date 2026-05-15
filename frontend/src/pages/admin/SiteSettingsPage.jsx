@@ -40,7 +40,7 @@ const SiteSettingsPage = () => {
     try {
       setLoading(true);
       const response = await axios.get(`${API}/admin/settings`, {
-        headers: { Authorization: 'Bearer dirtplace2024' }
+        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token') || 'dirtplace2024'}` }
       });
       if (response.data.hero_image_url) {
         setHeroImageUrl(response.data.hero_image_url);
@@ -48,7 +48,7 @@ const SiteSettingsPage = () => {
 
       // Fetch popup settings
       const popupResponse = await axios.get(`${API}/admin/popup-settings`, {
-        headers: { Authorization: 'Bearer dirtplace2024' }
+        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token') || 'dirtplace2024'}` }
       });
       
       if (popupResponse.data) {
@@ -86,7 +86,7 @@ const SiteSettingsPage = () => {
       setSaving(true);
       await axios.put(`${API}/admin/settings/hero-image`, 
         { hero_image_url: heroImageUrl },
-        { headers: { Authorization: 'Bearer dirtplace2024' } }
+        { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token') || 'dirtplace2024'}` } }
       );
       setMessage('Hero image updated successfully!');
       setTimeout(() => setMessage(''), 3000);
@@ -109,7 +109,7 @@ const SiteSettingsPage = () => {
       setSaving(true);
       await axios.put(`${API}/admin/popup-settings`,
         popupSettings,
-        { headers: { Authorization: 'Bearer dirtplace2024' } }
+        { headers: { Authorization: `Bearer ${localStorage.getItem('admin_token') || 'dirtplace2024'}` } }
       );
       setMessage('Popup settings updated successfully!');
       // Clear session storage to show popup again with new settings

@@ -329,7 +329,7 @@ const CheckoutPage = () => {
                   </div>
                   <div className="flex justify-between" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                     <span className="text-[#6B4F3F]">Date:</span>
-                    <span className="font-semibold text-[#3B2F2F]">{formData.deliveryDate}</span>
+                    <span className="font-semibold text-[#3B2F2F]">{formData.deliveryDate || 'To be scheduled'}</span>
                   </div>
                 </div>
                 <div className="bg-[#D9A441] rounded p-4">

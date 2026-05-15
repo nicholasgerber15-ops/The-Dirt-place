@@ -95,7 +95,7 @@ const CartPage = () => {
                         </button>
                       </div>
                       <button
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => { if (window.confirm(`Remove ${item.name} from your cart?`)) removeFromCart(item.id); }}
                         className="text-red-600 hover:text-red-700 transition-colors"
                       >
                         <Trash2 size={20} />

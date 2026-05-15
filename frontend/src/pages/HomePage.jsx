@@ -73,7 +73,7 @@ const HomePage = () => {
   const fetchHeroImage = async () => {
     try {
       const response = await axios.get(`${API}/admin/settings`, {
-        headers: { Authorization: 'Bearer dirtplace2024' }
+        headers: { Authorization: `Bearer ${localStorage.getItem('admin_token') || 'dirtplace2024'}` }
       });
       if (response.data.hero_image_url) {
         setHeroImage(response.data.hero_image_url);
@@ -190,9 +190,21 @@ const HomePage = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {materials.map((material, index) => (
-              <MaterialCard key={material.id} material={material} index={index} />
-            ))}
+            {loadingMaterials ? (
+              <div className="col-span-full flex justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#D9A441]"></div>
+              </div>
+            ) : materials.length > 0 ? (
+              materials.map((material, index) => (
+                <MaterialCard key={material.id} material={material} index={index} />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-lg text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                  Unable to load materials right now. Please call us at (830) 336-3713 to place your order.
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="text-center mt-12 scroll-animate">

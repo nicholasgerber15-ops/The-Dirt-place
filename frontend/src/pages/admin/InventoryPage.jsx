@@ -424,7 +424,7 @@ const InventoryPage = () => {
               onClick={() => handleCellClick(item.material_id, 'image_url', item.image_url || '')}
             >
               {item.image_url ? (
-                <img src={item.image_url} alt="" className="w-10 h-10 object-cover rounded border" />
+                <img src={item.image_url} alt={item.name || ''} className="w-10 h-10 object-cover rounded border" />
               ) : (
                 <div className="w-10 h-10 bg-gray-200 rounded border flex items-center justify-center">
                   <Image size={16} className="text-gray-400" />

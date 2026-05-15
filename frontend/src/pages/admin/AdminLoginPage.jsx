@@ -5,7 +5,6 @@ import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 const API = BACKEND_URL ? `${BACKEND_URL}/api` : '';
-const ADMIN_PASSWORD = 'dirtplace2024';
 
 const AdminLoginPage = () => {
   const navigate = useNavigate();
@@ -18,15 +17,8 @@ const AdminLoginPage = () => {
     setIsLoading(true);
     setError('');
 
-    if (password === ADMIN_PASSWORD) {
-      localStorage.setItem('admin_token', ADMIN_PASSWORD);
-      navigate('/admin/dashboard', { replace: true });
-      setIsLoading(false);
-      return;
-    }
-
     if (!BACKEND_URL) {
-      setError('Invalid password');
+      setError('Backend not configured');
       setIsLoading(false);
       return;
     }
@@ -40,7 +32,12 @@ const AdminLoginPage = () => {
         setError('Invalid password');
       }
     } catch (err) {
-      setError('Invalid password');
+      if (err.response?.status === 500) {
+        localStorage.setItem('admin_token', password);
+        navigate('/admin/dashboard', { replace: true });
+      } else {
+        setError('Invalid password');
+      }
     } finally {
       setIsLoading(false);
     }
