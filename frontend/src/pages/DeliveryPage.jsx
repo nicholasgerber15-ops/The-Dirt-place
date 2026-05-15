@@ -346,12 +346,12 @@ const DeliveryPage = () => {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
-                    href="tel:(830) 555-0198"
+                    href="tel:(830) 336-3713"
                     className="inline-flex items-center justify-center space-x-2 px-8 py-4 bg-[#6B7A3A] text-white font-bold rounded hover:bg-[#3B2F2F] transition-colors duration-300"
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
                   >
                     <Phone size={20} />
-                    <span>(830) 555-0198</span>
+                    <span>(830) 336-3713</span>
                   </a>
                   <Link
                     to="/contact"

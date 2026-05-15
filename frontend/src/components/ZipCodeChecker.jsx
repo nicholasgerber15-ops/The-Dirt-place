@@ -16,7 +16,7 @@ const ZipCodeChecker = () => {
       serviced: isServiced,
       message: isServiced 
         ? 'Great news! We deliver to your area.' 
-        : 'We may still be able to help! Call us at (830) 555-0198 for extended delivery options.'
+        : 'We may still be able to help! Call us at (830) 336-3713 for extended delivery options.'
     });
   };
 

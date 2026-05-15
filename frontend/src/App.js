@@ -6,6 +6,7 @@ import { CartProvider } from './context/CartContext';
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import SeasonalPopup from "./components/SeasonalPopup";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { MessageCircle, X } from 'lucide-react';
 
 // Lazy load pages for code splitting (except critical pages)
@@ -76,7 +77,7 @@ function AppContent() {
       const data = await response.json();
       setChatHistory(prev => [...prev, { role: 'assistant', content: data.response || "Thanks for your question! A team member will respond soon." }]);
     } catch (error) {
-      setChatHistory(prev => [...prev, { role: 'assistant', content: "Sorry, I'm having trouble connecting. Please call us at (830) 555-0198!" }]);
+      setChatHistory(prev => [...prev, { role: 'assistant', content: "Sorry, I'm having trouble connecting. Please call us at (830) 336-3713!" }]);
     } finally {
       setIsLoading(false);
     }
@@ -86,6 +87,7 @@ function AppContent() {
     <>
       {!isAdminRoute && <Header />}
       <Suspense fallback={<PageLoader />}>
+        <ErrorBoundary fallbackMessage="Something went wrong loading this page. Please try refreshing.">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/materials" element={<MaterialsPage />} />
@@ -111,6 +113,7 @@ function AppContent() {
           <Route path="/driver" element={<DriverDashboard />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </ErrorBoundary>
       </Suspense>
       {!isAdminRoute && <Footer />}
       {!isAdminRoute && <SeasonalPopup />}

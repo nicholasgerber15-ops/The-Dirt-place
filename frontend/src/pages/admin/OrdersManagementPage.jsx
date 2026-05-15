@@ -98,6 +98,9 @@ const OrdersManagementPage = () => {
   };
 
   const updateOrderStatus = async (orderId, newStatus) => {
+    if (newStatus === 'cancelled' && !window.confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
+      return;
+    }
     try {
       const token = localStorage.getItem('admin_token');
       await axios.patch(

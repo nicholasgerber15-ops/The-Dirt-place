@@ -196,7 +196,8 @@ const InventoryPage = () => {
 
   const handleAddNewRow = async () => {
     if (!newRow.name || !newRow.price_per_unit) {
-      alert('Name and price are required');
+      setSaveMessage('Name and price are required');
+      setTimeout(() => setSaveMessage(''), 3000);
       return;
     }
 

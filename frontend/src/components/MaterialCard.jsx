@@ -170,7 +170,7 @@ const MaterialCard = ({ material, index }) => {
         <div className="flex gap-3">
           {(!material.in_stock || material.stock_quantity <= 0) ? (
             <a
-              href="tel:(830) 555-0198"
+              href="tel:(830) 336-3713"
               className="flex-1 flex items-center justify-center space-x-2 px-4 py-3 bg-[#D9A441] text-[#3B2F2F] font-semibold rounded hover:bg-[#3B2F2F] hover:text-white transition-all duration-300"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >

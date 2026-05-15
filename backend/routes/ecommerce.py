@@ -413,7 +413,7 @@ async def send_order_confirmation_email(order):
 <p>Admin Fee: ${pricing.get('admin_fee',0):.2f}</p>
 <p>Sales Tax: ${pricing.get('tax',0):.2f}</p>
 <p style="font-size:24px;font-weight:bold;color:#D9A441">Total Paid: ${pricing.get('total',0):.2f}</p></div>
-<p style="color:#6B4F3F">We'll contact you to confirm your delivery window. Questions? Call (830) 555-0198.</p></div>
+<p style="color:#6B4F3F">We'll contact you to confirm your delivery window. Questions? Call (830) 336-3713.</p></div>
 <div style="text-align:center;padding:20px;color:#6B4F3F;font-size:12px">
 <p>The Dirt Place | 240 TX-46, Boerne, TX 78006</p></div></body></html>"""
 
@@ -458,7 +458,7 @@ async def get_checkout_status(session_id: str):
             "status": "pending_payment",
             "payment_status": "pending",
             "order_number": session_id,
-            "note": "Order is being processed. Contact us at (830) 555-0198 if you have questions."
+            "note": "Order is being processed. Contact us at (830) 336-3713 if you have questions."
         }
 
 @router.get("/materials")

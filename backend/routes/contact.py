@@ -142,7 +142,7 @@ async def submit_contact_form(request: ContactFormRequest):
                     </div>
                 </div>
                 <div class="footer">
-                    <p>The Dirt Place | 240 TX-46, Boerne, TX 78006 | (830) 555-0198</p>
+                    <p>The Dirt Place | 240 TX-46, Boerne, TX 78006 | (830) 336-3713</p>
                     <p>Serving the Texas Hill Country</p>
                 </div>
             </div>
@@ -270,7 +270,7 @@ async def submit_contact_form(request: ContactFormRequest):
                         
                         <div class="info-box">
                             <h3>📞 Contact Information</h3>
-                            <p><strong>Phone:</strong> (830) 555-0198</p>
+                            <p><strong>Phone:</strong> (830) 336-3713</p>
                             <p><strong>Email:</strong> info@thedirtplace.com</p>
                             <p><strong>Address:</strong> 240 TX-46, Boerne, TX 78006</p>
                         </div>
@@ -296,7 +296,7 @@ async def submit_contact_form(request: ContactFormRequest):
                     <div class="footer">
                         <p><strong>The Dirt Place Team</strong></p>
                         <p>240 TX-46, Boerne, TX 78006</p>
-                        <p>Phone: (830) 555-0198 | Email: info@thedirtplace.com</p>
+                        <p>Phone: (830) 336-3713 | Email: info@thedirtplace.com</p>
                         <p style="margin-top: 15px;">Serving the Texas Hill Country with quality materials since 2010</p>
                     </div>
                 </div>
@@ -331,7 +331,7 @@ async def submit_contact_form(request: ContactFormRequest):
         logger.error(f"Failed to send contact form email: {str(e)}")
         raise HTTPException(
             status_code=500, 
-            detail=f"Failed to send message. Please try again or call us at (830) 555-0198."
+            detail=f"Failed to send message. Please try again or call us at (830) 336-3713."
         )
 
 class CalculatorRequest(BaseModel):
@@ -575,7 +575,7 @@ async def email_calculation(request: EmailCalculationRequest):
                 <div class="footer">
                     <p><strong>The Dirt Place</strong></p>
                     <p>240 TX-46, Boerne, TX 78006</p>
-                    <p>Phone: (830) 555-0198 | Email: info@thedirtplace.com</p>
+                    <p>Phone: (830) 336-3713 | Email: info@thedirtplace.com</p>
                     <p style="margin-top: 15px;">Serving the Texas Hill Country with quality materials since 2010</p>
                 </div>
             </div>

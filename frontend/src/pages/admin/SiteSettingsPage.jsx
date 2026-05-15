@@ -227,7 +227,7 @@ const SiteSettingsPage = () => {
                 <button
                   onClick={handleHeroImageUpdate}
                   disabled={saving}
-                  className="px-6 py-3 bg-[#3B2F2F] text-[#FAF9F6] font-bold rounded hover:bg-[#D9A441] hover:text-[#3B2F2F] transition-all duration-300 disabled:opacity-50 disabled:cursor-no-allowed flex items-center space-x-2"
+                  className="px-6 py-3 bg-[#3B2F2F] text-[#FAF9F6] font-bold rounded hover:bg-[#D9A441] hover:text-[#3B2F2F] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
                   style={{ fontFamily: 'Montserrat, sans-serif' }}
                 >
                   <Save size={18} />

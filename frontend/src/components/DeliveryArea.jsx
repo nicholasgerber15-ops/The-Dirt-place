@@ -211,12 +211,12 @@ const DeliveryArea = () => {
                 Don't see your area listed? Give us a call — we may be able to help!
               </p>
               <a
-                href="tel:(830) 555-0198"
+                href="tel:(830) 336-3713"
                 className="inline-flex items-center space-x-2 px-6 py-3 bg-[#6B7A3A] text-white font-bold rounded hover:bg-[#3B2F2F] transition-colors duration-300"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
                 <Phone size={20} />
-                <span>(830) 555-0198</span>
+                <span>(830) 336-3713</span>
               </a>
             </div>
           </div>
