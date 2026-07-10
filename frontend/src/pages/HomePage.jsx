@@ -9,7 +9,7 @@ import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
-const DEFAULT_HERO_IMAGE = '/images/IMG_0483.jpg';
+const DEFAULT_HERO_IMAGE = 'https://cdn.theboernedirtplace.com/images/IMG_0483.jpg';
 
 // Static content (can be moved to API later if needed)
 
@@ -92,7 +92,7 @@ const HomePage = () => {
         id: m.material_id || m.id,
         name: m.name,
         description: m.description || `Premium ${m.name.toLowerCase()} for your landscaping needs.`,
-        image: m.image_url || '/images/IMG_0476.jpg',
+        image: m.image_url || 'https://cdn.theboernedirtplace.com/images/IMG_0476.jpg',
         category: m.name,
         pricePerCubicYard: m.price_per_unit || m.price_per_cubic_yard || 0,
         unit: m.unit_type || 'cubic yard',
@@ -270,7 +270,7 @@ const HomePage = () => {
       <section className="py-24 bg-[#6B4F3F] relative overflow-hidden">
         <div 
           className="absolute inset-0 opacity-5 bg-cover bg-center"
-          style={{ backgroundImage: `url('/images/IMG_0478.jpg')` }}
+          style={{ backgroundImage: `url('https://cdn.theboernedirtplace.com/images/IMG_0478.jpg')` }}
         ></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center scroll-animate">
