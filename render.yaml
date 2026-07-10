@@ -1,0 +1,41 @@
+databases:
+  - name: dirtplace-db
+    plan: free
+
+services:
+  - type: web
+    plan: free
+    name: dirtplace-backend
+    runtime: docker
+    repo: https://github.com/nicholasgerber15-ops/The-Dirt-place.git
+    branch: main
+    dockerfilePath: ./backend/Dockerfile
+    buildCommand: echo 'build handled by docker'
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: dirtplace-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: MYFINN_MODEL_URL
+        value: http://localhost:11434
+      - key: MYFINN_MODEL_NAME
+        value: janus-tools:latest
+      - key: CLOUDFLARE_API_TOKEN
+        sync: false
+      - key: CLOUDFLARE_ZONE_ID
+        sync: false
+      - key: CLOUDFLARE_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_BUCKET
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_PUBLIC_BASE
+        sync: false
