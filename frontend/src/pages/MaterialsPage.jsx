@@ -61,7 +61,7 @@ const MaterialsPage = () => {
         id: m.material_id || m.id,
         name: m.name,
         description: m.description || `Premium ${m.name.toLowerCase()} for your landscaping needs.`,
-        image: m.image_url || 'https://images.unsplash.com/photo-1591745287451-268db77122a9',
+        image: m.image_url || '/images/IMG_0477.jpg',
         category: m.category || m.name,
         pricePerCubicYard: parseFloat(m.price_per_unit || m.price_per_cubic_yard || m.price || 0),
         unit: m.unit_type || m.unit || 'cubic yard',
@@ -94,7 +94,7 @@ const MaterialsPage = () => {
         <div 
           className="absolute inset-0 bg-cover bg-center parallax-bg"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1591745287451-268db77122a9')`,
+            backgroundImage: `url('/images/IMG_0476.jpg')`, 
           }}
         ></div>
         <div className="absolute inset-0 bg-gradient-to-b from-[#3B2F2F]/80 via-[#3B2F2F]/70 to-[#FAF9F6]"></div>
@@ -241,7 +241,7 @@ const MaterialsPage = () => {
       <section className="py-24 bg-[#3B2F2F] relative overflow-hidden">
         <div 
           className="absolute inset-0 opacity-5 bg-cover bg-center"
-          style={{ backgroundImage: `url('https://images.unsplash.com/photo-1519806390608-acf7ef9c8d1b')` }}
+          style={{ backgroundImage: `url('/images/IMG_0480.jpg')` }}
         ></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center scroll-animate">

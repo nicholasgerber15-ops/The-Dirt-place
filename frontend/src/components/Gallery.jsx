@@ -7,37 +7,37 @@ const Gallery = () => {
   const galleryImages = [
     {
       id: 1,
-      url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b',
+      url: '/images/IMG_0483.jpg',
       title: 'Decorative Rock Installation',
       category: 'Landscaping'
     },
     {
       id: 2,
-      url: 'https://images.unsplash.com/photo-1558904541-efa843a96f01',
+      url: '/images/IMG_0477.jpg',
       title: 'Gravel Driveway',
       category: 'Driveways'
     },
     {
       id: 3,
-      url: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae',
+      url: '/images/IMG_0476.jpg',
       title: 'Garden Topsoil',
       category: 'Gardens'
     },
     {
       id: 4,
-      url: 'https://images.unsplash.com/photo-1598902108854-10e335adac99',
+      url: '/images/IMG_0482.jpg',
       title: 'Mulch Landscape Bed',
       category: 'Landscaping'
     },
     {
       id: 5,
-      url: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b',
+      url: '/images/IMG_0484.jpg',
       title: 'Stone Pathway',
       category: 'Pathways'
     },
     {
       id: 6,
-      url: 'https://images.unsplash.com/photo-1558904541-efa843a96f01',
+      url: '/images/IMG_0489.jpg',
       title: 'Material Delivery',
       category: 'Delivery'
     }

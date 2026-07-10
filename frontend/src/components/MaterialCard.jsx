@@ -91,7 +91,7 @@ const MaterialCard = ({ material, index }) => {
             height="256"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             onError={(e) => {
-              e.target.src = 'https://images.unsplash.com/photo-1591745287451-268db77122a9?w=400&h=256&fit=crop';
+              e.target.src = '/images/IMG_0477.jpg';
             }}
           />
         </picture>
