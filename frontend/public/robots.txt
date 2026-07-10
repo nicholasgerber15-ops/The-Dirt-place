@@ -1,0 +1,43 @@
+# robots.txt for The Dirt Place
+# https://theboernedirtplace.com/
+
+User-agent: *
+Allow: /
+
+# Block all API endpoints (state-changing)
+Disallow: /api/
+Disallow: /api/ecommerce/
+Disallow: /api/admin/
+Disallow: /api/contact/
+Disallow: /api/scheduling/
+Disallow: /api/auth/
+
+# Block checkout page (no SEO value)
+Disallow: /checkout
+
+# Block admin or private areas
+Disallow: /admin/
+Disallow: /dashboard/
+
+# Block search/filter URLs with query parameters (duplicate content)
+Disallow: /materials?
+Disallow: /services?
+
+# Block AI training crawlers
+User-agent: GPTBot
+Disallow: /
+User-agent: ChatGPT-User
+Disallow: /
+User-agent: CCBot
+Disallow: /
+User-agent: anthropic-ai
+Disallow: /
+
+# Allow sitemap
+Sitemap: https://theboernedirtplace.com/sitemap.xml
+
+# Security
+# https://theboernedirtplace.com/.well-known/security.txt
+
+# Crawl delay to be nice to server
+Crawl-delay: 1

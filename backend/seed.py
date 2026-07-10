@@ -1,0 +1,189 @@
+#!/usr/bin/env python3
+import asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
+from datetime import datetime
+
+MONGO_URL = 'mongodb+srv://nicholasgerber15_db_user:nGskf168MsTtgC65@cluster0.6sbuaza.mongodb.net/the_dirt_place?retryWrites=true&w=majority'
+
+async def seed():
+    client = AsyncIOMotorClient(MONGO_URL)
+    db = client['the_dirt_place']
+    await db.command('ping')
+    print('Connected to MongoDB!')
+    
+    # Products from mock.js (converted to Python list)
+    products = [
+        {"material_id": "CAP-050", "name": "1/2\" Screw-On Cap", "price_per_unit": 1.98, "unit_type": "each", "category": "Pipes & Fittings", "description": "t screw on cap 1/2", "stock_quantity": 100},
+        {"material_id": "PIPE-05020", "name": "1/2\" x 20' Service Pipe", "price_per_unit": 8.75, "unit_type": "each", "category": "Pipes & Fittings", "description": "1/2\"x20'", "stock_quantity": 50},
+        {"material_id": "EDGE-18416B", "name": "Steel Edging 1/8\" x 4\" x 16' Black", "price_per_unit": 67.25, "unit_type": "each", "category": "Edging & Borders", "description": "1/8x4x16 black 4x16 w4stk", "stock_quantity": 30, "product_details": "Includes 4 stakes, 14GA"},
+        {"material_id": "EDGE-18416U", "name": "Steel Edging 1/8\" x 4\" x 16' Uncoated", "price_per_unit": 67.25, "unit_type": "each", "category": "Edging & Borders", "description": "1/8x4x16 uncoated 16 feet edging 6 stks", "stock_quantity": 30, "product_details": "6 stakes included, 16 ft"},
+        {"material_id": "BLK-114C", "name": "Charcoal Block 1x1x4", "price_per_unit": 85.00, "unit_type": "each", "category": "Blocks & Pavers", "description": "1x1x4 Charcoal blocks", "stock_quantity": 20},
+        {"material_id": "SLAB-114CR", "name": "Cream Block 1x1x4", "price_per_unit": 85.00, "unit_type": "each", "category": "Blocks & Pavers", "description": "1x1x4 Cream Blocks", "stock_quantity": 20, "product_details": "Delivery available"},
+        {"material_id": "SLAB-225CR", "name": "Cream Slab 2 1/4\" (5x2)", "price_per_unit": 118.00, "unit_type": "each", "category": "Blocks & Pavers", "description": "2 1/4\" cream slabs 5x2", "stock_quantity": 15},
+        {"material_id": "BLK-225", "name": "Block 2x2x5", "price_per_unit": 250.00, "unit_type": "each", "category": "Blocks & Pavers", "description": "2x2x5 Blocks", "stock_quantity": 15, "product_details": "Delivery available"},
+        {"material_id": "BLK-225CB", "name": "Charcoal Blue Lueders 2x2x5", "price_per_unit": 265.00, "unit_type": "each", "category": "Blocks & Pavers", "description": "2x2x5 Charcoal Blue Leuders", "stock_quantity": 10, "product_details": "Delivery available"},
+        {"material_id": "CAP-075", "name": "3/4\" Screw-On Cap", "price_per_unit": 2.12, "unit_type": "each", "category": "Pipes & Fittings", "description": "3/4 cap t screw on cap 3/4", "stock_quantity": 100},
+        {"material_id": "CAP-075PVC", "name": "3/4\" PVC Top Cap", "price_per_unit": 1.35, "unit_type": "each", "category": "Pipes & Fittings", "description": "3/4 pvc cap s top cap", "stock_quantity": 100},
+        {"material_id": "LIME-038", "name": "Limestone 3/8\"", "price_per_unit": 90.00, "unit_type": "yard", "category": "Aggregate & Stone", "description": "3/8 limestone", "stock_quantity": 200},
+        {"material_id": "LIME-038-05", "name": "Limestone 3/8\" (1/2 Yard)", "price_per_unit": 45.50, "unit_type": "half-yard", "category": "Aggregate & Stone", "description": "3/8 limestone 1/2 yd", "stock_quantity": 400},
+        {"material_id": "STONE-3X100", "name": "Stone 3x100", "price_per_unit": 38.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "3x100", "stock_quantity": 150},
+        {"material_id": "SOIL-4WAY", "name": "4-Way Mix", "price_per_unit": 58.00, "unit_type": "yard", "category": "Soil & Compost", "description": "4 Way Mix - Mixture of topsoil, landscape mix", "stock_quantity": 300},
+        {"material_id": "SOIL-4WAY-05", "name": "4-Way Mix (1/2 Yard)", "price_per_unit": 27.75, "unit_type": "half-yard", "category": "Soil & Compost", "description": "4 Way Mix 1/2 yd - Mixture of topsoil, landscape", "stock_quantity": 600},
+        {"material_id": "EDGE-410BLK", "name": "Steel Edging 4\" x 10' Black 14GA", "price_per_unit": 31.50, "unit_type": "each", "category": "Edging & Borders", "description": "4\"x10' black 14GA w/4stk", "stock_quantity": 40, "product_details": "Includes 4 stakes"},
+        {"material_id": "EDGE-410BRN", "name": "Steel Edging 4\" x 10' Brown 14GA", "price_per_unit": 32.50, "unit_type": "each", "category": "Edging & Borders", "description": "4\"x10' brown 14GA w/4stk", "stock_quantity": 40, "product_details": "Includes 4 stakes"},
+        {"material_id": "EDGE-410GRN", "name": "Steel Edging 4\" x 10' Green 14GA", "price_per_unit": 31.50, "unit_type": "each", "category": "Edging & Borders", "description": "4\"x10' w/4stk green 14GA", "stock_quantity": 40, "product_details": "Includes 4 stakes"},
+        {"material_id": "STONE-CAVE", "name": "Cave Stone 4\"-6\"-8\"", "price_per_unit": 245.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "4-6-8\" Cave Pall", "stock_quantity": 50},
+        {"material_id": "BLK-4X6WH", "name": "White Chop Block 4x6", "price_per_unit": 235.00, "unit_type": "each", "category": "Blocks & Pavers", "description": "4x6 white chop blocks", "stock_quantity": 15},
+        {"material_id": "BLK-4X8X16", "name": "Concrete Block 4x8x16", "price_per_unit": 3.20, "unit_type": "each", "category": "Blocks & Pavers", "description": "4x8x16 block", "stock_quantity": 500},
+        {"material_id": "STONE-6X4CAP", "name": "Sandstone Cap 6x4", "price_per_unit": 255.00, "unit_type": "each", "category": "Blocks & Pavers", "description": "6x4 cap sand stone", "stock_quantity": 20},
+        {"material_id": "BLK-6X6", "name": "Block 6x6", "price_per_unit": 235.00, "unit_type": "each", "category": "Blocks & Pavers", "description": "6x6 Blocks", "stock_quantity": 25},
+        {"material_id": "BLK-6X8X16", "name": "Concrete Block 6x8x16", "price_per_unit": 3.25, "unit_type": "each", "category": "Blocks & Pavers", "description": "6x8x16 blocks", "stock_quantity": 500},
+        {"material_id": "NET-8X112", "name": "Netting 8x112", "price_per_unit": 67.50, "unit_type": "each", "category": "Landscaping Supplies", "description": "8x112 net", "stock_quantity": 30},
+        {"material_id": "NET-8X250", "name": "Netting 8x250 Pro", "price_per_unit": 395.00, "unit_type": "each", "category": "Landscaping Supplies", "description": "8x250 pro", "stock_quantity": 15},
+        {"material_id": "BLK-8X8X16", "name": "Concrete Block 8x8x16", "price_per_unit": 3.85, "unit_type": "each", "category": "Blocks & Pavers", "description": "8x8x16 blocks", "stock_quantity": 500},
+        {"material_id": "SAND-A1", "name": "A-1 Masonry Sand (1 Yard)", "price_per_unit": 72.00, "unit_type": "yard", "category": "Sand & Gravel", "description": "A-1 MASONRY SAND", "stock_quantity": 250},
+        {"material_id": "SAND-A1-05", "name": "A-1 Masonry Sand (1/2 Yard)", "price_per_unit": 35.25, "unit_type": "half-yard", "category": "Sand & Gravel", "description": "A-1 masonry sand 1/2 yard", "stock_quantity": 500},
+        {"material_id": "POT-ARGXXL", "name": "Argolla XXL Mexico Flower Pot", "price_per_unit": 175.65, "unit_type": "each", "category": "Planters & Pots", "description": "argolla 3 left", "stock_quantity": 3},
+        {"material_id": "ASPH-MILL", "name": "Asphalt Millings", "price_per_unit": 37.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Asphalt Millings", "stock_quantity": 100},
+        {"material_id": "MULCH-BAG", "name": "Bag of Mulch (Black/Brown)", "price_per_unit": 4.95, "unit_type": "bag", "category": "Mulch", "description": "Black and Brown", "stock_quantity": 200},
+        {"material_id": "ROCK-LAVA", "name": "Lava Rock (Basket)", "price_per_unit": 545.00, "unit_type": "basket", "category": "Decorative Stone", "description": "Basket Lava Rock", "stock_quantity": 10},
+        {"material_id": "GRASS-BERM", "name": "Bermuda Grass (8 Pallets)", "price_per_unit": 2180.00, "unit_type": "pallet", "category": "Grass & Turf", "description": "8 pallets $260 each, unloaded", "stock_quantity": 5, "product_details": "Unloaded delivery"},
+        {"material_id": "STAT-GIRB", "name": "Big Giraffe Statue", "price_per_unit": 60.00, "unit_type": "each", "category": "Garden Decor", "description": "Big giraffe", "stock_quantity": 10},
+        {"material_id": "STAT-IGUB", "name": "Big Iguana Statue", "price_per_unit": 55.00, "unit_type": "each", "category": "Garden Decor", "description": "Big iguana", "stock_quantity": 10},
+        {"material_id": "STAT-TURB", "name": "Big Turtle Statue", "price_per_unit": 55.00, "unit_type": "each", "category": "Garden Decor", "description": "Big turtle", "stock_quantity": 10},
+        {"material_id": "STONE-BLFLAG", "name": "Black Flagstone", "price_per_unit": 310.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Black Flagstone 310/ton", "stock_quantity": 40},
+        {"material_id": "MULCH-BLK1", "name": "Black Dyed Mulch (1 Yard)", "price_per_unit": 44.39, "unit_type": "yard", "category": "Mulch", "description": "BLACK DYED MULCH", "stock_quantity": 150},
+        {"material_id": "MULCH-BLK05", "name": "Black Dyed Mulch (1/2 Yard)", "price_per_unit": 23.94, "unit_type": "half-yard", "category": "Mulch", "description": "BLACK DYED MULCH", "stock_quantity": 300},
+        {"material_id": "SLAB-BLSEL", "name": "Black Select Slabs", "price_per_unit": 350.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Black select Slabs 350/ton", "stock_quantity": 25},
+        {"material_id": "SLAB-BLUE", "name": "Blue Lueders Slab 5x2", "price_per_unit": 118.00, "unit_type": "each", "category": "Aggregate & Stone", "description": "Blue Lueders 5x2", "stock_quantity": 20},
+        {"material_id": "MULCH-BRN1", "name": "Brown Dyed Mulch (1 Yard)", "price_per_unit": 44.39, "unit_type": "yard", "category": "Mulch", "description": "BROWN DYED MULCH", "stock_quantity": 150},
+        {"material_id": "MULCH-BRN05", "name": "Brown Dyed Mulch (1/2 Yard)", "price_per_unit": 23.94, "unit_type": "half-yard", "category": "Mulch", "description": "BROWN DYED MULCH", "stock_quantity": 300},
+        {"material_id": "BUCK-SAND", "name": "Bucket / Sand", "price_per_unit": 8.00, "unit_type": "each", "category": "Landscaping Supplies", "description": "each bucket $8 sand $6", "stock_quantity": 100, "product_details": "Sand fill $6"},
+        {"material_id": "STAT-BUN", "name": "Bunny Statue", "price_per_unit": 0.00, "unit_type": "each", "category": "Garden Decor", "description": "Bunny", "stock_quantity": 0, "product_details": "Price pending"},
+        {"material_id": "PAV-CON3X3", "name": "Contractor Select+ 3'x3'", "price_per_unit": 92.00, "unit_type": "each", "category": "Blocks & Pavers", "description": "CONTRACTOR SELECT+ 3'X3'", "stock_quantity": 30},
+        {"material_id": "PAV-CON4X1", "name": "Contractor Select+ 4'x1'", "price_per_unit": 49.31, "unit_type": "each", "category": "Blocks & Pavers", "description": "CONTRACTOR SELECT+ 4'X1'", "stock_quantity": 50},
+        {"material_id": "PAV-CON3X1", "name": "Contractor Select+ 3'x1'", "price_per_unit": 42.15, "unit_type": "each", "category": "Blocks & Pavers", "description": "CONTRACTOR SELECT+ 3'X1'", "stock_quantity": 50},
+        {"material_id": "PAV-CON9", "name": "Contractor Select+ 9'x", "price_per_unit": 293.00, "unit_type": "each", "category": "Blocks & Pavers", "description": "CONTRACTORS SELECT+ 9'X", "stock_quantity": 15},
+        {"material_id": "PAV-CON4", "name": "Contractor Select+ 4'x", "price_per_unit": 136.00, "unit_type": "each", "category": "Blocks & Pavers", "description": "CONTRACTORS SELECT+ 4'X", "stock_quantity": 25},
+        {"material_id": "PAV-CON6", "name": "Contractor Select+ 6'x", "price_per_unit": 175.00, "unit_type": "each", "category": "Blocks & Pavers", "description": "CONTRACTORS SELECT+ 6'X", "stock_quantity": 20},
+        {"material_id": "FEE-CARD", "name": "Card Processing Fee", "price_per_unit": 0.035, "unit_type": "percentage", "category": "Services & Fees", "description": "3.5% Processing Fee", "stock_quantity": 999999, "product_details": "Applied at checkout"},
+        {"material_id": "MULCH-CDR1", "name": "Cedar Mulch (1 Yard)", "price_per_unit": 28.00, "unit_type": "yard", "category": "Mulch", "description": "CEDAR MULCH", "stock_quantity": 200},
+        {"material_id": "MULCH-CDR05", "name": "Cedar Mulch (1/2 Yard)", "price_per_unit": 15.75, "unit_type": "half-yard", "category": "Mulch", "description": "CEDAR MULCH", "stock_quantity": 400},
+        {"material_id": "PAL-QUIK", "name": "Concrete Pallet (Quikrete)", "price_per_unit": 304.50, "unit_type": "pallet", "category": "Concrete & Cement", "description": "Concrete Pallet", "stock_quantity": 10, "product_details": "Must add $25 for pallet delivery"},
+        {"material_id": "STAT-COW", "name": "Cow Decorative Statue", "price_per_unit": 58.00, "unit_type": "each", "category": "Garden Decor", "description": "Cow decorative", "stock_quantity": 8},
+        {"material_id": "STAT-CROC", "name": "Crocodile Statue", "price_per_unit": 55.65, "unit_type": "each", "category": "Garden Decor", "description": "Crocodile hand made decor", "stock_quantity": 8},
+        {"material_id": "LIME-CR1", "name": "Crushed Limestone 1\" (1 Yard)", "price_per_unit": 59.00, "unit_type": "yard", "category": "Aggregate & Stone", "description": "CRUSHED LIMESTONE 1\"", "stock_quantity": 250},
+        {"material_id": "LIME-CR05", "name": "Crushed Limestone 1\" (1/2 Yard)", "price_per_unit": 31.25, "unit_type": "half-yard", "category": "Aggregate & Stone", "description": "CRUSHED LIMESTONE 1\"", "stock_quantity": 500},
+        {"material_id": "LIME-CR2", "name": "Crushed Limestone 2\"", "price_per_unit": 90.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Crushed limestone 2\"", "stock_quantity": 150},
+        {"material_id": "CUST-AMT", "name": "Custom Amount", "price_per_unit": 0.00, "unit_type": "each", "category": "Services & Fees", "description": "Non-Inventory", "stock_quantity": 999999},
+        {"material_id": "FEE-DEL", "name": "Delivery Fee", "price_per_unit": 70.00, "unit_type": "flat", "category": "Services & Fees", "description": "Delivery fee", "stock_quantity": 999999},
+        {"material_id": "SAND-PLDW", "name": "Double Washed Plaster Sand (1 Yard)", "price_per_unit": 72.00, "unit_type": "yard", "category": "Sand & Gravel", "description": "PLASTER SAND", "stock_quantity": 200},
+        {"material_id": "SAND-PLDW-05", "name": "Double Washed Plaster Sand (1/2 Yard)", "price_per_unit": 30.25, "unit_type": "half-yard", "category": "Sand & Gravel", "description": "PLASTER SAND", "stock_quantity": 400},
+        {"material_id": "POT-ELECUP", "name": "Elegant Cup Flower Pot", "price_per_unit": 78.65, "unit_type": "each", "category": "Planters & Pots", "description": "Elegant cup flower pot", "stock_quantity": 25},
+        {"material_id": "STAT-ELE", "name": "Elephant Statue", "price_per_unit": 25.00, "unit_type": "each", "category": "Garden Decor", "description": "Elephant", "stock_quantity": 12},
+        {"material_id": "SOIL-TOP1", "name": "Enriched Topsoil (1 Yard)", "price_per_unit": 48.89, "unit_type": "yard", "category": "Soil & Compost", "description": "Mixture of sandy loam", "stock_quantity": 300},
+        {"material_id": "FEE-MILE", "name": "Delivery Per Mile", "price_per_unit": 5.00, "unit_type": "mile", "category": "Services & Fees", "description": "Every Fee Per Mile", "stock_quantity": 999999},
+        {"material_id": "FEE-BOUNCE", "name": "Bounced Check Fee", "price_per_unit": 35.00, "unit_type": "flat", "category": "Services & Fees", "description": "Fee for bounced check", "stock_quantity": 999999},
+        {"material_id": "STAT-FISH", "name": "Fish Statue Set", "price_per_unit": 0.00, "unit_type": "set", "category": "Garden Decor", "description": "Fish set", "stock_quantity": 0, "product_details": "Price pending"},
+        {"material_id": "FONT-MEX", "name": "Mexican Water Fountain", "price_per_unit": 115.00, "unit_type": "each", "category": "Planters & Pots", "description": "Mexico water fountain", "stock_quantity": 8},
+        {"material_id": "FEE-FREIGHT", "name": "Freight Fee", "price_per_unit": 350.00, "unit_type": "flat", "category": "Services & Fees", "description": "Freight", "stock_quantity": 999999},
+        {"material_id": "STAT-FROG", "name": "Frog Statue Set", "price_per_unit": 0.00, "unit_type": "set", "category": "Garden Decor", "description": "Frog set", "stock_quantity": 0, "product_details": "Price pending"},
+        {"material_id": "STAT-GIR", "name": "Giraffe Statue", "price_per_unit": 0.00, "unit_type": "each", "category": "Garden Decor", "description": "Giraffe", "stock_quantity": 0, "product_details": "Price pending"},
+        {"material_id": "CHIP-GRA05", "name": "Granite Chips (1/2 Yard)", "price_per_unit": 44.25, "unit_type": "half-yard", "category": "Decorative Stone", "description": "GRANITE CHIPS-1/2\"", "stock_quantity": 300},
+        {"material_id": "CHIP-GRA1", "name": "Granite Chips (1 Yard)", "price_per_unit": 90.00, "unit_type": "yard", "category": "Decorative Stone", "description": "GRANITE CHIPS-1\"", "stock_quantity": 150},
+        {"material_id": "RENT-GRAP", "name": "Grapple Rental", "price_per_unit": 70.00, "unit_type": "day", "category": "Services & Fees", "description": "Grabbers - Rent $70 per day", "stock_quantity": 999999, "product_details": "$70 per day rental"},
+        {"material_id": "BASE-GR2", "name": "Gravel Base #2 1 1/2\" (1 Yard)", "price_per_unit": 36.00, "unit_type": "yard", "category": "Aggregate & Stone", "description": "Gravel base #2 1 yard - 1 1/2\"", "stock_quantity": 300},
+        {"material_id": "BASE-GR2-05", "name": "Gravel Base #2 1 1/2\" (1/2 Yard)", "price_per_unit": 19.75, "unit_type": "half-yard", "category": "Aggregate & Stone", "description": "Gravel base #2 1/2 yard - 1 1/2\"", "stock_quantity": 600},
+        {"material_id": "BASE-GR34", "name": "Gravel Base 3/4\" (1 Yard)", "price_per_unit": 36.00, "unit_type": "yard", "category": "Aggregate & Stone", "description": "GRAVEL BASE", "stock_quantity": 300},
+        {"material_id": "BASE-GR34-05", "name": "Gravel Base 3/4\" (1/2 Yard)", "price_per_unit": 19.75, "unit_type": "half-yard", "category": "Aggregate & Stone", "description": "GRAVEL BASE", "stock_quantity": 600},
+        {"material_id": "CEM-GREY", "name": "Grey Cement", "price_per_unit": 13.25, "unit_type": "bag", "category": "Concrete & Cement", "description": "Grey type cement", "stock_quantity": 300},
+        {"material_id": "STONE-GUAD", "name": "Guadalupe Stone 1 1/2\"", "price_per_unit": 110.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Guadalupe 1 1/2\"", "stock_quantity": 80},
+        {"material_id": "MULCH-HARD1", "name": "Hardwood Compost Mulch (1 Yard)", "price_per_unit": 38.83, "unit_type": "yard", "category": "Mulch", "description": "Hardwood compost Mulch", "stock_quantity": 180},
+        {"material_id": "MULCH-HARD05", "name": "Hardwood Compost Mulch (1/2 Yard)", "price_per_unit": 21.16, "unit_type": "half-yard", "category": "Mulch", "description": "Hardwood compost Mulch", "stock_quantity": 360},
+        {"material_id": "STAT-HORSE", "name": "Horse Statue", "price_per_unit": 58.00, "unit_type": "each", "category": "Garden Decor", "description": "Horse", "stock_quantity": 8},
+        {"material_id": "POT-LRG", "name": "Large Flower Pot", "price_per_unit": 86.00, "unit_type": "each", "category": "Planters & Pots", "description": "Large pot flower pot", "stock_quantity": 30},
+        {"material_id": "STAT-TURL", "name": "Little Turtle Statue", "price_per_unit": 15.80, "unit_type": "each", "category": "Garden Decor", "description": "Little turtle", "stock_quantity": 15},
+        {"material_id": "STONE-LLANO", "name": "Llano Stone 2\"-4\"", "price_per_unit": 135.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Llano 2\"-4\"", "stock_quantity": 60},
+        {"material_id": "STONE-MED", "name": "Medina Stone 1\"", "price_per_unit": 105.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "MEDINA 1\"", "stock_quantity": 70},
+        {"material_id": "POT-MEXCUP", "name": "Mexican Cup Pot", "price_per_unit": 129.00, "unit_type": "each", "category": "Planters & Pots", "description": "MEXICAN (cup) POT", "stock_quantity": 20},
+        {"material_id": "POT-MEXHALF", "name": "Mexican Half Pot", "price_per_unit": 139.00, "unit_type": "each", "category": "Planters & Pots", "description": "MEXICAN (half) POT", "stock_quantity": 18},
+        {"material_id": "POT-MEXRIDGE", "name": "Mexican Ridged Pot", "price_per_unit": 85.00, "unit_type": "each", "category": "Planters & Pots", "description": "MEXICAN (ridged) POT", "stock_quantity": 25},
+        {"material_id": "POT-MEXSWIDE", "name": "Mexican Small Wide Pot", "price_per_unit": 129.00, "unit_type": "each", "category": "Planters & Pots", "description": "MEXICAN (small wide) POT", "stock_quantity": 22},
+        {"material_id": "POT-MEXSML", "name": "Mexican Small Pot", "price_per_unit": 29.00, "unit_type": "each", "category": "Planters & Pots", "description": "MEXICAN (small) POT", "stock_quantity": 40},
+        {"material_id": "URN-MEXSML", "name": "Mexican Small Urn", "price_per_unit": 49.00, "unit_type": "each", "category": "Planters & Pots", "description": "MEXICAN (small) URN", "stock_quantity": 15},
+        {"material_id": "POT-MEXWIDE", "name": "Mexican Wide Top Pot", "price_per_unit": 169.00, "unit_type": "each", "category": "Planters & Pots", "description": "MEXICAN (wide top) POT", "stock_quantity": 12},
+        {"material_id": "POT-MEXW", "name": "Mexican Wide Pot", "price_per_unit": 295.00, "unit_type": "each", "category": "Planters & Pots", "description": "MEXICAN (wide) POT", "stock_quantity": 10},
+        {"material_id": "URN-MEX", "name": "Mexican Urn", "price_per_unit": 195.00, "unit_type": "each", "category": "Planters & Pots", "description": "MEXICAN URN", "stock_quantity": 12},
+        {"material_id": "SAND-MAN", "name": "Manufactured Sand", "price_per_unit": 59.00, "unit_type": "ton", "category": "Sand & Gravel", "description": "Manufactured Sand", "stock_quantity": 120},
+        {"material_id": "SOIL-MAN", "name": "Manure Compost", "price_per_unit": 58.00, "unit_type": "yard", "category": "Soil & Compost", "description": "MANURE COMPOST screened", "stock_quantity": 200},
+        {"material_id": "STONE-MARM", "name": "Marmol Stone 2\"-3\"", "price_per_unit": 660.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Marmol 2\"-3\" 660 per ton", "stock_quantity": 30},
+        {"material_id": "POT-MICH", "name": "Michoacan Large Pot", "price_per_unit": 98.65, "unit_type": "each", "category": "Planters & Pots", "description": "Mechoacano large - large michuacano", "stock_quantity": 20},
+        {"material_id": "PEB-MEXBAG", "name": "Mexican Beach Pebbles (50lb Bag)", "price_per_unit": 32.50, "unit_type": "bag", "category": "Decorative Stone", "description": "Mexican Beach Pebbles - 50lb bags", "stock_quantity": 100},
+        {"material_id": "STONE-MEXW", "name": "Mexican White Stand-Ups", "price_per_unit": 390.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Mexican White Stand-Ups", "stock_quantity": 40},
+        {"material_id": "PEB-MEX660", "name": "Mexico Beach Pebbles", "price_per_unit": 660.00, "unit_type": "ton", "category": "Decorative Stone", "description": "Mexico Beach Pebbles 660 per ton", "stock_quantity": 35},
+        {"material_id": "STONE-MEXPAT", "name": "Mexico White Patio", "price_per_unit": 290.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Mexico White patio", "stock_quantity": 45},
+        {"material_id": "STONE-BLDMOSS", "name": "Moss Boulders", "price_per_unit": 190.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Moss Boulders 190 per ton", "stock_quantity": 50},
+        {"material_id": "STAT-MUSH", "name": "Mushroom Statue Set", "price_per_unit": 58.00, "unit_type": "set", "category": "Garden Decor", "description": "Mushroom set", "stock_quantity": 10},
+        {"material_id": "BOUL-NAT", "name": "Native Boulders", "price_per_unit": 0.20, "unit_type": "pound", "category": "Aggregate & Stone", "description": "Boulders white cream color", "stock_quantity": 10000, "product_details": "Price per lb"},
+        {"material_id": "SLAB-NAT", "name": "Native Slabs", "price_per_unit": 280.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Native Slabs 280 per ton", "stock_quantity": 35},
+        {"material_id": "STONE-NIC", "name": "Nicotina Stone", "price_per_unit": 245.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Nicotina", "stock_quantity": 40},
+        {"material_id": "STONE-OKBLUE", "name": "Oklahoma Blue Stand-Ups", "price_per_unit": 861.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Oklahoma blue Stand ups 861 per ton", "stock_quantity": 25},
+        {"material_id": "STONE-OKCHOP", "name": "Oklahoma Chop", "price_per_unit": 405.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Oklahoma chop", "stock_quantity": 40},
+        {"material_id": "STONE-OKPAT", "name": "Oklahoma Patio", "price_per_unit": 430.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Oklahoma patio - TWO COLORS", "stock_quantity": 45},
+        {"material_id": "BASE-OR1", "name": "Orange Base (1 Yard)", "price_per_unit": 42.00, "unit_type": "yard", "category": "Aggregate & Stone", "description": "Orange Base 1 Yard", "stock_quantity": 250},
+        {"material_id": "BASE-OR05", "name": "Orange Base (1/2 Yard)", "price_per_unit": 21.75, "unit_type": "half-yard", "category": "Aggregate & Stone", "description": "Orange Base 1/2 Yard", "stock_quantity": 500},
+        {"material_id": "STAT-OWL", "name": "Owl Flower Pot/Statue", "price_per_unit": 58.00, "unit_type": "each", "category": "Garden Decor", "description": "Owl owl flower pot", "stock_quantity": 15},
+        {"material_id": "FEE-PAL", "name": "Pallet Only Fee", "price_per_unit": 25.00, "unit_type": "flat", "category": "Services & Fees", "description": "Pallet Only - if pallet was taken", "stock_quantity": 999999},
+        {"material_id": "EQUIP-PIGGY", "name": "Piggyback Pallet Machine", "price_per_unit": 100.00, "unit_type": "rental", "category": "Services & Fees", "description": "Piggyback Pallet lowering machine", "stock_quantity": 999999},
+        {"material_id": "STONE-PINK", "name": "Pink Swirl Stand-Ups", "price_per_unit": 360.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Pink Swirl stand ups", "stock_quantity": 35},
+        {"material_id": "BOARD-POL", "name": "Polly Board 3.5\" x 20\"", "price_per_unit": 50.00, "unit_type": "each", "category": "Landscaping Supplies", "description": "Polly Board 3.5\"x20\" - DOES NOT INCLUDE stakes", "stock_quantity": 50},
+        {"material_id": "CEM-PORT", "name": "Portland Cement", "price_per_unit": 16.97, "unit_type": "bag", "category": "Concrete & Cement", "description": "Portlen Cement", "stock_quantity": 250},
+        {"material_id": "MULCH-PREM1", "name": "Premium Native Mulch (1 Yard)", "price_per_unit": 30.00, "unit_type": "yard", "category": "Mulch", "description": "PREMIUM NATIVE", "stock_quantity": 220},
+        {"material_id": "MULCH-PREM05", "name": "Premium Native Mulch (1/2 Yard)", "price_per_unit": 16.75, "unit_type": "half-yard", "category": "Mulch", "description": "PREMIUM NATIVE Mulch", "stock_quantity": 440},
+        {"material_id": "STAT-PUMPK", "name": "Pumpkin Statue", "price_per_unit": 65.00, "unit_type": "each", "category": "Garden Decor", "description": "Pumpkin", "stock_quantity": 12},
+        {"material_id": "QUIK-80", "name": "Quikrete 80lb Bag", "price_per_unit": 8.50, "unit_type": "bag", "category": "Concrete & Cement", "description": "Quikrete 80lb bag", "stock_quantity": 400},
+        {"material_id": "RAIL-85", "name": "Railroad Ties", "price_per_unit": 37.94, "unit_type": "each", "category": "Landscaping Supplies", "description": "Railroad Ties 8.5\"L x 8.5\"H", "stock_quantity": 60},
+        {"material_id": "HERB-RANG", "name": "Ranger Pro Herbicide 2.5 Gal", "price_per_unit": 85.00, "unit_type": "gallon", "category": "Chemicals & Treatments", "description": "Ranger Pro Herbicide 2.5 Gal - Weed killer also kills grass", "stock_quantity": 30},
+        {"material_id": "REBAR-038", "name": "Rebar 3/8\" x 20'", "price_per_unit": 7.25, "unit_type": "each", "category": "Landscaping Supplies", "description": "Rebar 3/8\"x20'", "stock_quantity": 80},
+        {"material_id": "MULCH-RED05", "name": "Red Dyed Mulch (1/2 Yard)", "price_per_unit": 23.94, "unit_type": "half-yard", "category": "Mulch", "description": "RED DYED MULCH", "stock_quantity": 300},
+        {"material_id": "MULCH-RED1", "name": "Red Dyed Mulch (1 Yard)", "price_per_unit": 44.39, "unit_type": "yard", "category": "Mulch", "description": "RED DYED MULCH", "stock_quantity": 150},
+        {"material_id": "STONE-REGCH", "name": "Reg Chop White", "price_per_unit": 240.00, "unit_type": "ton", "category": "Aggregate & Stone", "description": "Reg Chop White per ton", "stock_quantity": 50},
+        {"material_id": "PEB-RIO38", "name": "Rio Pea Gravel 3/8\"", "price_per_unit": 150.00, "unit_type": "ton", "category": "Decorative Stone", "description": "Rio Pea Gravel 3/8\"", "stock_quantity": 80},
+        {"material_id": "ROCK-RIO12", "name": "Rio Rock 1\"-2\"", "price_per_unit": 150.00, "unit_type": "ton", "category": "Decorative Stone", "description": "Rio Rock 1\"-2\"", "stock_quantity": 75},
+        {"material_id": "ROCK-RIO26", "name": "Rio Rock 2\"-6\"", "price_per_unit": 150.00, "unit_type": "ton", "category": "Decorative Stone", "description": "Rio Rock 2\"-6\"", "stock_quantity": 70},
+        {"material_id": "TOOL-SHOV", "name": "Round Shovel", "price_per_unit": 20.99, "unit_type": "each", "category": "Tools & Equipment", "description": "Round Shovel", "stock_quantity": 50},
+        {"material_id": "GRASS-SA", "name": "St. Augustine Pro Vista Grass", "price_per_unit": 290.00, "unit_type": "pallet", "category": "Grass & Turf", "description": "San Augustine pro vista grass 290 delivered", "stock_quantity": 8, "product_details": "Delivered price"},
+        {"material_id": "MIX-SG05", "name": "Sand & Gravel Mix (1/2 Yard)", "price_per_unit": 35.75, "unit_type": "half-yard", "category": "Aggregate & Stone", "description": "Sand Gravel Mix 1/2", "stock_quantity": 400},
+        {"material_id": "MIX-SG1", "name": "Sand & Gravel Mix (1 Yard)", "price_per_unit": 72.00, "unit_type": "yard", "category": "Aggregate & Stone", "description": "Sand Gravel Mix (Full Yard)", "stock_quantity": 200},
+        {"material_id": "DIRT-SF1", "name": "Screened Field Dirt (1 Yard)", "price_per_unit": 35.00, "unit_type": "yard", "category": "Soil & Compost", "description": "Screened Field", "stock_quantity": 350},
+        {"material_id": "DIRT-SF05", "name": "Screened Field Dirt (1/2 Yard)", "price_per_unit": 18.50, "unit_type": "half-yard", "category": "Soil & Compost", "description": "Field Dirt 1/2", "stock_quantity": 700},
+        {"material_id": "STONE-SHAD", "name": "Shadow Rock 3/8\"", "price_per_unit": 168.00, "unit_type": "ton", "category": "Decorative Stone", "description": "Shadow Rock 3/8", "stock_quantity": 60},
+    ]
+    
+    # Add timestamps
+    now = datetime.utcnow()
+    for p in products:
+        p['created_at'] = now
+        p['updated_at'] = now
+        p['min_order'] = 1
+    
+    # Insert or update each product
+    inserted = 0
+    updated = 0
+    for p in products:
+        result = await db.material_pricing.update_one(
+            {"material_id": p["material_id"]},
+            {"$set": p},
+            upsert=True
+        )
+        if result.upserted_id:
+            inserted += 1
+        else:
+            updated += 1
+    
+    print(f'Seeded database: {inserted} inserted, {updated} updated')
+    print(f'Total materials: {await db.material_pricing.count_documents({})}')
+    
+    client.close()
+
+asyncio.run(seed())

@@ -1,0 +1,14 @@
+.git
+.github/
+.gitignore
+node_modules/
+.env
+*.pyc
+__pycache__/
+*.egg-info/
+.venv/
+venv/
+Untitled/
+Local/
+*.log
+.DS_Store
