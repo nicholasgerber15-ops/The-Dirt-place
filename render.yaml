@@ -1,7 +1,4 @@
 # Render Blueprint - The Dirt Place
-# Fix: MongoDB SSL fallback to demo mode
-# Import: render blueprint apply render.yaml
-
 previewsEnabled: true
 
 services:
@@ -13,35 +10,33 @@ services:
     repo: https://github.com/nicholasgerber15-ops/The-Dirt-place
     branch: Version-2
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install --no-cache-dir -r requirements.txt
     startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: MONGO_URL
-        sync: false
-      - key: DB_NAME
-        sync: false
-      - key: ADMIN_PASSWORD
-        sync: false
-        value: dirtplace2024
+      - key: CDN_BASE
+        value: https://cdn.theboernedirtplace.com
       - key: CORS_ORIGINS
-        sync: false
-        value: "*"
-      - key: RESEND_API_KEY
-        sync: false
-      - key: R2_ACCESS_KEY_ID
-        sync: false
-      - key: R2_SECRET_ACCESS_KEY
-        sync: false
-      - key: R2_BUCKET_NAME
-        sync: false
-        value: dirt-place-images
+        value: https://theboernedirtplace.com,https://the-dirt-place.onrender.com,https://the-dirt-place-frontend.onrender.com
+      - key: DB_NAME
+        value: the_dirt_place
+      - key: MONGO_CERT
+        value: theboernedirtplace.com.pem
+      - key: MONGO_URL
+        value: mongodb+srv://cluster0.6sbuaza.mongodb.net/?authSource=%24external&authMechanism=MONGODB-X509&appName=Cluster0
+      - key: PIP_NO_CACHE_DIR
+        value: "1"
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: R2_ACCESS_KEY
+        value: 038dbd35e2051194737b89eae3ba2eab
       - key: R2_ACCOUNT_ID
-        sync: false
-      - key: R2_PUBLIC_URL
-        sync: false
-      - key: FORCE_DEMO
-        value: "true"
-
+        value: c12ef03d29310fceb5fe71e1cae66cf7
+      - key: R2_BUCKET
+        value: dirt-place-images
+      - key: R2_ENDPOINT
+        value: https://c12ef03d29310fceb5fe71e1cae66cf7.r2.cloudflarestorage.com
+      - key: R2_SECRET_KEY
+        value: a174cac0f99abd93e6bcf043d98945597057681d498b0cc62d62c0f0e283536a
   # === FRONTEND ===
   - name: the-dirt-place
     runtime: static
@@ -52,7 +47,6 @@ services:
     staticPublishPath: build
     envVars:
       - key: REACT_APP_BACKEND_URL
-        sync: false
         value: https://the-dirt-place-backend.onrender.com
     routes:
       - type: rewrite
