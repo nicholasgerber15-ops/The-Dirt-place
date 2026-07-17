@@ -1,10 +1,11 @@
+// CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL
+// PROPRIETARY / UNDER DEVELOPMENT / SECRET
 import React from 'react';
 import { Truck, Trees, Phone, Star, CheckCircle, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const RecommendedPros = ({ variant = 'full', className = '' }) => {
   const phoneNumber = '(830) 336-3713';
-  const websiteUrl = 'https://juans-landscaping.com';
 
   if (variant === 'compact') {
     return (
@@ -15,7 +16,7 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
               Need Installation Too?
             </h3>
             <p className="text-sm text-[#D9A441]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Juan's Lawn, Trees & Landscaping — Full-service landscaping & tree care
+              Trusted local installation partners for landscaping & tree care
             </p>
           </div>
           <div className="flex gap-2">
@@ -24,12 +25,10 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
               className="inline-flex items-center space-x-1 px-4 py-2 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#FAF9F6] transition-colors text-sm"
             >
               <Phone size={16} />
-              <span>Call Juan</span>
+              <span>Call for Referral</span>
             </a>
             <a
-              href={websiteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/contact"
               className="inline-flex items-center space-x-1 px-4 py-2 bg-transparent border-2 border-[#FAF9F6] text-[#FAF9F6] font-bold rounded hover:bg-[#FAF9F6] hover:text-[#3B2F2F] transition-colors text-sm"
             >
               <span>Get Estimate</span>
@@ -45,15 +44,13 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
       <div className={`bg-gradient-to-r from-[#3B2F2F] to-[#6B4F3F] text-[#FAF9F6] py-3 px-6 ${className}`}>
         <div className="container mx-auto flex items-center justify-center space-x-4 flex-wrap">
           <span className="font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-            Need installation? We've got you covered.
+            Need installation? We can refer trusted local partners.
           </span>
           <a
-            href={websiteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/contact"
             className="inline-flex items-center space-x-1 px-4 py-1 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#FAF9F6] transition-colors text-sm"
           >
-            <span>Get Estimate from Juan's Landscaping</span>
+            <span>Request Installation Referral</span>
           </a>
         </div>
       </div>
@@ -77,7 +74,7 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
               className="text-lg text-[#6B4F3F]"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Order materials from The Dirt Place, then let Juan's team handle the installation. 
+              Order materials from The Dirt Place, then we can refer trusted partners for installation. 
               From delivery to finished landscape — one call does it all.
             </p>
           </div>
@@ -104,7 +101,7 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
                   2. Professional Installation
                 </h3>
                 <p className="text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  Juan's team designs, installs, and cleans up
+                  Our vetted partners design, install, and clean up
                 </p>
               </div>
 
@@ -125,7 +122,7 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
               <div className="flex items-center justify-between flex-col md:flex-row gap-4">
                 <div>
                   <h3 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
-                    Juan's Lawn, Trees & Landscaping
+                    Trusted Installation Partners
                   </h3>
                   <p className="text-[#D9A441] mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                     Serving Boerne & Texas Hill Country
@@ -149,7 +146,7 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
                   <div className="text-3xl font-bold text-[#D9A441]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
                     {phoneNumber}
                   </div>
-                  <p className="text-sm text-[#FAF9F6]/80">Call for a free estimate</p>
+                  <p className="text-sm text-[#FAF9F6]/80">Call for a free referral</p>
                 </div>
               </div>
             </div>
@@ -161,20 +158,11 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
                 <Phone size={20} />
-                <span>Call Juan: {phoneNumber}</span>
-              </a>
-              <a
-                href={websiteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center space-x-2 px-8 py-4 bg-transparent border-2 border-[#3B2F2F] text-[#3B2F2F] text-lg font-bold rounded hover:bg-[#3B2F2F] hover:text-[#FAF9F6] transition-colors"
-                style={{ fontFamily: 'Montserrat, sans-serif' }}
-              >
-                <span>Visit Juan's Website</span>
+                <span>Call for Referral: {phoneNumber}</span>
               </a>
               <Link
                 to="/contact"
-                className="inline-flex items-center justify-center space-x-2 px-8 py-4 bg-[#6B4F3F] text-[#FAF9F6] text-lg font-bold rounded hover:bg-[#3B2F2F] transition-colors"
+                className="inline-flex items-center justify-center space-x-2 px-8 py-4 bg-transparent border-2 border-[#3B2F2F] text-[#3B2F2F] text-lg font-bold rounded hover:bg-[#3B2F2F] hover:text-[#FAF9F6] transition-colors"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
                 <span>Request Materials Quote</span>
@@ -182,7 +170,7 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
             </div>
 
             <p className="text-center text-sm text-[#6B4F3F] mt-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              🤝 Partnership: The Dirt Place + Juan's Lawn, Trees & Landscaping
+              🤝 Partnership: The Dirt Place + Trusted Local Installers
             </p>
           </div>
         </div>

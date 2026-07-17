@@ -1,3 +1,14 @@
+UNIVERSAL NRG-CO HEADER BLOCK
+Use this exact banner at the top of source files. License/covenant terms still apply.
+
+################################################################
+#                                                              #
+#                ⚡  N R G - C O  ⚡                          #
+#                                                              #
+#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
+#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
+#                                                              #
+################################################################
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Truck, Shield, Clock, Award, Star, Settings, Phone } from 'lucide-react';
@@ -360,7 +371,7 @@ const HomePage = () => {
               className="text-xl text-[#6B4F3F] mb-8"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              We deliver the materials — Juan's Lawn, Trees & Landscaping installs them.
+              We deliver the materials — and can connect you with trusted local installers.
               From dirt delivery to finished landscape, we've got you covered.
             </p>
 
@@ -384,7 +395,7 @@ const HomePage = () => {
                   2. Professional Installation
                 </h3>
                 <p className="text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  Juan's team handles design, installation, and cleanup
+                  Our vetted partners handle design, installation, and cleanup
                 </p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -402,7 +413,7 @@ const HomePage = () => {
 
             <div className="bg-[#3B2F2F] p-8 rounded-lg text-[#FAF9F6] mb-8">
               <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
-                Juan's Lawn, Trees & Landscaping
+                Trusted Installation Partners
               </h3>
               <p className="text-lg mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
                 Full-service landscaping, tree care, lawn maintenance, and outdoor living spaces.
@@ -411,29 +422,27 @@ const HomePage = () => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
                   href="tel:8303363713"
-                  aria-label="Call The Dirt Place for a quote at (830) 336-3713"
+                  aria-label="Call The Dirt Place for installation referrals at (830) 336-3713"
                   className="inline-flex items-center space-x-2 px-8 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#FAF9F6] transition-colors"
                   style={{ fontFamily: 'Montserrat, sans-serif' }}
                 >
                   <Phone size={20} aria-hidden="true" />
-                  <span>Call for Quote: (830) 336-3713</span>
+                  <span>Call for Install Referral: (830) 336-3713</span>
                 </a>
                 <a
-                  href="https://juans-landscaping.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Visit Juan's Landscaping website (opens in new tab)"
+                  href="/contact"
+                  aria-label="Request installation referral from The Dirt Place"
                   className="inline-flex items-center space-x-2 px-8 py-3 bg-transparent border-2 border-[#FAF9F6] text-[#FAF9F6] font-bold rounded hover:bg-[#FAF9F6] hover:text-[#3B2F2F] transition-colors"
                   style={{ fontFamily: 'Montserrat, sans-serif' }}
                 >
-                  <span>Visit Juan's Website</span>
+                  <span>Request Referral</span>
                   <ArrowRight size={20} aria-hidden="true" />
                 </a>
               </div>
             </div>
 
             <p className="text-[#6B4F3F] text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              🤝 Partnership: The Dirt Place + Juan's Lawn, Trees & Landscaping
+              🤝 Partnership: The Dirt Place + Trusted Local Installers
             </p>
           </div>
         </div>

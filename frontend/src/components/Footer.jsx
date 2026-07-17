@@ -1,3 +1,14 @@
+UNIVERSAL NRG-CO HEADER BLOCK
+Use this exact banner at the top of source files. License/covenant terms still apply.
+
+################################################################
+#                                                              #
+#                ⚡  N R G - C O  ⚡                          #
+#                                                              #
+#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
+#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
+#                                                              #
+################################################################
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, Facebook, Instagram } from 'lucide-react';
@@ -33,7 +44,7 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/profile.php?id=61566256235599"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-[#6B4F3F] flex items-center justify-center hover:bg-[#D9A441] hover:scale-110 transition-all duration-300"
