@@ -3,7 +3,7 @@
 previewsEnabled: true
 services:
   # === BACKEND API ===
-  - name: the-dirt-place-backend
+  - name: the-dirt-place-1
     runtime: python
     region: oregon
     plan: free
@@ -50,7 +50,7 @@ services:
     staticPublishPath: build
     envVars:
       - key: REACT_APP_BACKEND_URL
-        value: https://the-dirt-place-backend.onrender.com
+        value: https://the-dirt-place-1.onrender.com
     routes:
       - type: rewrite
         source: /*
