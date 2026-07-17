@@ -4,14 +4,14 @@ previewsEnabled: true
 services:
   # === BACKEND API ===
   - name: the-dirt-place-1
-    runtime: python
+    runtime: python-3.11
     region: oregon
     plan: free
     repo: https://github.com/nicholasgerber15-ops/The-Dirt-place
     branch: Version-2
     rootDir: .
-    buildCommand: pip install -r backend/requirements.txt
-    startCommand: uvicorn backend.server:app --host 0.0.0.0 --port $PORT
+    buildCommand: poetry install
+    startCommand: poetry run uvicorn backend.server:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: CDN_BASE
         value: https://cdn.theboernedirtplace.com
