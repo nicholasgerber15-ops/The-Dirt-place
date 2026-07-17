@@ -8,10 +8,10 @@ services:
     region: oregon
     plan: free
     repo: https://github.com/nicholasgerber15-ops/The-Dirt-place
-    branch: Version-2
+    branch: main
     rootDir: .
-    buildCommand: poetry install
-    startCommand: poetry run uvicorn backend.server:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.server:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: CDN_BASE
         value: https://cdn.theboernedirtplace.com
@@ -44,7 +44,7 @@ services:
     type: static
     runtime: static
     repo: https://github.com/nicholasgerber15-ops/The-Dirt-place
-    branch: Version-2
+    branch: main
     rootDir: frontend
     buildCommand: npm install --legacy-peer-deps && npm run build --legacy-peer-deps
     staticPublishPath: build
