@@ -1,3 +1,14 @@
+UNIVERSAL NRG-CO HEADER BLOCK
+Use this exact banner at the top of source files. License/covenant terms still apply.
+
+################################################################
+#                                                              #
+#                ⚡  N R G - C O  ⚡                          #
+#                                                              #
+#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
+#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
+#                                                              #
+################################################################
 {
   "env_image_name": "fastapi_react_mongo_shadcn_base_image_cloud_arm:release-13042026-1",
   "job_id": "6e6e82dd-bf23-43af-bcb4-60ad3d42d4d2",

@@ -1,3 +1,14 @@
+UNIVERSAL NRG-CO HEADER BLOCK
+Use this exact banner at the top of source files. License/covenant terms still apply.
+
+################################################################
+#                                                              #
+#                ⚡  N R G - C O  ⚡                          #
+#                                                              #
+#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
+#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
+#                                                              #
+################################################################
 {
   "summary": "Iteration 3 retest. Found and fixed CRITICAL missing ObjectId import in ecommerce.py (would have caused NameError on payment status transition - the exact bug this iteration was retesting). All 15/15 backend pytest cases pass. Frontend verified: admin routes have NO public navbar, admin login has NO password hint, admin orders/pricing/dashboard pages all load correctly with proper data (search input, status filter, 3 seed orders, 6 material pricing rows, 6 delivery fee rows). Materials page shows current prices correctly.",
   "backend_issues": {

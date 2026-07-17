@@ -1,1 +1,12 @@
+UNIVERSAL NRG-CO HEADER BLOCK
+Use this exact banner at the top of source files. License/covenant terms still apply.
+
+################################################################
+#                                                              #
+#                ⚡  N R G - C O  ⚡                          #
+#                                                              #
+#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
+#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
+#                                                              #
+################################################################
 <?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="15" time="2.725" timestamp="2026-04-22T06:51:44.716262+00:00" hostname="agent-env-c4f83eb9-45d5-4c9e-a931-d9a67c71b2b6"><testcase classname="tests.backend_test.TestAdminAuth" name="test_login_success" time="0.137" /><testcase classname="tests.backend_test.TestAdminAuth" name="test_login_fail" time="0.149" /><testcase classname="tests.backend_test.TestAdminAuth" name="test_protected_requires_auth" time="0.121" /><testcase classname="tests.backend_test.TestAdminStats" name="test_get_stats" time="0.249" /><testcase classname="tests.backend_test.TestAdminOrders" name="test_list_orders" time="0.106" /><testcase classname="tests.backend_test.TestAdminOrders" name="test_list_with_status_filter" time="0.106" /><testcase classname="tests.backend_test.TestAdminOrders" name="test_search" time="0.095" /><testcase classname="tests.backend_test.TestAdminPricing" name="test_get_pricing" time="0.116" /><testcase classname="tests.backend_test.TestAdminPricing" name="test_update_pricing_persists" time="0.399" /><testcase classname="tests.backend_test.TestDeliveryFees" name="test_get_fees" time="0.105" /><testcase classname="tests.backend_test.TestDeliveryFees" name="test_update_fee" time="0.101" /><testcase classname="tests.backend_test.TestEcommerce" name="test_delivery_fee_public" time="0.116" /><testcase classname="tests.backend_test.TestEcommerce" name="test_create_checkout_session" time="0.621" /><testcase classname="tests.backend_test.TestEcommerce" name="test_order_appears_in_admin" time="0.116" /><testcase classname="tests.backend_test.TestEcommerce" name="test_invalid_material_rejected" time="0.116" /></testsuite></testsuites>

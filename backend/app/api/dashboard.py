@@ -1,3 +1,14 @@
+# UNIVERSAL NRG-CO HEADER BLOCK
+# Use this exact banner at the top of source files. License/covenant terms still apply.
+# 
+################################################################
+#                                                              #
+#                ⚡  N R G - C O  ⚡                          #
+#                                                              #
+#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
+#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
+#                                                              #
+################################################################
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -8,43 +19,33 @@ from app.models.ticket import Ticket, TicketStatus, TicketPriority
 from app.models.security import SecurityScan
 from app.models.user import User
 from app.services.mongodb import mongodb
+from app.dependencies import require_active_subscription, get_current_tenant_user
 
 router = APIRouter(prefix="/dashboard", tags=["Dashboard"])
 
-
 @router.get("/stats")
-async def get_dashboard_stats(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
-    # Site stats
-    total_sites = (await db.execute(select(func.count(Site.id)))).scalar() or 0
-    online_sites = (await db.execute(select(func.count(Site.id)).where(Site.status == SiteStatus.ONLINE))).scalar() or 0
-    offline_sites = (await db.execute(select(func.count(Site.id)).where(Site.status == SiteStatus.OFFLINE))).scalar() or 0
+async def get_dashboard_stats(
+    ctx: TenantContext = Depends(require_active_subscription),
+    db: AsyncSession = Depends(get_db),
+):
+    total_sites = (await db.execute(select(func.count(Site.id)).where(Site.tenant_id == ctx.tenant_id))).scalar() or 0
+    online_sites = (await db.execute(select(func.count(Site.id)).where(Site.tenant_id == ctx.tenant_id, Site.status == SiteStatus.ONLINE))).scalar() or 0
+    offline_sites = (await db.execute(select(func.count(Site.id)).where(Site.tenant_id == ctx.tenant_id, Site.status == SiteStatus.OFFLINE))).scalar() or 0
 
-    # Ticket stats
     open_tickets = (await db.execute(
-        select(func.count(Ticket.id)).where(Ticket.status.in_([TicketStatus.OPEN, TicketStatus.IN_PROGRESS]))
+        select(func.count(Ticket.id)).where(Ticket.tenant_id == ctx.tenant_id, Ticket.status.in_([TicketStatus.OPEN, TicketStatus.IN_PROGRESS]))
     )).scalar() or 0
     critical_tickets = (await db.execute(
-        select(func.count(Ticket.id)).where(Ticket.priority == TicketPriority.CRITICAL, Ticket.status != TicketStatus.CLOSED)
+        select(func.count(Ticket.id)).where(Ticket.tenant_id == ctx.tenant_id, Ticket.priority == TicketPriority.CRITICAL, Ticket.status != TicketStatus.CLOSED)
     )).scalar() or 0
 
-    # Alerts
     alerts = await mongodb.get_active_alerts()
+    recent_scans = (await db.execute(select(func.count(SecurityScan.id)).where(SecurityScan.tenant_id == ctx.tenant_id))).scalar() or 0
 
-    # Recent scans
-    recent_scans = (await db.execute(select(func.count(SecurityScan.id)))).scalar() or 0
-
-    # Average response time from recent sites
-    avg_response = 0
-    sites = await db.execute(select(Site).where(Site.last_uptime_response_ms != None))
+    sites = await db.execute(select(Site).where(Site.tenant_id == ctx.tenant_id, Site.last_uptime_response_ms != None))
     site_list = sites.scalars().all()
-    if site_list:
-        avg_response = sum(s.last_uptime_response_ms or 0 for s in site_list) // len(site_list)
-
-    # Average uptime
-    avg_uptime = 0
-    online_count = sum(1 for s in site_list if s.status == SiteStatus.ONLINE)
-    if site_list:
-        avg_uptime = round((online_count / len(site_list)) * 100, 1)
+    avg_response = sum(s.last_uptime_response_ms or 0 for s in site_list) // len(site_list) if site_list else 0
+    avg_uptime = round(sum(1 for s in site_list if s.status == SiteStatus.ONLINE) / len(site_list) * 100, 1) if site_list else 0
 
     return {
         "total_sites": total_sites,

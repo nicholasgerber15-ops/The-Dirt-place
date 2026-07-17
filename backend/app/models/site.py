@@ -1,5 +1,17 @@
+# UNIVERSAL NRG-CO HEADER BLOCK
+# Use this exact banner at the top of source files. License/covenant terms still apply.
+# 
+################################################################
+#                                                              #
+#                ⚡  N R G - C O  ⚡                          #
+#                                                              #
+#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
+#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
+#                                                              #
+################################################################
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, Enum, JSON
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, Enum, JSON, ForeignKey
+from sqlalchemy.orm import relationship
 from app.core.database import Base
 import enum
 
@@ -24,6 +36,7 @@ class Site(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(255), nullable=False)
     url = Column(String(500), nullable=False)
+    tenant_id = Column(Integer, ForeignKey("tenants.id"), nullable=False, index=True)
     site_type = Column(Enum(SiteType), default=SiteType.GENERIC)
     status = Column(Enum(SiteStatus), default=SiteStatus.UNKNOWN)
     description = Column(Text)
@@ -38,3 +51,5 @@ class Site(Base):
     config = Column(JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    tenant = relationship("Tenant", backref="sites")

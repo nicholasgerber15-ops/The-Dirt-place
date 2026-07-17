@@ -1,10 +1,21 @@
+# UNIVERSAL NRG-CO HEADER BLOCK
+# Use this exact banner at the top of source files. License/covenant terms still apply.
+# 
+################################################################
+#                                                              #
+#                ⚡  N R G - C O  ⚡                          #
+#                                                              #
+#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
+#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
+#                                                              #
+################################################################
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import get_settings
 from app.core.database import engine, Base
 from app.services.mongodb import mongodb
-from app.api import auth, sites, tickets, security, ai_chat, dashboard, inventory
+from app.api import auth, sites, tickets, security, ai_chat, dashboard, inventory, tenants, billing
 
 settings = get_settings()
 
@@ -44,6 +55,8 @@ app.include_router(security.router, prefix="/api/v1")
 app.include_router(ai_chat.router, prefix="/api/v1")
 app.include_router(dashboard.router, prefix="/api/v1")
 app.include_router(inventory.router, prefix="/api/v1")
+app.include_router(tenants.router, prefix="/api/v1")
+app.include_router(billing.router, prefix="/api/v1")
 
 
 @app.get("/")

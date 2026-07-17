@@ -1,3 +1,14 @@
+# UNIVERSAL NRG-CO HEADER BLOCK
+# Use this exact banner at the top of source files. License/covenant terms still apply.
+# 
+################################################################
+#                                                              #
+#                ⚡  N R G - C O  ⚡                          #
+#                                                              #
+#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
+#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
+#                                                              #
+################################################################
 # Shared product list
 PRODUCTS = [
     {"material_id": "CAP-050", "name": "1/2\" Screw-On Cap", "price_per_unit": 1.98, "unit_type": "each", "category": "Pipes & Fittings", "description": "t screw on cap 1/2", "stock_quantity": 100},

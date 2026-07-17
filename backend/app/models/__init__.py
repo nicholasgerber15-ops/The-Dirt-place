@@ -5,6 +5,9 @@ from app.models.ticket import Ticket, TicketComment, TicketStatus, TicketPriorit
 from app.models.security import SecurityScan, SecurityFinding, ScanType, ScanSeverity
 from app.models.update import SiteUpdate, UpdateType, UpdateStatus
 from app.models.audit import AuditLog
+from app.models.tenant import Tenant, TenantStatus
+from app.models.membership import TenantUser, TenantUserRole
+from app.models.billing import Subscription, SubscriptionStatus, Invoice
 
 __all__ = [
     "User", "UserRole",
@@ -14,4 +17,7 @@ __all__ = [
     "SecurityScan", "SecurityFinding", "ScanType", "ScanSeverity",
     "SiteUpdate", "UpdateType", "UpdateStatus",
     "AuditLog",
+    "Tenant", "TenantStatus",
+    "TenantUser", "TenantUserRole",
+    "Subscription", "SubscriptionStatus", "Invoice",
 ]

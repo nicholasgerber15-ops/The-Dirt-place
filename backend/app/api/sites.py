@@ -1,3 +1,14 @@
+# UNIVERSAL NRG-CO HEADER BLOCK
+# Use this exact banner at the top of source files. License/covenant terms still apply.
+# 
+################################################################
+#                                                              #
+#                ⚡  N R G - C O  ⚡                          #
+#                                                              #
+#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
+#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
+#                                                              #
+################################################################
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -12,14 +23,25 @@ router = APIRouter(prefix="/sites", tags=["Sites"])
 
 
 @router.get("/", response_model=list[SiteResponse])
-async def list_sites(db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
-    result = await db.execute(select(Site).order_by(Site.created_at.desc()))
+async def list_sites(
+    ctx: TenantContext = Depends(require_active_subscription),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Site)
+        .where(Site.tenant_id == ctx.tenant_id)
+        .order_by(Site.created_at.desc())
+    )
     return result.scalars().all()
 
 
 @router.post("/", response_model=SiteResponse)
-async def create_site(data: SiteCreate, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
-    site = Site(**data.model_dump())
+async def create_site(
+    data: SiteCreate,
+    ctx: TenantContext = Depends(require_active_subscription),
+    db: AsyncSession = Depends(get_db),
+):
+    site = Site(**data.model_dump(), tenant_id=ctx.tenant_id)
     db.add(site)
     await db.commit()
     await db.refresh(site)
@@ -27,8 +49,14 @@ async def create_site(data: SiteCreate, db: AsyncSession = Depends(get_db), user
 
 
 @router.get("/{site_id}", response_model=SiteResponse)
-async def get_site(site_id: int, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
-    result = await db.execute(select(Site).where(Site.id == site_id))
+async def get_site(
+    site_id: int,
+    ctx: TenantContext = Depends(require_active_subscription),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Site).where(Site.id == site_id, Site.tenant_id == ctx.tenant_id)
+    )
     site = result.scalar_one_or_none()
     if not site:
         raise HTTPException(status_code=404, detail="Site not found")
@@ -36,8 +64,15 @@ async def get_site(site_id: int, db: AsyncSession = Depends(get_db), user: User 
 
 
 @router.put("/{site_id}", response_model=SiteResponse)
-async def update_site(site_id: int, data: SiteUpdate, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
-    result = await db.execute(select(Site).where(Site.id == site_id))
+async def update_site(
+    site_id: int,
+    data: SiteUpdate,
+    ctx: TenantContext = Depends(require_active_subscription),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Site).where(Site.id == site_id, Site.tenant_id == ctx.tenant_id)
+    )
     site = result.scalar_one_or_none()
     if not site:
         raise HTTPException(status_code=404, detail="Site not found")
@@ -50,8 +85,14 @@ async def update_site(site_id: int, data: SiteUpdate, db: AsyncSession = Depends
 
 
 @router.delete("/{site_id}")
-async def delete_site(site_id: int, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
-    result = await db.execute(select(Site).where(Site.id == site_id))
+async def delete_site(
+    site_id: int,
+    ctx: TenantContext = Depends(get_current_tenant_user),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Site).where(Site.id == site_id, Site.tenant_id == ctx.tenant_id)
+    )
     site = result.scalar_one_or_none()
     if not site:
         raise HTTPException(status_code=404, detail="Site not found")
@@ -61,8 +102,14 @@ async def delete_site(site_id: int, db: AsyncSession = Depends(get_db), user: Us
 
 
 @router.post("/{site_id}/check")
-async def check_site(site_id: int, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
-    result = await db.execute(select(Site).where(Site.id == site_id))
+async def check_site(
+    site_id: int,
+    ctx: TenantContext = Depends(require_active_subscription),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Site).where(Site.id == site_id, Site.tenant_id == ctx.tenant_id)
+    )
     site = result.scalar_one_or_none()
     if not site:
         raise HTTPException(status_code=404, detail="Site not found")
@@ -76,13 +123,33 @@ async def check_site(site_id: int, db: AsyncSession = Depends(get_db), user: Use
 
 
 @router.get("/{site_id}/uptime")
-async def get_uptime(site_id: int, hours: int = 24, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+async def get_uptime(
+    site_id: int,
+    hours: int = 24,
+    ctx: TenantContext = Depends(require_active_subscription),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Site).where(Site.id == site_id, Site.tenant_id == ctx.tenant_id)
+    )
+    if not result.scalar_one_or_none():
+        raise HTTPException(status_code=404, detail="Site not found")
     stats = await monitor.get_uptime_stats(site_id, db, hours)
     return stats
 
 
 @router.get("/{site_id}/uptime/history")
-async def get_uptime_history(site_id: int, hours: int = 24, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+async def get_uptime_history(
+    site_id: int,
+    hours: int = 24,
+    ctx: TenantContext = Depends(require_active_subscription),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Site).where(Site.id == site_id, Site.tenant_id == ctx.tenant_id)
+    )
+    if not result.scalar_one_or_none():
+        raise HTTPException(status_code=404, detail="Site not found")
     logs = await monitor.get_uptime_history(site_id, db, hours)
     return [
         {

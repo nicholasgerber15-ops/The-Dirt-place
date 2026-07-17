@@ -1,3 +1,14 @@
+# UNIVERSAL NRG-CO HEADER BLOCK
+# Use this exact banner at the top of source files. License/covenant terms still apply.
+# 
+################################################################
+#                                                              #
+#                ⚡  N R G - C O  ⚡                          #
+#                                                              #
+#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
+#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
+#                                                              #
+################################################################
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum
 from app.core.database import Base
@@ -6,6 +17,7 @@ import enum
 
 class UserRole(str, enum.Enum):
     ADMIN = "admin"
+    TENANT_ADMIN = "tenant_admin"
     MANAGER = "manager"
     TECHNICIAN = "technician"
     VIEWER = "viewer"

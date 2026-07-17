@@ -1,7 +1,34 @@
+# UNIVERSAL NRG-CO HEADER BLOCK
+# Use this exact banner at the top of source files. License/covenant terms still apply.
+# 
+################################################################
+#                                                              #
+#                ⚡  N R G - C O  ⚡                          #
+#                                                              #
+#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
+#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
+#                                                              #
+################################################################
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
 from datetime import datetime
 from enum import Enum
+
+
+class SecretRedaction(str, Enum):
+    REDACTED = "redacted"
+    PLAINTEXT = "plaintext"
+
+
+class StripeConnectRequest(BaseModel):
+    api_key: str
+    connect_account: bool = False
+
+
+class StripeConnectStatusResponse(BaseModel):
+    connected: bool
+    stripe_connect_account_id: Optional[str] = None
+    last_four: Optional[str] = None
 
 
 # --- Auth ---
