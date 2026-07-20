@@ -9,7 +9,7 @@ services:
     repo: https://github.com/nicholasgerber15-ops/The-Dirt-place
     branch: main
     buildCommand: pip install -r ./backend/requirements.txt
-    startCommand: uvicorn backend.server:app --host 0.0.0.0 --port $PORT
+    startCommand: python -m uvicorn backend.server:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: CDN_BASE
         value: https://cdn.theboernedirtplace.com
