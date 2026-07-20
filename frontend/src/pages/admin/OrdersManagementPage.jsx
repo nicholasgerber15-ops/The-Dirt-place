@@ -44,7 +44,7 @@ const OrdersManagementPage = () => {
       return;
     }
     fetchOrders();
-  }, [filterStatus, page]);
+  }, [filterStatus, page, navigate]);
 
   const fetchOrders = async () => {
     try {

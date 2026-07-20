@@ -104,7 +104,7 @@ const DriverManagementPage = () => {
 
   useEffect(() => {
     fetchDayDeliveries(selectedDate);
-  }, []);
+  }, [fetchDayDeliveries, selectedDate]);
 
   const prevMonth = () => {
     if (currentMonth === 0) {

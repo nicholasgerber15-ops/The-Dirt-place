@@ -39,7 +39,7 @@ const PricingManagementPage = () => {
       return;
     }
     fetchAllPricing();
-  }, []);
+  }, [fetchAllPricing, navigate]);
 
   const fetchAllPricing = async () => {
     try {
