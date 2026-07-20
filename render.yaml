@@ -1,5 +1,4 @@
 # Fix: MongoDB SSL fallback to demo mode
-# Import: render blueprint apply render.yaml
 previewsEnabled: true
 services:
   # === BACKEND API ===
@@ -9,9 +8,8 @@ services:
     plan: free
     repo: https://github.com/nicholasgerber15-ops/The-Dirt-place
     branch: main
-    rootDir: backend
-    buildCommand: pip install -r ./requirements.txt
-    startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
+    buildCommand: pip install -r ./backend/requirements.txt
+    startCommand: uvicorn backend.server:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: CDN_BASE
         value: https://cdn.theboernedirtplace.com
