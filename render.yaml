@@ -10,7 +10,7 @@ services:
     repo: https://github.com/nicholasgerber15-ops/The-Dirt-place
     branch: main
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r ./requirements.txt
     startCommand: uvicorn server:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: CDN_BASE
