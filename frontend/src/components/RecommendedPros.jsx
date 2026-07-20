@@ -12,11 +12,11 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
       <div className={`bg-[#3B2F2F] rounded-lg p-4 text-[#FAF9F6] ${className}`}>
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h3 className="font-bold text-lg" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
-              Need Installation Too?
-            </h3>
+            <span className="font-bold" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+              Installation Help?
+            </span>
             <p className="text-sm text-[#D9A441]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              Trusted local installation partners for landscaping & tree care
+              Need a hand? We can connect you with trusted local experts.
             </p>
           </div>
           <div className="flex gap-2">
@@ -25,7 +25,7 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
               className="inline-flex items-center space-x-1 px-4 py-2 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#FAF9F6] transition-colors text-sm"
             >
               <Phone size={16} />
-              <span>Call for Referral</span>
+              <span>Get Estimate from Local Experts</span>
             </a>
             <a
               href="/contact"
@@ -44,13 +44,13 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
       <div className={`bg-gradient-to-r from-[#3B2F2F] to-[#6B4F3F] text-[#FAF9F6] py-3 px-6 ${className}`}>
         <div className="container mx-auto flex items-center justify-center space-x-4 flex-wrap">
           <span className="font-semibold" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-            Need installation? We can refer trusted local partners.
+            Need a local pro? We can refer trusted experts.
           </span>
           <a
-            href="/contact"
-            className="inline-flex items-center space-x-1 px-4 py-1 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#FAF9F6] transition-colors text-sm"
+          href="/contact"
+          className="inline-flex items-center space-x-1 px-4 py-1 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#FAF9F6] transition-colors text-sm"
           >
-            <span>Request Installation Referral</span>
+          <span>Get Estimate from Local Experts</span>
           </a>
         </div>
       </div>
@@ -67,14 +67,14 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
               className="text-4xl font-bold text-[#3B2F2F] mb-4"
               style={{ fontFamily: 'Bebas Neue, sans-serif' }}
             >
-              Need Installation Too? We've Got You Covered.
+              Need Installation Help? We've Got You Covered.
             </h2>
             <div className="w-24 h-1 bg-[#D9A441] mx-auto mb-4"></div>
             <p 
               className="text-lg text-[#6B4F3F]"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              Order materials from The Dirt Place, then we can refer trusted partners for installation. 
+              Order materials from The Dirt Place, then we know the right pros for the job. 
               From delivery to finished landscape — one call does it all.
             </p>
           </div>
@@ -98,10 +98,10 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
                   <Trees size={32} className="text-[#3B2F2F]" />
                 </div>
                 <h3 className="text-xl font-bold text-[#3B2F2F] mb-2" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
-                  2. Professional Installation
+                  2. Connect With Local Experts
                 </h3>
                 <p className="text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  Our vetted partners design, install, and clean up
+                  We refer trusted local experts who handle install and cleanup
                 </p>
               </div>
 
@@ -146,7 +146,7 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
                   <div className="text-3xl font-bold text-[#D9A441]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
                     {phoneNumber}
                   </div>
-                  <p className="text-sm text-[#FAF9F6]/80">Call for a free referral</p>
+                  <p className="text-sm text-[#FAF9F6]/80">Get matched with a local expert</p>
                 </div>
               </div>
             </div>
@@ -165,12 +165,12 @@ const RecommendedPros = ({ variant = 'full', className = '' }) => {
                 className="inline-flex items-center justify-center space-x-2 px-8 py-4 bg-transparent border-2 border-[#3B2F2F] text-[#3B2F2F] text-lg font-bold rounded hover:bg-[#3B2F2F] hover:text-[#FAF9F6] transition-colors"
                 style={{ fontFamily: 'Montserrat, sans-serif' }}
               >
-                <span>Request Materials Quote</span>
+                <span>Request Local Expert Referral</span>
               </Link>
             </div>
 
             <p className="text-center text-sm text-[#6B4F3F] mt-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              🤝 Partnership: The Dirt Place + Trusted Local Installers
+              🤝 Partnership: The Dirt Place + Trusted Local Experts
             </p>
           </div>
         </div>

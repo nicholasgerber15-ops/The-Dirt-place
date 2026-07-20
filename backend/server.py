@@ -86,15 +86,16 @@ app.add_middleware(GZipMiddleware, minimum_size=1000)
 @app.middleware("http")
 async def security_headers(request: Request, call_next):
     response = await call_next(request)
-    # Security headers
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
-    # CSP - Allow Cloudflare scripts and inline styles
     r2_domain = os.environ.get('R2_PUBLIC_URL', '').split('//')[-1].split('/')[0] if os.environ.get('R2_PUBLIC_URL') else ''
-    response.headers["Content-Security-Policy"] = f"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://theboernedirtplace.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.r2.cloudflarestorage.com {r2_domain}; connect-src 'self' https://theboernedirtplace.com https://the-dirt-place-backend.onrender.com; worker-src 'self' blob:;"
+    backend_host = request.headers.get('host', '').split(':')[0]
+    ph_host = 'us.i.posthog.com'
+    connect_origins = ','.join(sorted({x.strip() for x in f"{backend_host} {ph_host} theboernedirtplace.com".split() if x.strip()}))
+    response.headers["Content-Security-Policy"] = f"default-src 'none'; frame-src 'self' https://challenges.cloudflare.com https://*.posthog.com; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://theboernedirtplace.com {ph_host} https://*.posthog.com; style-src 'self' 'inline' https://theboernedirtplace.com; img-src 'self' data: https: https://*.r2.cloudflarestorage.com {r2_domain}; connect-src 'self' {connect_origins}; worker-src 'self' blob:;"
     return response
 
 # Create a router with the /api prefix
@@ -163,6 +164,10 @@ app.include_router(scheduling_router)  # Already has /api/scheduling prefix
 if upload_router:
     app.include_router(upload_router, prefix="/api/admin")
 
+@app.options("/{full_path:path}")
+async def options_preflight(request: Request, full_path: str):
+    return JSONResponse(content=None, status_code=204, headers={"Allow": "OPTIONS, GET, POST, PUT, DELETE"})
+
 # Security middleware for headers
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
@@ -192,9 +197,11 @@ async def https_redirect(request: Request, call_next):
 # Always include necessary origins, merge with env var if set
 _default_origins = [
     'https://theboernedirtplace.com',
+    'https://www.theboernedirtplace.com',
     'https://the-dirt-place.onrender.com',
     'https://the-dirt-place-frontend.onrender.com',
     'https://the-dirt-place-backend.onrender.com',
+    'https://the-dirt-place-1.onrender.com',
 ]
 _env_origins = os.environ.get('CORS_ORIGINS', '').split(',') if os.environ.get('CORS_ORIGINS') else []
 _cors_origins = list(dict.fromkeys(_default_origins + _env_origins))  # deduplicate, preserve order

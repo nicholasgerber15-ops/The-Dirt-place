@@ -33,6 +33,12 @@ if (config.enableHealthCheck) {
   healthPluginInstance = new WebpackHealthPlugin();
 }
 
+// Force disable visual-edits in production builds.
+const isProduction = process.env.NODE_ENV === "production";
+if (isProduction) {
+  process.env.ENABLE_HEALTH_CHECK = process.env.ENABLE_HEALTH_CHECK || "false";
+}
+
 let webpackConfig = {
   eslint: {
     configure: {
@@ -48,17 +54,22 @@ let webpackConfig = {
       '@': path.resolve(__dirname, 'src'),
     },
     configure: (webpackConfig) => {
+      // Strip worker source maps to avoid blob:// source-map control check errors.
+      webpackConfig.devtool = false;
+      if (webpackConfig.output && webpackConfig.output.workerMapFilename) {
+        webpackConfig.output.workerMapFilename = false;
+      }
 
       // Add ignored patterns to reduce watched directories
-        webpackConfig.watchOptions = {
-          ...webpackConfig.watchOptions,
-          ignored: [
-            '**/node_modules/**',
-            '**/.git/**',
-            '**/build/**',
-            '**/dist/**',
-            '**/coverage/**',
-            '**/public/**',
+      webpackConfig.watchOptions = {
+        ...webpackConfig.watchOptions,
+        ignored: [
+          '**/node_modules/**',
+          '**/.git/**',
+          '**/build/**',
+          '**/dist/**',
+          '**/coverage/**',
+          '**/public/**',
         ],
       };
 
@@ -92,8 +103,8 @@ webpackConfig.devServer = (devServerConfig) => {
   return devServerConfig;
 };
 
-// Wrap with visual edits (automatically adds babel plugin, dev server, and overlay in dev mode)
-if (isDevServer) {
+// Wrap with visual edits only when explicitly enabled and not production.
+if (!isProduction && process.env.ENABLE_VISUAL_EDITS === "true") {
   try {
     const { withVisualEdits } = require("@emergentbase/visual-edits/craco");
     webpackConfig = withVisualEdits(webpackConfig);
@@ -105,6 +116,17 @@ if (isDevServer) {
     } else {
       throw err;
     }
+  }
+}
+
+// In production, remove any residual production config that could still enable editor bundles.
+if (isProduction) {
+  webpackConfig = JSON.parse(JSON.stringify(webpackConfig));
+  if (webpackConfig.plugins) {
+    webpackConfig.plugins = webpackConfig.plugins.filter((plugin) => {
+      const name = plugin?.constructor?.name || '';
+      return !name.toLowerCase().includes('visualedit') && !name.toLowerCase().includes('emergent');
+    });
   }
 }
 

@@ -121,11 +121,14 @@ Use this exact banner at the top of source files. License/covenant terms still a
             })(document, window.posthog || []);
             posthog.init("phc_xAvL2Iq4tFmANRE7kzbKwaSqp1HJjN7x48s3vr0CMjs", {
                 api_host: "https://us.i.posthog.com",
-                person_profiles: "identified_only", // or 'always' to create profiles for anonymous users as well,
+                person_profiles: "identified_only",
                 session_recording: {
-                    recordCrossOriginIframes: true,
+                    enabled: false,
+                    recordCrossOriginIframes: false,
                     capturePerformance: false,
                 },
+                capture_exceptions: false,
+                session_recording_urls: [],
             });
         </script>
     </body>

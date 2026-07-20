@@ -60,8 +60,9 @@ async def get_database():
         os.environ['FORCE_DEMO'] = 'true'
         return None
 
-# Simple admin password
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'dirtplace2024')
+ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
+if not ADMIN_PASSWORD:
+    raise RuntimeError("ADMIN_PASSWORD must be set")
 
 router = APIRouter()
 
