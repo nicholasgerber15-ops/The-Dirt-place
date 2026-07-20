@@ -23,13 +23,13 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List
 import uuid
 from datetime import datetime, timezone
-from routes.contact import router as contact_router
-from routes.ecommerce import router as ecommerce_router
-from routes.admin import router as admin_router
-from routes.auth import router as auth_router
-from routes.scheduling import router as scheduling_router
+from backend.routes.contact import router as contact_router
+from backend.routes.ecommerce import router as ecommerce_router
+from backend.routes.admin import router as admin_router
+from backend.routes.auth import router as auth_router
+from backend.routes.scheduling import router as scheduling_router
 try:
-    from routes.upload import router as upload_router
+    from backend.routes.upload import router as upload_router
 except Exception:
     upload_router = None
 
