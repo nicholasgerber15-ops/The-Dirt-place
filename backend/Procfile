@@ -8,4 +8,4 @@ Use this exact banner at the top of source files. License/covenant terms still a
 #    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
 #                                                              #
 ################################################################
-web: uvicorn server:app --host 0.0.0.0 --port $PORT
+web: uvicorn backend.server:app --host 0.0.0.0 --port $PORT
