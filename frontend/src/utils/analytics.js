@@ -1,14 +1,3 @@
-UNIVERSAL NRG-CO HEADER BLOCK
-Use this exact banner at the top of source files. License/covenant terms still apply.
-
-################################################################
-#                                                              #
-#                ⚡  N R G - C O  ⚡                          #
-#                                                              #
-#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
-#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
-#                                                              #
-################################################################
 // Google Analytics 4 & Facebook Pixel Event Tracking Utility
 export const GA_MEASUREMENT_ID = 'G-5K89G39NX7';
 export const FB_PIXEL_ID = process.env.REACT_APP_FB_PIXEL_ID || 'YOUR_PIXEL_ID_HERE'; // Set REACT_APP_FB_PIXEL_ID in Render

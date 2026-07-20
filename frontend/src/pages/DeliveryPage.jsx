@@ -1,14 +1,3 @@
-UNIVERSAL NRG-CO HEADER BLOCK
-Use this exact banner at the top of source files. License/covenant terms still apply.
-
-################################################################
-#                                                              #
-#                ⚡  N R G - C O  ⚡                          #
-#                                                              #
-#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
-#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
-#                                                              #
-################################################################
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Check, Phone, ChevronDown, ChevronUp, ArrowLeft, Truck, Clock, DollarSign } from 'lucide-react';
