@@ -22,9 +22,9 @@ router = APIRouter(prefix="/ai", tags=["AI Assistant"])
 
 
 @router.post("/chat", response_model=ChatResponse)
-async def chat(data: ChatMessage, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)):
+async def chat(data: ChatMessage, db: AsyncSession = Depends(get_db), user: Optional[User] = Depends(get_current_user_optional)):
     session_id = data.session_id or str(uuid.uuid4())
-    response = await ai_assistant.chat(user.id, session_id, data.message, db)
+    response = await ai_assistant.chat(session_id, data.message, db, user_id=user.id if user else None)
     return ChatResponse(response=response, session_id=session_id)
 
 
