@@ -11,7 +11,8 @@
 ################################################################
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-import jwt
+from jose import jwt
+from jose import exceptions as jwt_exceptions
 import bcrypt
 from datetime import datetime, timedelta
 import os
@@ -57,9 +58,9 @@ def verify_driver(credentials: HTTPAuthorizationCredentials = Depends(security))
         if role != "driver":
             raise HTTPException(status_code=403, detail="Driver access required")
         return payload.get("sub")
-    except jwt.ExpiredSignatureError:
+    except jwt_exceptions.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
+    except jwt_exceptions.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 @router.post("/register")
@@ -144,9 +145,9 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
         if user_id is None:
             raise HTTPException(status_code=401, detail="Invalid token")
         return user_id
-    except jwt.ExpiredSignatureError:
+    except jwt_exceptions.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")
-    except jwt.InvalidTokenError:
+    except jwt_exceptions.InvalidTokenError:
         raise HTTPException(status_code=401, detail="Invalid token")
 
 @router.get("/me")
