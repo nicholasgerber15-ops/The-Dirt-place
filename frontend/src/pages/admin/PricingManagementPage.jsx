@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { DollarSign, LogOut, Edit2, X, Check, Plus, Package, Upload, Download as DownloadIcon } from 'lucide-react';
 import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
 const API = `${BACKEND_URL}/api`;
 
 const UNIT_TYPES = ['yard', 'half-yard', 'ton', 'bag', 'each', 'pallet', 'basket', 'gallon', 'pound', 'set', 'flat', 'mile', 'day', 'rental', 'percentage'];

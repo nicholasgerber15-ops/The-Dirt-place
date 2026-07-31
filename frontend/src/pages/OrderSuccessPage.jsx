@@ -7,7 +7,7 @@ import axios from 'axios';
 import SEO from '../components/SEO';
 import RecommendedPros from '../components/RecommendedPros';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
 const API = `${BACKEND_URL}/api`;
 
 const OrderSuccessPage = () => {

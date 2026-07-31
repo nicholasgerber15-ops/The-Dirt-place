@@ -1,0 +1,76 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "materials": "Materiales",
+    "contact": "Contacto",
+    "serviceAreas": "Zonas de Servicio"
+  },
+  "home": {
+    "hero": {
+      "title": "Materiales para paisajismo en Boerne, Texas",
+      "subtitle": "Servicio confiable y precios honestos. Entregamos en todo Texas Hill Country.",
+      "cta": "Ver Materiales"
+    },
+    "whatWeOffer": "Lo Que Ofrecemos",
+    "whatWeOfferSub": "Materiales de paisajismo de alta calidad para cada proyecto",
+    "viewAll": "Ver Todos los Materiales",
+    "whyChooseUs": "Por Qué Elegirnos",
+    "qualityGuaranteed": "Calidad Garantizada",
+    "qualityGuaranteedDesc": "Cada carga cumple con nuestros altos estándares",
+    "fastTurnaround": "Entrega Rápida",
+    "fastTurnaroundDesc": "Servicio rápido cuando lo necesites",
+    "since2022": "Desde 2022",
+    "since2022Desc": "Confianza de la comunidad",
+    "professionalService": "Servicio Profesional",
+    "professionalServiceDesc": "Conductores y equipo expertos",
+    "unableLoadMaterials": "No se pudieron cargar materiales en este momento. Llámenos al (830) 336-3713.",
+    "installationTitle": "¿Necesitas También Instalación?",
+    "installationSubtitle": "Entregamos los materiales y te conectamos con instaladores locales confiables.",
+    "orderMaterials": "Ordenar Materiales",
+    "professionalInstallation": "Instalación Profesional",
+    "enjoyLandscape": "Disfruta Tu Nuevo Paisaje",
+    "installReferral": "Llama para Referencia: (830) 336-3713",
+    "requestReferral": "Solicitar Referencia",
+    "partnership": "Asociación: The Dirt Place + Instaladores Locales de Confianza",
+    "ourCustomersSay": "Lo Que Dicen Nuestros Clientes",
+    "aboutTitle": "Acerca de The Dirt Place"
+  },
+  "materials": {
+    "title": "Nuestros Materiales",
+    "subtitle": "Suministramos tierra, grava, arena, mantillo y roca para proyectos residenciales, ranchos y comerciales. Cada carga cumple con nuestros estándares.",
+    "searchPlaceholder": "Buscar materiales...",
+    "allCategories": "Todas las Categorías",
+    "noMatch": "No hay materiales que coincidan con tu búsqueda.",
+    "noAvailable": "No hay materiales disponibles en este momento.",
+    "clearFilters": "Limpiar Filtros",
+    "needHelp": "¿Necesitas Ayuda para Elegir?",
+    "needHelpDesc": "Nuestro equipo te ayuda a elegir los materiales ideales. Entradas, jardines o proyectos comerciales.",
+    "contactUs": "Contáctanos",
+    "callNow": "Llamar Ahora",
+    "qualityTrust": "Calidad en la Que Confías",
+    "qualityTrustDesc": "Cada material se selecciona e inspecciona para cumplir rigurosos estándares.",
+    "instructions": "Instrucciones",
+    "quantity": "Cantidad",
+    "minOrder": "Pedido Mínimo",
+    "available": "Disponible",
+    "addToCart": "Agregar al Carrito",
+    "added": "¡Agregado!",
+    "inStock": "En Stock",
+    "lowStock": "Poco Stock",
+    "availableOnRequest": "Disponible Bajo Pedido"
+  },
+  "categories": {
+    "Landscaping Blocks": "Bloques para Paisajismo",
+    "Aggregates and Gravels": "Agregados y Gravas",
+    "Dirt Mulch and Soils": "Tierra, Mantillo y Suelos",
+    "Decorative Stones": "Piedras Decorativas"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "language": "English",
+    "chatTitle": "Chat de The Dirt Place",
+    "chatSubtitle": "Pregúntanos lo que quieras",
+    "chatPlaceholder": "Escribe tu mensaje...",
+    "send": "Enviar"
+  }
+}

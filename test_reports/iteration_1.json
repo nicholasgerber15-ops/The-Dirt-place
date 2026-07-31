@@ -1,14 +1,3 @@
-UNIVERSAL NRG-CO HEADER BLOCK
-Use this exact banner at the top of source files. License/covenant terms still apply.
-
-################################################################
-#                                                              #
-#                ⚡  N R G - C O  ⚡                          #
-#                                                              #
-#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
-#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
-#                                                              #
-################################################################
 {
   "summary": "Completed comprehensive end-to-end testing of The Dirt Place website. All major features working correctly including homepage with parallax effects, materials page with calculator, contact form with email integration, and responsive design across devices.",
   

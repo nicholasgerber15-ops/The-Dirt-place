@@ -1,0 +1,24 @@
+app = "theboernedirtplace"
+primary_region = "iad"
+hostname = "theboernedirtplace.com"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  [http_service.concurrency]
+    hard_limit = 1000
+    soft_limit = 500
+    type = "requests"
+
+  [[http_service.http_checks]]
+    interval = 30000
+    grace_period = "30s"
+    method = "GET"
+    path = "/"
+    protocol = "http"
+    timeout = 5000

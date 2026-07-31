@@ -12,6 +12,8 @@
 import os
 import asyncio
 import logging
+import html
+import math
 import resend
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr, field_validator
@@ -133,23 +135,23 @@ async def submit_contact_form(request: ContactFormRequest):
                 <div class="content">
                     <div class="field">
                         <span class="label">Name:</span>
-                        <div class="value">{request.name}</div>
+                        <div class="value">{html.escape(request.name)}</div>
                     </div>
                     <div class="field">
                         <span class="label">Phone:</span>
-                        <div class="value">{request.phone}</div>
+                        <div class="value">{html.escape(request.phone)}</div>
                     </div>
                     <div class="field">
                         <span class="label">Email:</span>
-                        <div class="value">{request.email}</div>
+                        <div class="value">{html.escape(str(request.email))}</div>
                     </div>
                     <div class="field">
                         <span class="label">Material Requested:</span>
-                        <div class="value">{request.material if request.material else 'Not specified'}</div>
+                        <div class="value">{html.escape(request.material) if request.material else 'Not specified'}</div>
                     </div>
                     <div class="field">
                         <span class="label">Message:</span>
-                        <div class="value">{request.message}</div>
+                        <div class="value">{html.escape(request.message)}</div>
                     </div>
                 </div>
                 <div class="footer">
@@ -412,8 +414,9 @@ async def calculate_material(request: CalculatorRequest):
         material = request.material if request.material in material_info else "Topsoil"
         info = material_info[material]
         
-        # Add 10% for waste and settling
-        recommended_amount = volume_cubic_yards * 1.1
+        # Add 10% for waste and settling, then round up to an orderable half-yard.
+        raw_recommended_amount = volume_cubic_yards * 1.1
+        recommended_amount = math.ceil(raw_recommended_amount * 2) / 2
         
         return {
             "status": "success",
@@ -425,13 +428,15 @@ async def calculate_material(request: CalculatorRequest):
             },
             "volume_cubic_feet": round(volume_cubic_feet, 2),
             "volume_cubic_yards": round(volume_cubic_yards, 2),
-            "recommended_amount": round(recommended_amount, 2),
+            "recommended_amount": recommended_amount,
             "unit": info["unit"],
             "material": material,
             "recommendation": info["recommendation"],
             "note": "Recommended amount includes 10% extra for settling and waste."
         }
         
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Calculator error: {str(e)}")
         raise HTTPException(

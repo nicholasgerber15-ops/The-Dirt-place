@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Package, DollarSign, Truck, LogOut, Menu, X, Home, List, Box, Settings, BarChart3, Mail, Calendar, Plus, FileText, Users } from 'lucide-react';
+import { Package, DollarSign, Truck, LogOut, Menu, X, Home, List, Box, Settings, BarChart3, Mail, Calendar, Plus, FileText, Users, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
@@ -38,6 +38,8 @@ const AdminDashboard = () => {
     zip_code: '',
     status: 'processing'
   });
+  const [configStatus, setConfigStatus] = useState(null);
+  const [showConfigModal, setShowConfigModal] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('admin_token');
@@ -53,6 +55,7 @@ const AdminDashboard = () => {
     }
 
     fetchStats();
+    fetchConfigStatus();
   }, [navigate]);
 
   const fetchStats = async () => {
@@ -72,6 +75,22 @@ const AdminDashboard = () => {
       setStats(defaultStats);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchConfigStatus = async () => {
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await axios.get(`${API}/admin/config-status`, {
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 5000
+      });
+      setConfigStatus(response.data);
+      if (!response.data.all_set && response.data.missing?.length) {
+        setShowConfigModal(true);
+      }
+    } catch (error) {
+      console.warn('Config status check failed');
     }
   };
   
@@ -196,6 +215,45 @@ const AdminDashboard = () => {
     return (
       <div className="min-h-screen bg-[#FAF9F6] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#D9A441]"></div>
+      </div>
+    );
+  }
+
+  if (showConfigModal && configStatus?.missing?.length) {
+    return (
+      <div className="min-h-screen bg-[#FAF9F6] flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-xl max-w-lg w-full p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <AlertTriangle className="text-yellow-600" size={28} />
+            <h2 className="text-2xl font-bold text-[#3B2F2F]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+              Setup Required
+            </h2>
+          </div>
+          <p className="text-[#6B4F3F] mb-4" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            The following API keys and tokens are not configured. Add them in your deployment environment variables to enable full functionality.
+          </p>
+          <ul className="list-disc pl-5 mb-6 space-y-2">
+            {configStatus.missing.map((item) => (
+              <li key={item.key} className="text-sm text-[#3B2F2F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <span className="font-semibold">{item.label}</span>
+                <br />
+                <code className="text-xs bg-gray-100 px-2 py-1 rounded">{item.key}</code>
+              </li>
+            ))}
+          </ul>
+          <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-6">
+            <p className="text-xs text-yellow-800" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              These values must be added to your hosting environment (for example Render, Railway, or Cloudflare Worker secrets). They are never displayed after being saved.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowConfigModal(false)}
+            className="w-full bg-[#D9A441] text-white py-3 rounded font-semibold hover:bg-[#B08D33] transition-colors"
+            style={{ fontFamily: 'Montserrat, sans-serif' }}
+          >
+            I understand, continue to dashboard
+          </button>
+        </div>
       </div>
     );
   }

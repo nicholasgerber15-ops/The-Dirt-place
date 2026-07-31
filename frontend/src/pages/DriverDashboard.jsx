@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapPin, LogOut, Truck, Phone, Navigation, Clock, Check, Play, AlertTriangle } from 'lucide-react';
 import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
 const API = `${BACKEND_URL}/api`;
 
 const DriverDashboard = () => {

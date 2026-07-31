@@ -3,6 +3,7 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { CartProvider } from './context/CartContext';
+import { LanguageProvider } from './context/LanguageContext';
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import SeasonalPopup from "./components/SeasonalPopup";
@@ -205,13 +206,15 @@ function AppContent() {
 function App() {
   return (
     <HelmetProvider>
-      <CartProvider>
-        <div className="App">
-          <BrowserRouter>
-            <AppContent />
-          </BrowserRouter>
-        </div>
-      </CartProvider>
+      <LanguageProvider>
+        <CartProvider>
+          <div className="App">
+            <BrowserRouter>
+              <AppContent />
+            </BrowserRouter>
+          </div>
+        </CartProvider>
+      </LanguageProvider>
     </HelmetProvider>
   );
 }

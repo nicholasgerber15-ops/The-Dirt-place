@@ -61,8 +61,6 @@ async def get_database():
         return None
 
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
-if not ADMIN_PASSWORD:
-    raise RuntimeError("ADMIN_PASSWORD must be set")
 
 router = APIRouter()
 
@@ -76,6 +74,8 @@ def verify_admin(authorization: Optional[str] = Header(None)):
     """
     Simple admin verification
     """
+    if not ADMIN_PASSWORD:
+        raise HTTPException(status_code=503, detail="Admin authentication is not configured")
     if not authorization or authorization != f"Bearer {ADMIN_PASSWORD}":
         raise HTTPException(status_code=401, detail="Unauthorized")
     return True
@@ -85,6 +85,8 @@ async def admin_login(credentials: AdminLogin):
     """
     Admin login
     """
+    if not ADMIN_PASSWORD:
+        raise HTTPException(status_code=503, detail="Admin authentication is not configured")
     if credentials.password == ADMIN_PASSWORD:
         return {
             "success": True,
@@ -1067,3 +1069,32 @@ async def get_popup_settings_public():
     except Exception as e:
         logger.error(f"Failed to fetch popup settings: {str(e)}")
         return DEFAULT_POPUP_SETTINGS
+
+@router.get("/config-status", dependencies=[Depends(verify_admin)])
+async def get_config_status():
+    """
+    Return which required API keys / environment variables are configured.
+    """
+    required = {
+        "JWT_SECRET_KEY": "JWT authentication",
+        "ADMIN_PASSWORD": "Admin authentication",
+        "MONGO_URL": "Mongo database",
+        "RESEND_API_KEY": "Transactional email (Resend)",
+        "STRIPE_API_KEY": "Stripe payments",
+        "QUICKBOOKS_CLIENT_ID": "QuickBooks Online integration",
+        "QUICKBOOKS_CLIENT_SECRET": "QuickBooks Online integration",
+        "GOOGLE_MAPS_API_KEY": "Delivery distance lookup",
+    }
+    configured = {}
+    missing = []
+    for key, label in required.items():
+        value = os.environ.get(key, "").strip()
+        is_set = bool(value) and "***" not in value and "example" not in value.lower()
+        configured[key] = is_set
+        if not is_set:
+            missing.append({"key": key, "label": label})
+    return {
+        "configured": configured,
+        "missing": missing,
+        "all_set": len(missing) == 0,
+    }

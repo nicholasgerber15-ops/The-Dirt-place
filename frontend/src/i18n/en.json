@@ -1,0 +1,76 @@
+{
+  "nav": {
+    "home": "Home",
+    "materials": "Materials",
+    "contact": "Contact",
+    "serviceAreas": "Service Areas"
+  },
+  "home": {
+    "hero": {
+      "title": "Premium Dirt, Gravel & Landscape Materials in Boerne, Texas",
+      "subtitle": "Reliable service and honest pricing. We deliver across the Texas Hill Country.",
+      "cta": "View Materials"
+    },
+    "whatWeOffer": "What We Offer",
+    "whatWeOfferSub": "High-quality landscape materials for every project",
+    "viewAll": "View All Materials",
+    "whyChooseUs": "Why Choose Us",
+    "qualityGuaranteed": "Quality Guaranteed",
+    "qualityGuaranteedDesc": "Every load meets our high standards",
+    "fastTurnaround": "Fast Turnaround",
+    "fastTurnaroundDesc": "Quick service when you need it",
+    "since2022": "Since 2022",
+    "since2022Desc": "Trusted by the community",
+    "professionalService": "Professional Service",
+    "professionalServiceDesc": "Expert drivers and equipment",
+    "unableLoadMaterials": "Unable to load materials right now. Please call us at (830) 336-3713 to place your order.",
+    "installationTitle": "Need Installation Too?",
+    "installationSubtitle": "We deliver the materials — and can connect you with trusted local installers.",
+    "orderMaterials": "Order Materials",
+    "professionalInstallation": "Professional Installation",
+    "enjoyLandscape": "Enjoy Your New Landscape",
+    "installReferral": "Call for Install Referral: (830) 336-3713",
+    "requestReferral": "Request Referral",
+    "partnership": "Partnership: The Dirt Place + Trusted Local Installers",
+    "ourCustomersSay": "What Our Customers Say",
+    "aboutTitle": "About The Dirt Place"
+  },
+  "materials": {
+    "title": "Our Materials",
+    "subtitle": "We supply high-quality dirt, gravel, sand, mulch, and rock for residential, ranch, and commercial projects. Every load meets our quality standards.",
+    "searchPlaceholder": "Search materials...",
+    "allCategories": "All Categories",
+    "noMatch": "No materials match your search.",
+    "noAvailable": "No materials available at the moment.",
+    "clearFilters": "Clear Filters",
+    "needHelp": "Need Help Choosing?",
+    "needHelpDesc": "Not sure which material is right for your project? Our experienced team can help you select the perfect materials for your specific needs. Whether you're building a driveway, creating a garden bed, or working on a large commercial project, we've got you covered.",
+    "contactUs": "Contact Us",
+    "callNow": "Call Now",
+    "qualityTrust": "Quality You Can Trust",
+    "qualityTrustDesc": "Every material we deliver is carefully sourced and inspected to ensure it meets our rigorous quality standards. We stand behind every load with our satisfaction guarantee.",
+    "instructions": "Instructions",
+    "quantity": "Quantity",
+    "minOrder": "Min",
+    "available": "Available",
+    "addToCart": "Add to Cart",
+    "added": "Added!",
+    "inStock": "In Stock",
+    "lowStock": "Low Stock",
+    "availableOnRequest": "Available on Request"
+  },
+  "categories": {
+    "Landscaping Blocks": "Landscaping Blocks",
+    "Aggregates and Gravels": "Aggregates and Gravels",
+    "Dirt Mulch and Soils": "Dirt Mulch and Soils",
+    "Decorative Stones": "Decorative Stones"
+  },
+  "common": {
+    "loading": "Loading...",
+    "language": "Español",
+    "chatTitle": "The Dirt Place Chat",
+    "chatSubtitle": "Ask us anything!",
+    "chatPlaceholder": "Type your message...",
+    "send": "Send"
+  }
+}

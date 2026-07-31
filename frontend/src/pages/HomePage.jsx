@@ -6,8 +6,9 @@ import Gallery from '../components/Gallery';
 import SEO from '../components/SEO';
 import LocalBusinessSchema from '../components/LocalBusinessSchema';
 import axios from 'axios';
+import { useLanguage } from '../context/LanguageContext';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
 const API = `${BACKEND_URL}/api`;
 const DEFAULT_HERO_IMAGE = 'https://cdn.theboernedirtplace.com/images/IMG_0483.jpg';
 
@@ -44,6 +45,7 @@ const HomePage = () => {
   const [heroImage, setHeroImage] = useState(DEFAULT_HERO_IMAGE);
   const [materials, setMaterials] = useState([]);
   const [loadingMaterials, setLoadingMaterials] = useState(true);
+  const { language, t } = useLanguage();
 
   useEffect(() => {
     fetchHeroImage();
@@ -174,37 +176,64 @@ const HomePage = () => {
       <section className="py-24 bg-[#FAF9F6]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 scroll-animate">
-            <h2 
+            <h2
               className="text-5xl md:text-6xl font-bold text-[#3B2F2F] mb-4"
               style={{ fontFamily: 'Bebas Neue, sans-serif' }}
             >
-              What We Offer
+              {t('home.whatWeOffer')}
             </h2>
             <div className="w-24 h-1 bg-[#D9A441] mx-auto mb-6"></div>
-            <p 
+            <p
               className="text-lg text-[#6B4F3F] max-w-2xl mx-auto"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              High-quality landscape materials for every project
+              {t('home.whatWeOfferSub')}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {loadingMaterials ? (
-              <div className="col-span-full flex justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-[#D9A441]"></div>
-              </div>
-            ) : materials.length > 0 ? (
-              materials.map((material, index) => (
-                <MaterialCard key={material.id} material={material} index={index} />
-              ))
-            ) : (
-              <div className="col-span-full text-center py-12">
-                <p className="text-lg text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-                  Unable to load materials right now. Please call us at (830) 336-3713 to place your order.
-                </p>
-              </div>
-            )}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                title: language === 'es' ? 'Bloques para Paisajismo' : 'Landscaping Blocks',
+                image: 'https://cdn.theboernedirtplace.com/images/landscaping-blocks.jpg',
+                link: '/materials'
+              },
+              {
+                title: language === 'es' ? 'Agregados y Gravas' : 'Aggregates and Gravels',
+                image: 'https://cdn.theboernedirtplace.com/images/aggregates-gravels.jpg',
+                link: '/materials'
+              },
+              {
+                title: language === 'es' ? 'Tierra, Mantillo y Suelos' : 'Dirt Mulch and Soils',
+                image: 'https://cdn.theboernedirtplace.com/images/dirt-mulch-soils.jpg',
+                link: '/materials'
+              },
+              {
+                title: language === 'es' ? 'Piedras Decorativas' : 'Decorative Stones',
+                image: 'https://cdn.theboernedirtplace.com/images/decorative-stones.jpg',
+                link: '/materials'
+              }
+            ].map((category, index) => (
+              <Link
+                key={index}
+                to={category.link}
+                className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 scroll-animate"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <div className="aspect-[4/3] bg-cover bg-center" style={{ backgroundImage: `url('${category.image}')` }}></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#3B2F2F]/80 via-[#3B2F2F]/20 to-transparent"></div>
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-center">
+                  <h3
+                    className="text-2xl md:text-3xl font-bold text-[#FAF9F6] mb-2"
+                    style={{ fontFamily: 'Bebas Neue, sans-serif' }}
+                  >
+                    {category.title}
+                  </h3>
+                  <div className="w-12 h-0.5 bg-[#D9A441] mx-auto group-hover:w-24 transition-all duration-300"></div>
+                </div>
+              </Link>
+            ))}
           </div>
 
           <div className="text-center mt-12 scroll-animate">
@@ -213,7 +242,7 @@ const HomePage = () => {
               className="inline-flex items-center space-x-2 px-8 py-4 bg-[#3B2F2F] text-[#FAF9F6] text-lg font-bold rounded hover:bg-[#D9A441] hover:text-[#3B2F2F] hover:shadow-xl transform hover:scale-105 transition-all duration-300"
               style={{ fontFamily: 'Montserrat, sans-serif' }}
             >
-              <span>View All Materials</span>
+              <span>{t('home.viewAll')}</span>
               <ArrowRight size={20} />
             </Link>
           </div>

@@ -12,6 +12,7 @@
 import os
 import asyncio
 import logging
+import math
 import stripe
 from datetime import datetime
 from typing import Optional
@@ -169,15 +170,15 @@ async def calculate_delivery_fee(delivery_address: str, date_str: str, total_yar
     try:
         dt = datetime.fromisoformat(date_str)
         if dt.weekday() == 6 and not SUNDAY_DELIVERY:
-            return None, "We do not deliver on Sundays. Please select another day.", distance or 0
+            return None, "We do not deliver on Sundays. Please select another day.", distance or 0, 0
     except:
         pass
 
     if distance and distance > 8 and total_yards < 2:
-        return None, f"After 8 miles a minimum of 2-3 yards is required for delivery. Your total is {total_yards} yards.", distance
+        return None, f"After 8 miles a minimum of 2-3 yards is required for delivery. Your total is {total_yards} yards.", distance, 0
 
     if total_yards < MIN_ORDER_YARDS:
-        return None, f"Minimum order is {MIN_ORDER_YARDS} yard(s) for delivery (1/2 yard for pickup).", distance or 0
+        return None, f"Minimum order is {MIN_ORDER_YARDS} yard(s) for delivery (1/2 yard for pickup).", distance or 0, 0
 
     num_trucks = calculate_trucks_needed(cart_items or [])
     per_truck_fee = DELIVERY_FEE_BASE + ((distance or 0) * DELIVERY_FEE_PER_MILE)
@@ -199,24 +200,49 @@ class CheckoutCreateRequest(BaseModel):
 @router.post("/create-payment-intent")
 async def create_payment_intent(request: CheckoutCreateRequest):
     try:
-        total_material_yards = sum(item.get('quantity', 0) for item in request.cart_items)
+        if not request.cart_items:
+            raise HTTPException(status_code=400, detail="Your cart is empty")
+
+        products_by_id = {product["material_id"]: product for product in PRODUCTS}
+        normalized_items = []
+        total_material_yards = 0.0
+        for submitted_item in request.cart_items:
+            product = products_by_id.get(str(submitted_item.get("id", "")))
+            if not product:
+                raise HTTPException(status_code=400, detail="One or more cart items are no longer available")
+            quantity = float(submitted_item.get("quantity", 0))
+            if not math.isfinite(quantity) or quantity <= 0:
+                raise HTTPException(status_code=400, detail=f"Invalid quantity for {product['name']}")
+            unit_type = product.get("unit_type", "each")
+            if unit_type == "yard":
+                total_material_yards += quantity
+            elif unit_type == "half-yard":
+                total_material_yards += quantity * 0.5
+            normalized_items.append({
+                "id": product["material_id"],
+                "sku": product["material_id"],
+                "name": product["name"],
+                "quantity": quantity,
+                "unit": unit_type,
+                "price": float(product["price_per_unit"]),
+            })
 
         delivery_fee = 0
         distance = 0
         if request.needs_delivery:
             delivery_fee, error, distance, num_trucks = await calculate_delivery_fee(
-                request.delivery_address, request.delivery_date or datetime.now().isoformat(), total_material_yards, request.cart_items
+                request.delivery_address, request.delivery_date or datetime.now().isoformat(), total_material_yards, normalized_items
             )
             if error:
                 raise HTTPException(status_code=400, detail=error)
 
         pallet_fee = 0
-        for item in request.cart_items:
+        for item in normalized_items:
             if item.get('name') in PALLET_ITEMS:
                 pallet_fee += PALLET_FEE
 
         materials_total = 0
-        for item in request.cart_items:
+        for item in normalized_items:
             price = float(item.get('price', 0))
             qty = float(item.get('quantity', 0))
             materials_total += price * qty
@@ -240,7 +266,7 @@ async def create_payment_intent(request: CheckoutCreateRequest):
                 "email": request.customer_email,
                 "phone": request.customer_phone
             },
-            "cart_items": request.cart_items,
+            "cart_items": normalized_items,
             "delivery": {
                 "address": request.delivery_address,
                 "date": request.delivery_date,
@@ -258,6 +284,14 @@ async def create_payment_intent(request: CheckoutCreateRequest):
             "status": "pending_payment",
             "payment_status": "pending",
             "stripe_session_id": None,
+            "integrations": {
+                "quickbooks": {
+                    "status": "pending",
+                    "entity_type": "SalesReceipt",
+                    "entity_id": None,
+                    "last_error": None
+                }
+            },
             "created_at": datetime.utcnow().isoformat(),
             "updated_at": datetime.utcnow().isoformat()
         }
@@ -322,13 +356,15 @@ async def stripe_webhook(request: Request):
         except stripe.error.SignatureVerificationError as e:
             logger.error(f"Stripe webhook signature verification failed: {e}")
             raise HTTPException(status_code=400, detail="Invalid signature")
-    else:
+    elif os.environ.get("DEV_MODE"):
         try:
             data = json.loads(payload)
             event = stripe.Event.construct_from(data, stripe.api_key)
         except Exception as e:
             logger.error(f"Failed to parse webhook payload: {e}")
             raise HTTPException(status_code=400, detail="Invalid payload")
+    else:
+        raise HTTPException(status_code=503, detail="Stripe webhook verification is not configured")
 
     if event["type"] == "payment_intent.succeeded":
         payment_intent = event["data"]["object"]

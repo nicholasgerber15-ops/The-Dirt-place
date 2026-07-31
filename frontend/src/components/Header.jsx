@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingCart } from 'lucide-react';
+import { Menu, X, ShoppingCart, Globe } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { getItemCount } = useCart();
   const cartCount = getItemCount();
+  const { language, toggle } = useLanguage();
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Materials', path: '/materials' },
-    { name: 'Contact', path: '/contact' },
-    { name: 'Service Areas', path: '/service-area/boerne' }
+    { name: language === 'es' ? 'Inicio' : 'Home', path: '/' },
+    { name: language === 'es' ? 'Materiales' : 'Materials', path: '/materials' },
+    { name: language === 'es' ? 'Contacto' : 'Contact', path: '/contact' },
+    { name: language === 'es' ? 'Zonas de Servicio' : 'Service Areas', path: '/service-area/boerne' }
   ];
 
   return (
@@ -67,6 +69,18 @@ const Header = () => {
                 </span>
               )}
             </Link>
+            <button
+              onClick={toggle}
+              className="ml-3 flex items-center gap-2 px-3 py-1.5 bg-[#F4A261]/10 border border-[#F4A261]/30 rounded text-[#F4A261] hover:bg-[#F4A261]/20 transition-colors"
+              aria-label={
+                language === 'en'
+                  ? 'Cambiar a español'
+                  : 'Switch to English'
+              }
+            >
+              <Globe size={16} />
+              <span className="text-sm font-semibold">{language === 'en' ? 'ES' : 'EN'}</span>
+            </button>
           </nav>
 
           {/* Mobile Menu Button */}

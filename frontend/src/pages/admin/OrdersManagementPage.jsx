@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Package, Search, Filter, ChevronLeft, ChevronRight, LogOut, Eye } from 'lucide-react';
 import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
 const API = `${BACKEND_URL}/api`;
 
 const api = axios.create({

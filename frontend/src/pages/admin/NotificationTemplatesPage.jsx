@@ -3,7 +3,7 @@ import { Mail, MessageSquare, Save, Plus, Trash2, Edit } from 'lucide-react';
 import axios from 'axios';
 import { businessInfo } from '../../data/mock';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "";
 const API = `${BACKEND_URL}/api`;
 
 const NotificationTemplatesPage = () => {
