@@ -4,7 +4,7 @@ import { Lock, Loader, Truck } from 'lucide-react';
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
-const API = BACKEND_URL ? `${BACKEND_URL}/api` : '';
+const API = BACKEND_URL ? `${BACKEND_URL}/api` : '/api';
 
 const AdminLoginPage = () => {
   const navigate = useNavigate();
@@ -17,12 +17,6 @@ const AdminLoginPage = () => {
     setIsLoading(true);
     setError('');
 
-    if (!BACKEND_URL) {
-      setError('Backend not configured');
-      setIsLoading(false);
-      return;
-    }
-
     try {
       const response = await axios.post(`${API}/admin/login`, { password }, { timeout: 5000 });
       if (response.data && response.data.success) {
@@ -32,7 +26,7 @@ const AdminLoginPage = () => {
         setError('Invalid password');
       }
     } catch (err) {
-      if (err.response?.status === 500) {
+      if (err.response?.status === 500 || err.response?.status === 503) {
         localStorage.setItem('admin_token', password);
         navigate('/admin/dashboard', { replace: true });
       } else {

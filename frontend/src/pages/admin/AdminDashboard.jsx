@@ -4,7 +4,7 @@ import { Package, DollarSign, Truck, LogOut, Menu, X, Home, List, Box, Settings,
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
-const API = BACKEND_URL ? `${BACKEND_URL}/api` : '';
+const API = BACKEND_URL ? `${BACKEND_URL}/api` : '/api';
 
 const defaultStats = {
   total_orders: 5,
@@ -45,12 +45,6 @@ const AdminDashboard = () => {
     const token = localStorage.getItem('admin_token');
     if (!token) {
       navigate('/admin/login', { replace: true });
-      return;
-    }
-
-    if (!BACKEND_URL) {
-      setStats(defaultStats);
-      setLoading(false);
       return;
     }
 

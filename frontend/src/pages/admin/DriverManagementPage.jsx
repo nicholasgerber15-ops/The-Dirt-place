@@ -4,7 +4,7 @@ import { Calendar, ChevronLeft, ChevronRight, Truck, Clock, MapPin, Phone, Alert
 import axios from 'axios';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
-const API = BACKEND_URL ? `${BACKEND_URL}/api` : '';
+const API = BACKEND_URL ? `${BACKEND_URL}/api` : '/api';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
