@@ -91,8 +91,8 @@ const MaterialCard = ({ material, index }) => {
             height="256"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = '/images/IMG_0477.jpg';
+              e.target.onerror = null;
+              e.target.src = 'https://cdn.theboernedirtplace.com/images/IMG_0477.jpg';
             }}
           />
         </picture>
