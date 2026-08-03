@@ -1,0 +1,23 @@
+app = "theboernedirtplace-api"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+
+  [http_service.concurrency]
+    type = "requests"
+    hard_limit = 1000
+    soft_limit = 500
+
+[env]
+  FORCE_DEMO = "true"
+  CORS_ORIGINS = "https://theboernedirtplace.com,https://the-dirt-place.onrender.com"
+  ADMIN_PASSWORD = "dirtplace2024"
+  R2_BUCKET_NAME = "dirt-place-images"
+  CDN_BASE = "https://cdn.theboernedirtplace.com"

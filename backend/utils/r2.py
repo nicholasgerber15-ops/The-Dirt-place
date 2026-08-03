@@ -23,7 +23,13 @@ R2_BUCKET_NAME = os.environ.get('R2_BUCKET_NAME', 'the-dirt-place')
 R2_ACCOUNT_ID = os.environ.get('R2_ACCOUNT_ID')
 R2_PUBLIC_URL = os.environ.get('R2_PUBLIC_URL')
 
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
+SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
+SUPABASE_BUCKET = os.environ.get('SUPABASE_BUCKET', 'dirt-place-images')
+
 _client = None
+_supabase_client = None
+
 
 def get_r2_client():
     global _client
@@ -47,38 +53,80 @@ def get_r2_client():
     return _client
 
 
+def get_supabase_client():
+    global _supabase_client
+    if _supabase_client is not None:
+        return _supabase_client
+
+    if not all([SUPABASE_URL, SUPABASE_KEY]):
+        logger.warning("Supabase credentials not configured")
+        return None
+
+    try:
+        from supabase import create_client
+        _supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
+        return _supabase_client
+    except Exception as e:
+        logger.error(f"Supabase client init failed: {e}")
+        return None
+
+
 def get_public_url(key: str) -> str:
     if R2_PUBLIC_URL:
         return f"{R2_PUBLIC_URL.rstrip('/')}/{key}"
-    return f"https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com/{R2_BUCKET_NAME}/{key}"
+    if R2_ACCOUNT_ID:
+        return f"https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com/{R2_BUCKET_NAME}/{key}"
+    if SUPABASE_URL:
+        return f"{SUPABASE_URL.rstrip('/')}/storage/v1/object/public/{SUPABASE_BUCKET}/{key}"
+    return f"https://cdn.theboernedirtplace.com/{key}"
 
 
 def upload_file(file_bytes: bytes, key: str, content_type: str) -> str | None:
     client = get_r2_client()
-    if not client:
-        return None
+    if client:
+        try:
+            client.put_object(
+                Bucket=R2_BUCKET_NAME,
+                Key=key,
+                Body=file_bytes,
+                ContentType=content_type
+            )
+            return get_public_url(key)
+        except Exception as e:
+            logger.error(f"R2 upload failed for {key}: {e}")
 
-    try:
-        client.put_object(
-            Bucket=R2_BUCKET_NAME,
-            Key=key,
-            Body=file_bytes,
-            ContentType=content_type
-        )
-        return get_public_url(key)
-    except Exception as e:
-        logger.error(f"R2 upload failed for {key}: {e}")
-        return None
+    supabase = get_supabase_client()
+    if supabase:
+        try:
+            from supabase.lib.file_config import FileConfig
+            supabase.storage.from_(SUPABASE_BUCKET).upload(
+                path=key,
+                file=file_bytes,
+                file_config=FileConfig(content_type=content_type)
+            )
+            return get_public_url(key)
+        except Exception as e:
+            logger.error(f"Supabase upload failed for {key}: {e}")
+
+    logger.warning("No storage backend configured for upload")
+    return None
 
 
 def delete_file(key: str) -> bool:
     client = get_r2_client()
-    if not client:
-        return False
+    if client:
+        try:
+            client.delete_object(Bucket=R2_BUCKET_NAME, Key=key)
+            return True
+        except Exception as e:
+            logger.error(f"R2 delete failed for {key}: {e}")
 
-    try:
-        client.delete_object(Bucket=R2_BUCKET_NAME, Key=key)
-        return True
-    except Exception as e:
-        logger.error(f"R2 delete failed for {key}: {e}")
-        return False
+    supabase = get_supabase_client()
+    if supabase:
+        try:
+            supabase.storage.from_(SUPABASE_BUCKET).remove([key])
+            return True
+        except Exception as e:
+            logger.error(f"Supabase delete failed for {key}: {e}")
+
+    return False

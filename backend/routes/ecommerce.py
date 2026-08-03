@@ -508,9 +508,88 @@ async def get_checkout_status(session_id: str):
             "note": "Order is being processed. Contact us at (830) 336-3713 if you have questions."
         }
 
+QUICKBOOKS_CLIENT_ID = os.environ.get('QUICKBOOKS_CLIENT_ID')
+QUICKBOOKS_CLIENT_SECRET = os.environ.get('QUICKBOOKS_CLIENT_SECRET')
+QUICKBOOKS_ACCESS_TOKEN = os.environ.get('QUICKBOOKS_ACCESS_TOKEN')
+QUICKBOOKS_REFRESH_TOKEN = os.environ.get('QUICKBOOKS_REFRESH_TOKEN')
+QUICKBOOKS_COMPANY_ID = os.environ.get('QUICKBOOKS_COMPANY_ID')
+QUICKBOOKS_ENVIRONMENT = os.environ.get('QUICKBOOKS_ENVIRONMENT', 'sandbox')
+QUICKBOOKS_MINOR_VERSION = os.environ.get('QUICKBOOKS_MINOR_VERSION', '75')
+
 @router.get("/materials")
 async def get_materials():
     return {"materials": get_all_materials()}
+
+@router.post("/ecommerce/quickbooks/sync")
+async def sync_quickbooks(request: Request):
+    """
+    Sync materials from QuickBooks Online inventory.
+    """
+    if not all([QUICKBOOKS_CLIENT_ID, QUICKBOOKS_CLIENT_SECRET, QUICKBOOKS_ACCESS_TOKEN, QUICKBOOKS_COMPANY_ID]):
+        raise HTTPException(status_code=503, detail="QuickBooks not configured")
+
+    try:
+        import httpx
+        base_url = "https://sandbox-quickbooks.api.intuit.com" if QUICKBOOKS_ENVIRONMENT == "sandbox" else "https://quickbooks.api.intuit.com"
+
+        async with httpx.AsyncClient(timeout=30) as client:
+            if QUICKBOOKS_REFRESH_TOKEN:
+                refresh_headers = {"Content-Type": "application/x-www-form-urlencoded"}
+                refresh_data = {
+                    "grant_type": "refresh_token",
+                    "client_id": QUICKBOOKS_CLIENT_ID,
+                    "client_secret": QUICKBOOKS_CLIENT_SECRET,
+                    "refresh_token": QUICKBOOKS_REFRESH_TOKEN,
+                }
+                token_resp = await client.post(
+                    "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer",
+                    data=refresh_data,
+                    headers=refresh_headers,
+                )
+                token_resp.raise_for_status()
+                tokens = token_resp.json()
+                access_token = tokens.get("access_token", QUICKBOOKS_ACCESS_TOKEN)
+            else:
+                access_token = QUICKBOOKS_ACCESS_TOKEN
+
+            query = "SELECT Id, Name, UnitPrice, QuantityOnHand, SalesTaxCodeRef, ItemCategoryType, TrackQtyOnHand FROM Item WHERE Active = true AND Type IN ('Inventory', 'NonInventory', 'Service', 'OtherCharge')"
+            headers = {
+                "Authorization": f"Bearer {access_token}",
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            }
+            qbo_resp = await client.get(
+                f"{base_url}/v3/company/{QUICKBOOKS_COMPANY_ID}/query",
+                params={"query": query, "minorversion": QUICKBOOKS_MINOR_VERSION},
+                headers=headers,
+            )
+            qbo_resp.raise_for_status()
+            qbo_data = qbo_resp.json()
+            qbo_items = qbo_data.get("QueryResponse", {}).get("Item", [])
+
+            synced = []
+            for item in qbo_items:
+                material = {
+                    "material_id": item.get("Id", ""),
+                    "name": item.get("Name", ""),
+                    "price_per_unit": float(item.get("UnitPrice", 0)),
+                    "unit_type": "each",
+                    "category": item.get("ItemCategoryType", "QuickBooks"),
+                    "description": item.get("Name", ""),
+                    "stock_quantity": int(item.get("QuantityOnHand", 0)) if item.get("TrackQtyOnHand") else 0,
+                    "quickbooks_id": item.get("Id"),
+                    "synced_from": "quickbooks",
+                }
+                synced.append(material)
+
+            return {"materials": synced, "synced_count": len(synced), "source": "quickbooks"}
+
+    except httpx.HTTPStatusError as e:
+        logger.error(f"QuickBooks sync HTTP error: {e.response.status_code} {e.response.text}")
+        raise HTTPException(status_code=502, detail=f"QuickBooks API error: {e.response.status_code}")
+    except Exception as e:
+        logger.error(f"QuickBooks sync failed: {e}")
+        raise HTTPException(status_code=500, detail=f"QuickBooks sync failed: {str(e)}")
 
 @router.get("/delivery-fee")
 async def get_delivery_fee(address: str = ""):
