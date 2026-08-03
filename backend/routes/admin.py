@@ -13,7 +13,12 @@ import os
 import uuid
 import csv
 import io
+import json
+import asyncio
 import logging
+import hashlib
+import secrets
+import time
 from datetime import datetime
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Depends, Header, Request
@@ -72,28 +77,188 @@ class OrderStatusUpdate(BaseModel):
 
 def verify_admin(authorization: Optional[str] = Header(None)):
     """
-    Simple admin verification
+    Simple admin verification — checks stored hash first, then env var.
     """
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    token = authorization.replace("Bearer ", "") if authorization.startswith("Bearer ") else authorization
+    stored_hash = _get_stored_password_hash()
+    if stored_hash:
+        if token != stored_hash:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        return True
     if not ADMIN_PASSWORD:
         raise HTTPException(status_code=503, detail="Admin authentication is not configured")
-    if not authorization or authorization != f"Bearer {ADMIN_PASSWORD}":
+    if token != ADMIN_PASSWORD:
         raise HTTPException(status_code=401, detail="Unauthorized")
     return True
 
 @router.post("/login")
 async def admin_login(credentials: AdminLogin):
     """
-    Admin login
+    Admin login — checks stored hash first, then env var.
     """
+    stored_hash = _get_stored_password_hash()
+    if stored_hash:
+        if _hash_password(credentials.password) == stored_hash:
+            return {"success": True, "token": stored_hash, "message": "Login successful"}
+        raise HTTPException(status_code=401, detail="Invalid password")
     if not ADMIN_PASSWORD:
         raise HTTPException(status_code=503, detail="Admin authentication is not configured")
     if credentials.password == ADMIN_PASSWORD:
         return {
             "success": True,
             "token": ADMIN_PASSWORD,
-            "message": "Login successful"
+            "message": "Login successful",
         }
     raise HTTPException(status_code=401, detail="Invalid password")
+
+# --- Password reset ---
+ADMIN_RESET_FILE = ROOT_DIR / "admin_reset.json"
+RESET_TOKEN_EXPIRY = 3600  # 1 hour
+
+def _load_reset_tokens():
+    if ADMIN_RESET_FILE.exists():
+        try:
+            return json.loads(ADMIN_RESET_FILE.read_text())
+        except Exception:
+            return {}
+    return {}
+
+def _save_reset_tokens(data):
+    ADMIN_RESET_FILE.write_text(json.dumps(data))
+
+def _hash_password(password: str) -> str:
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def _get_stored_password_hash():
+    db = asyncio.run(get_database())
+    if db is not None:
+        try:
+            coll = db["admin"]
+            doc = coll.find_one({"_id": "password"})
+            if doc and "hash" in doc:
+                return doc["hash"]
+        except Exception:
+            pass
+    if ADMIN_RESET_FILE.exists():
+        try:
+            data = json.loads(ADMIN_RESET_FILE.read_text())
+            if "password_hash" in data:
+                return data["password_hash"]
+        except Exception:
+            pass
+    return None
+
+async def _store_password_hash(password_hash: str):
+    db = asyncio.run(get_database())
+    if db is not None:
+        try:
+            coll = db["admin"]
+            coll.update_one(
+                {"_id": "password"},
+                {"$set": {"hash": password_hash, "updated_at": datetime.utcnow().isoformat()}},
+                upsert=True,
+            )
+            return
+        except Exception:
+            pass
+    data = {}
+    if ADMIN_RESET_FILE.exists():
+        try:
+            data = json.loads(ADMIN_RESET_FILE.read_text())
+        except Exception:
+            pass
+    data["password_hash"] = password_hash
+    _save_reset_tokens(data)
+
+@router.post("/forgot-password")
+async def forgot_password(request: Request):
+    """
+    Send a password reset link to the admin email.
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    email = body.get("email", "").strip().lower()
+    if email != "thedirtplace@outlook.com":
+        return {"success": True, "message": "If that email is registered, a reset link has been sent."}
+
+    token = secrets.token_urlsafe(32)
+    tokens = _load_reset_tokens()
+    tokens[token] = {
+        "created_at": datetime.utcnow().isoformat(),
+        "expires_at": datetime.utcnow().timestamp() + RESET_TOKEN_EXPIRY,
+        "used": False,
+    }
+    _save_reset_tokens(tokens)
+
+    reset_link = f"https://theboernedirtplace.com/admin/reset-password?token={token}"
+    try:
+        import asyncio
+        import resend
+        resend.api_key = os.environ.get("RESEND_API_KEY")
+        sender = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
+        params = {
+            "from": sender,
+            "to": ["thedirtplace@outlook.com"],
+            "subject": "Password Reset — The Dirt Place Admin",
+            "html": f"<p>Click the link below to reset your admin password:</p><p><a href='{reset_link}'>{reset_link}</a></p><p>This link expires in 1 hour.</p>",
+        }
+        asyncio.to_thread(resend.Emails.send, params)
+    except Exception as e:
+        logger.error(f"Failed to send reset email: {e}")
+
+    return {"success": True, "message": "If that email is registered, a reset link has been sent."}
+
+@router.post("/reset-password")
+async def reset_password(request: Request):
+    """
+    Reset admin password with a valid reset token.
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    token = body.get("token", "").strip()
+    new_password = body.get("password", "").strip()
+
+    if not token or not new_password or len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="Invalid token or password too short")
+
+    tokens = _load_reset_tokens()
+    token_data = tokens.get(token)
+    if not token_data or token_data.get("used"):
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+    if datetime.utcnow().timestamp() > token_data.get("expires_at", 0):
+        raise HTTPException(status_code=400, detail="Token has expired")
+
+    tokens[token]["used"] = True
+    _save_reset_tokens(tokens)
+
+    password_hash = _hash_password(new_password)
+    await _store_password_hash(password_hash)
+
+    return {"success": True, "message": "Password reset successfully. You can now log in with your new password."}
+
+@router.post("/reset-password/verify-token")
+async def verify_reset_token(request: Request):
+    """
+    Verify a reset token is valid and not expired.
+    """
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+    token = body.get("token", "").strip()
+    tokens = _load_reset_tokens()
+    token_data = tokens.get(token)
+    if not token_data or token_data.get("used"):
+        raise HTTPException(status_code=400, detail="Invalid token")
+    if datetime.utcnow().timestamp() > token_data.get("expires_at", 0):
+        raise HTTPException(status_code=400, detail="Token has expired")
+    return {"success": True, "message": "Token is valid"}
 
 # Demo data for offline mode
 def get_demo_orders():
