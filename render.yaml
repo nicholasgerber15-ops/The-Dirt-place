@@ -1,14 +1,11 @@
-# Render Deployment Configuration
-# Deploys both backend (FastAPI) and frontend (React) on Render's free tier.
-#
+# Render Blueprint for The Dirt Place
 # Usage:
 #   1. Push this file to GitHub.
 #   2. In Render, click "New" → "Blueprint" and connect this repo.
-#   3. Render will create the backend web service and frontend static site.
-#   4. Set secrets in the Render dashboard, not in this file.
+#   3. After creation, add the remaining secrets in the Render dashboard.
+#   4. Trigger a deploy.
 
 services:
-  # Backend: FastAPI web service
   - type: web
     name: dirt-place-backend
     runtime: python
@@ -26,23 +23,80 @@ services:
           property: connectionString
       - key: DB_NAME
         value: the_dirt_place
+      - key: JWT_SECRET_KEY
+        generateValue: true
       - key: ADMIN_JWT_SECRET_KEY
         generateValue: true
       - key: ADMIN_PASSWORD
         generateValue: true
+      - key: ENABLE_DEMO_AUTH
+        value: "false"
+      - key: QUICKBOOKS_ENVIRONMENT
+        value: sandbox
       - key: QUICKBOOKS_REDIRECT_URI
         value: https://dirt-place-backend.onrender.com/api/admin/quickbooks/callback
       - key: QUICKBOOKS_POST_CONNECT_URL
         value: https://dirt-place-frontend.onrender.com/admin/settings?integration=quickbooks
+      - key: QUICKBOOKS_MINOR_VERSION
+        value: "75"
+      - key: QUICKBOOKS_TOKEN_ENCRYPTION_KEY
+        generateValue: true
+      - key: QUICKBOOKS_PRICE_STALE_AFTER_HOURS
+        value: "24"
+      - key: QUICKBOOKS_BLOCK_CHECKOUT_WHEN_STALE
+        value: "false"
+      - key: QUICKBOOKS_EMERGENCY_OVERRIDE_ENABLED
+        value: "false"
+      - key: R2_BUCKET_NAME
+        value: dirt-place-images
       - key: R2_PUBLIC_URL
         value: https://cdn.theboernedirtplace.com
       - key: DEV_MODE
-        value: false
+        value: "false"
       - key: CORS_ORIGINS
         value: https://dirt-place-frontend.onrender.com,https://theboernedirtplace.com,https://www.theboernedirtplace.com
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: SENDER_EMAIL
+        value: onboarding@resend.dev
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: DIRTPLACE_ADDRESS
+        value: 240 TX-46, Boerne, TX 78006
+      - key: TEXAS_TAX_RATE
+        value: "0.0825"
+      - key: CARD_ADMIN_FEE_RATE
+        value: "0.035"
+      - key: DELIVERY_FEE_BASE
+        value: "70"
+      - key: DELIVERY_FEE_PER_MILE
+        value: "5"
+      - key: MIN_ORDER_YARDS
+        value: "1"
+      - key: PICKUP_MIN_ORDER_YARDS
+        value: "0.5"
+      - key: SUNDAY_DELIVERY
+        value: "false"
+      - key: QUICKBOOKS_CLIENT_ID
+        sync: false
+      - key: QUICKBOOKS_CLIENT_SECRET
+        sync: false
+      - key: QUICKBOOKS_COMPANY_ID
+        sync: false
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_ENDPOINT_URL
+        sync: false
     autoDeploy: true
 
-  # Frontend: React static site
   - type: web
     name: dirt-place-frontend
     runtime: static
@@ -57,7 +111,6 @@ services:
         value: https://dirt-place-backend.onrender.com
     autoDeploy: true
 
-# MongoDB database for backend
 databases:
   - name: dirt-place-mongo
     plan: free
