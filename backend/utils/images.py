@@ -20,7 +20,12 @@ from datetime import datetime
 from typing import Optional, Tuple
 
 from fastapi import HTTPException
-from PIL import Image
+try:
+    from PIL import Image
+    _PIL_AVAILABLE = True
+except Exception:
+    Image = None
+    _PIL_AVAILABLE = False
 import boto3
 from botocore.config import Config
 
@@ -66,6 +71,8 @@ def _safe_key(prefix: str, filename: str) -> str:
 
 
 def _process_image(file_bytes: bytes, content_type: str, max_bytes: int = 10 * 1024 * 1024) -> Tuple[Optional[bytes], Optional[str], Optional[Tuple[int, int]]]:
+    if not _PIL_AVAILABLE:
+        raise HTTPException(status_code=500, detail="Image processing is not available on this server")
     if len(file_bytes) > max_bytes:
         raise HTTPException(status_code=400, detail="Image exceeds 10 MB limit")
     try:
@@ -88,7 +95,9 @@ def _process_image(file_bytes: bytes, content_type: str, max_bytes: int = 10 * 1
     return variants, "image/webp", (width, height)
 
 
-def _encode_webp(image: Image.Image) -> bytes:
+def _encode_webp(image: "Image.Image") -> bytes:
+    if not _PIL_AVAILABLE:
+        raise HTTPException(status_code=500, detail="Image processing is not available on this server")
     buffer = io.BytesIO()
     image.save(buffer, format="WEBP", quality=85, method=6)
     return buffer.getvalue()
