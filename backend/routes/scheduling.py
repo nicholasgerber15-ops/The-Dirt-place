@@ -15,7 +15,11 @@ from typing import List, Optional, Dict
 from datetime import datetime, timedelta, date
 import os
 import json
+import logging
+import httpx
+from motor.motor_asyncio import AsyncIOMotorClient
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/scheduling", tags=["scheduling"])
 
 GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY", "")
@@ -23,6 +27,23 @@ THE_DIRT_PLACE_ADDRESS = "411 SA-Evans Rd, Boerne, TX 78006"
 LOAD_TIME_MINUTES = 10
 DELIVERY_TIME_MINUTES = 10
 DRIVER_SPEED_FACTOR = 1.2  # Account for truck speed
+
+class SchedulingRequest(BaseModel):
+    delivery_address: str
+    date: str  # YYYY-MM-DD format
+    duration_minutes: Optional[int] = 30
+
+def get_database():
+    mongo_url = os.environ.get("MONGO_URL")
+    db_name = os.environ.get("DB_NAME")
+    if not mongo_url or not db_name:
+        return None
+    try:
+        client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=5000)
+        return client[db_name]
+    except Exception as e:
+        logger.error(f"MongoDB connection failed: {e}")
+        return None
 
 class DeliverySlot(BaseModel):
     start_time: str
@@ -161,11 +182,23 @@ def generate_time_slots(
     
     return slots
 
-@router.get("/available-slots")
-async def get_available_slots(date: str, address: str = THE_DIRT_PLACE_ADDRESS):
+@router.api_route("/available-slots", methods=["GET", "POST"])
+async def get_available_slots(
+    date: Optional[str] = Query(None),
+    address: Optional[str] = Query(None),
+    request_body: Optional[SchedulingRequest] = None
+):
     """Get available delivery slots and calculate per-mile delivery fee"""
+    delivery_address = address
+    if request_body:
+        date = request_body.date
+        delivery_address = request_body.delivery_address
+    if not date:
+        raise HTTPException(400, "Missing required field: date")
+    if not delivery_address:
+        delivery_address = THE_DIRT_PLACE_ADDRESS
+
     try:
-        # Validate date
         datetime.strptime(date, "%Y-%m-%d")
     except ValueError:
         raise HTTPException(400, "Invalid date format. Use YYYY-MM-DD")
