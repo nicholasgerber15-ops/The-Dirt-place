@@ -11,7 +11,7 @@
   "dependencies": {
     "@langchain/community": "^0.0.30",
     "@langchain/openai": "^0.0.16",
-    "ai": "^2.2.36",
+    "ai": "^7.0.64",
     "axios": "^1.6.7",
     "dotenv": "^16.4.5",
     "filepond": "^4.30.6",
