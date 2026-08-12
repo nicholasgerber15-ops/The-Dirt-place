@@ -250,7 +250,7 @@ const QuickBooksSettingsPage = () => {
           <div className="flex space-x-8">
             <Link to="/admin/dashboard" className="px-4 py-4 text-[#6B4F3F] hover:text-[#D9A441] font-semibold transition-colors">Dashboard</Link>
             <Link to="/admin/inventory" className="px-4 py-4 text-[#6B4F3F] hover:text-[#D9A441] font-semibold transition-colors">Materials & Inventory</Link>
-            <span className="px-4 py-4 border-b-2 border-[#D9A441] text-[#D9A441] font-semibold">QuickBooks</Link>
+            <Link to="/admin/quickbooks" className="px-4 py-4 border-b-2 border-[#D9A441] text-[#D9A441] font-semibold">QuickBooks</Link>
             <Link to="/admin/settings" className="px-4 py-4 text-[#6B4F3F] hover:text-[#D9A441] font-semibold transition-colors">Settings</Link>
           </div>
         </div>
