@@ -33,6 +33,13 @@ class SchedulingRequest(BaseModel):
     date: str  # YYYY-MM-DD format
     duration_minutes: Optional[int] = 30
 
+class BookSlotRequest(BaseModel):
+    date: str
+    time: str
+    order_id: str
+    delivery_address: str = ""
+    customer_name: str = ""
+
 def get_database():
     mongo_url = os.environ.get("MONGO_URL")
     db_name = os.environ.get("DB_NAME")
@@ -254,14 +261,34 @@ async def get_available_slots(
     }
 
 @router.post("/book-slot")
-async def book_slot(date: str, time: str, order_id: str):
+async def book_slot(request: BookSlotRequest):
     """Book a delivery slot"""
-    slot_key = f"{date}-{time}"
+    slot_key = f"{request.date}-{request.time}"
     if booked_slots.get(slot_key):
         raise HTTPException(400, "This slot is already booked")
     
     booked_slots[slot_key] = {
+        "order_id": request.order_id,
+        "delivery_address": request.delivery_address,
+        "customer_name": request.customer_name,
+        "booked_at": datetime.utcnow().isoformat()
+    }
+    return {"status": "booked", "slot": slot_key}
+
+
+async def book_slot_for_order(date: str, time: str, order_id: str, address: str = "", customer_name: str = ""):
+    """
+    Internal helper to book a delivery slot for an order.
+    Called from ecommerce.py after order creation/payment.
+    """
+    slot_key = f"{date}-{time}"
+    if booked_slots.get(slot_key):
+        raise HTTPException(status_code=400, detail="This slot is already booked")
+    
+    booked_slots[slot_key] = {
         "order_id": order_id,
+        "delivery_address": address,
+        "customer_name": customer_name,
         "booked_at": datetime.utcnow().isoformat()
     }
     return {"status": "booked", "slot": slot_key}

@@ -386,7 +386,199 @@ async def create_payment_intent(request: CheckoutCreateRequest):
         logger.error(f"Payment intent creation failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Payment processing failed: {str(e)}")
 
-@router.post("/webhook")
+
+@router.post("/create-order")
+async def create_order_no_payment(request: CheckoutCreateRequest):
+    """
+    Create an order without requiring payment.
+    Used for pickup orders or invoice-later orders.
+    """
+    try:
+        if not request.cart_items:
+            raise HTTPException(status_code=400, detail="Your cart is empty")
+
+        database = get_database()
+        db_materials = {}
+        unavailable = []
+        if database:
+            for submitted_item in request.cart_items:
+                material_id = str(submitted_item.get("id", ""))
+                doc = None
+                if ObjectId.is_valid(material_id):
+                    doc = await database.materials.find_one({"_id": ObjectId(material_id)})
+                if not doc:
+                    doc = await database.materials.find_one({"quickbooks_item_id": material_id})
+                if not doc:
+                    unavailable.append(material_id)
+                    continue
+                db_materials[material_id] = doc
+        else:
+            for submitted_item in request.cart_items:
+                material_id = str(submitted_item.get("id", ""))
+                product = next((p for p in PRODUCTS if p.get("material_id") == material_id), None)
+                if not product:
+                    unavailable.append(material_id)
+                    continue
+                db_materials[material_id] = product
+
+        if unavailable:
+            raise HTTPException(status_code=400, detail=f"One or more cart items are no longer available: {', '.join(unavailable)}")
+
+        normalized_items = []
+        total_material_yards = 0.0
+        for submitted_item in request.cart_items:
+            material_id = str(submitted_item.get("id", ""))
+            doc = db_materials.get(material_id)
+            if not doc:
+                raise HTTPException(status_code=400, detail="One or more cart items are no longer available")
+
+            status = doc.get("status")
+            if status == "archived":
+                raise HTTPException(status_code=400, detail=f"{doc.get('name')} is no longer available")
+
+            qbo_id = doc.get("quickbooks_item_id")
+            if not qbo_id:
+                raise HTTPException(status_code=400, detail=f"{doc.get('name')} has not been mapped to QuickBooks")
+
+            pricing = doc.get("pricing", {})
+            price_cents = pricing.get("retail_price_cents") or 0
+            if price_cents <= 0:
+                raise HTTPException(status_code=400, detail=f"{doc.get('name')} does not have a valid price")
+
+            quantity = float(submitted_item.get("quantity", 0))
+            if not math.isfinite(quantity) or quantity <= 0:
+                raise HTTPException(status_code=400, detail=f"Invalid quantity for {doc.get('name')}")
+
+            unit = pricing.get("unit", "each")
+            if unit == "cubic_yard":
+                total_material_yards += quantity
+            elif unit == "ton":
+                total_material_yards += quantity
+
+            normalized_items.append({
+                "id": str(doc.get("_id", doc.get("material_id"))),
+                "sku": doc.get("material_id", str(doc.get("_id"))),
+                "quickbooks_item_id": qbo_id,
+                "name": doc.get("name"),
+                "quantity": quantity,
+                "unit": unit,
+                "price": price_cents / 100,
+                "price_snapshot_cents": price_cents,
+            })
+
+        if not normalized_items:
+            raise HTTPException(status_code=400, detail="No valid items in cart")
+
+        delivery_fee = 0
+        distance = 0
+        error = None
+        if request.needs_delivery and request.delivery_address:
+            delivery_fee, error, distance, _ = await calculate_delivery_fee(
+                request.delivery_address,
+                request.delivery_date,
+                total_material_yards,
+                normalized_items
+            )
+            if error:
+                raise HTTPException(status_code=400, detail=error)
+
+        pallet_fee = 0
+        for item in normalized_items:
+            if item.get('name') in PALLET_ITEMS:
+                pallet_fee += PALLET_FEE
+
+        materials_total = 0
+        for item in normalized_items:
+            price = float(item.get('price', 0))
+            qty = float(item.get('quantity', 0))
+            materials_total += price * qty
+
+        subtotal = materials_total + delivery_fee + pallet_fee
+        admin_fee = round(subtotal * CARD_ADMIN_FEE_RATE, 2)
+        tax = round((subtotal + admin_fee) * TEXAS_TAX_RATE, 2)
+        total = round(subtotal + admin_fee + tax, 2)
+
+        order_number = f"DP-{datetime.now().strftime('%Y%m%d')}-{datetime.now().timestamp():.0f}"
+
+        order_data = {
+            "order_number": order_number,
+            "customer": {
+                "name": request.customer_name,
+                "email": request.customer_email,
+                "phone": request.customer_phone
+            },
+            "cart_items": normalized_items,
+            "delivery": {
+                "address": request.delivery_address,
+                "date": request.delivery_date,
+                "time": request.delivery_time
+            },
+            "pricing": {
+                "materials_total": round(materials_total, 2),
+                "delivery_fee": delivery_fee,
+                "pallet_fee": pallet_fee,
+                "admin_fee": admin_fee,
+                "tax": tax,
+                "total": total,
+                "source": "server_authoritative",
+                "price_snapshot_cents": {item["id"]: item["price_snapshot_cents"] for item in normalized_items},
+            },
+            "notes": request.notes,
+            "status": "pending_pickup",
+            "payment_status": "pending_pickup",
+            "stripe_session_id": None,
+            "integrations": {
+                "quickbooks": {
+                    "status": "pending",
+                    "entity_type": "SalesReceipt",
+                    "entity_id": None,
+                    "last_error": None
+                }
+            },
+            "created_at": datetime.utcnow().isoformat(),
+            "updated_at": datetime.utcnow().isoformat()
+        }
+
+        db = get_database()
+        order_id = None
+        if db:
+            result = await db.orders.insert_one(order_data)
+            order_id = str(result.inserted_id)
+        else:
+            order_id = "demo_" + order_number
+
+        order_data["_id"] = order_id
+
+        if request.needs_delivery and request.delivery_date and request.delivery_time:
+            try:
+                from backend.routes.scheduling import book_slot_for_order
+                await book_slot_for_order(
+                    date=request.delivery_date,
+                    time=request.delivery_time,
+                    order_id=order_id,
+                    address=request.delivery_address,
+                    customer_name=request.customer_name
+                )
+            except Exception as slot_error:
+                logger.warning(f"Delivery slot booking failed for order {order_number}: {slot_error}")
+
+        return {
+            "success": True,
+            "order_number": order_number,
+            "order_id": order_id,
+            "status": "pending_pickup",
+            "payment_status": "pending_pickup",
+            "total": total,
+            "pricing": order_data["pricing"],
+            "message": "Order placed successfully! Please pay at pickup."
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Order creation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Order creation failed: {str(e)}")
+
 async def stripe_webhook(request: Request):
     import json
 

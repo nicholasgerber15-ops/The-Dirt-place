@@ -158,6 +158,13 @@ const CheckoutPage = () => {
     deliveryAddress: '',
     notes: ''
   });
+  const [deliveryDate, setDeliveryDate] = useState('');
+  const [deliveryTime, setDeliveryTime] = useState('');
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
+  const [slotsError, setSlotsError] = useState('');
+  const [orderSuccessData, setOrderSuccessData] = useState(null);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   useEffect(() => {
     if (cart.length === 0 && !clientSecret) {
@@ -189,6 +196,74 @@ const CheckoutPage = () => {
       setDeliveryFee(70);
     } finally {
       setDeliveryFeeLoading(false);
+    }
+  };
+
+  const fetchAvailableSlots = async () => {
+    if (!deliveryDate || !formData.deliveryAddress) return;
+    setSlotsLoading(true);
+    setSlotsError('');
+    try {
+      const resp = await axios.get(`${API}/scheduling/available-slots`, {
+        params: { date: deliveryDate, address: formData.deliveryAddress },
+        timeout: 10000
+      });
+      setAvailableSlots(resp.data.slots || []);
+    } catch (err) {
+      setSlotsError('Unable to load delivery slots. Please try again.');
+      console.error(err);
+    } finally {
+      setSlotsLoading(false);
+    }
+  };
+
+  const handlePlaceOrderNoPayment = async () => {
+    if (!deliveryDate || !deliveryTime) {
+      setSubmitError('Please select a delivery date and time.');
+      return;
+    }
+    if (needsDelivery && !formData.deliveryAddress) {
+      setSubmitError('Please enter a delivery address.');
+      return;
+    }
+
+    setIsPlacingOrder(true);
+    setSubmitError(null);
+
+    try {
+      const cartItems = cart.map(item => ({
+        id: item.id.toString(),
+        name: item.name,
+        quantity: parseFloat(item.quantity),
+        price: parseFloat(item.pricePerCubicYard)
+      }));
+
+      const orderData = {
+        cart_items: cartItems,
+        customer_name: formData.customerName,
+        customer_email: formData.customerEmail,
+        customer_phone: formData.customerPhone,
+        delivery_address: needsDelivery ? formData.deliveryAddress : '',
+        delivery_date: deliveryDate,
+        delivery_time: deliveryTime,
+        needs_delivery: needsDelivery,
+        notes: formData.notes,
+        origin_url: window.location.origin
+      };
+
+      const response = await axios.post(`${API}/ecommerce/create-order`, orderData);
+      if (response.data && response.data.success) {
+        setOrderSuccessData(response.data);
+        clearCart();
+      } else {
+        setSubmitError('Failed to place order. Please try again.');
+      }
+    } catch (error) {
+      console.error('Order creation failed:', error);
+      const msg = error.response?.data?.detail || 'Failed to place order. Please try again.';
+      setSubmitError(msg);
+    } finally {
+      setIsPlacingOrder(false);
     }
   };
 
@@ -351,15 +426,19 @@ const CheckoutPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF9F6] pt-32 pb-24">
-      <SEO
-        title="Checkout | The Dirt Place"
-        description="Complete your order for landscape materials"
-      />
-      <div className="container mx-auto px-4">
-        <h1 className="text-6xl font-bold text-[#3B2F2F] mb-12" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
-          Checkout
-        </h1>
+    <>
+      {orderSuccessData ? (
+        <OrderSuccessView orderData={orderSuccessData} />
+      ) : (
+        <div className="min-h-screen bg-[#FAF9F6] pt-32 pb-24">
+          <SEO
+            title="Checkout | The Dirt Place"
+            description="Complete your order for landscape materials"
+          />
+          <div className="container mx-auto px-4">
+            <h1 className="text-6xl font-bold text-[#3B2F2F] mb-12" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+              Checkout
+            </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
@@ -455,6 +534,81 @@ const CheckoutPage = () => {
                       </p>
                     )}
                   </div>
+
+                  {needsDelivery && (
+                    <div className="border-t-2 border-[#6B4F3F]/10 pt-6">
+                      <h3 className="text-xl font-bold text-[#3B2F2F] mb-4" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                        Schedule Delivery
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <label className="block text-[#3B2F2F] font-semibold mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                            Delivery Date *
+                          </label>
+                          <input
+                            type="date"
+                            value={deliveryDate}
+                            onChange={(e) => { setDeliveryDate(e.target.value); setAvailableSlots([]); }}
+                            min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
+                            max={new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0]}
+                            className="w-full px-4 py-3 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none"
+                            style={{ fontFamily: 'Montserrat, sans-serif' }}
+                          />
+                        </div>
+                        <div className="flex items-end">
+                          <button
+                            type="button"
+                            onClick={fetchAvailableSlots}
+                            disabled={!deliveryDate || slotsLoading}
+                            className="w-full px-4 py-3 bg-[#6B7A3A] text-white font-bold rounded hover:bg-[#3B2F2F] transition-colors disabled:opacity-50"
+                            style={{ fontFamily: 'Montserrat, sans-serif' }}
+                          >
+                            {slotsLoading ? 'Loading...' : 'Check Available Times'}
+                          </button>
+                        </div>
+                      </div>
+
+                      {slotsError && (
+                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                          {slotsError}
+                        </div>
+                      )}
+
+                      {availableSlots.length > 0 && (
+                        <div className="mb-4">
+                          <p className="text-sm font-semibold text-[#3B2F2F] mb-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                            Available Time Slots:
+                          </p>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            {availableSlots.map((slot, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setDeliveryTime(slot.start_time)}
+                                disabled={!slot.available}
+                                className={`p-2 rounded border-2 text-sm transition-all ${
+                                  deliveryTime === slot.start_time
+                                    ? 'border-[#D9A441] bg-[#D9A441]/10'
+                                    : slot.available
+                                    ? 'border-gray-200 hover:border-[#D9A441]'
+                                    : 'border-gray-100 bg-gray-50 cursor-not-allowed opacity-50'
+                                }`}
+                                style={{ fontFamily: 'Montserrat, sans-serif' }}
+                              >
+                                <div className="font-semibold text-[#3B2F2F]">{slot.start_time}</div>
+                                {!slot.available && <div className="text-xs text-red-500">Booked</div>}
+                              </button>
+                            ))}
+                          </div>
+                          {deliveryTime && (
+                            <p className="text-sm text-[#6B7A3A] mt-2" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                              Selected: {deliveryTime}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -482,21 +636,40 @@ const CheckoutPage = () => {
                 </div>
               )}
 
-              <button
-                type="submit"
-                disabled={isProcessing}
-                className="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-[#D9A441] text-[#3B2F2F] text-lg font-bold rounded hover:bg-[#3B2F2F] hover:text-[#FAF9F6] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{ fontFamily: 'Montserrat, sans-serif' }}
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader size={20} className="animate-spin" />
-                    <span>Processing...</span>
-                  </>
-                ) : (
-                  <span>Proceed to Payment</span>
-                )}
-              </button>
+              <div className="space-y-3">
+                <button
+                  type="button"
+                  onClick={handlePlaceOrderNoPayment}
+                  disabled={isPlacingOrder || isProcessing}
+                  className="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-[#6B7A3A] text-white text-lg font-bold rounded hover:bg-[#3B2F2F] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  {isPlacingOrder ? (
+                    <>
+                      <Loader size={20} className="animate-spin" />
+                      <span>Placing Order...</span>
+                    </>
+                  ) : (
+                    <span>Place Order — Pay at Pickup</span>
+                  )}
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={isProcessing || isPlacingOrder}
+                  className="w-full flex items-center justify-center space-x-2 px-6 py-4 bg-[#D9A441] text-[#3B2F2F] text-lg font-bold rounded hover:bg-[#3B2F2F] hover:text-[#FAF9F6] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader size={20} className="animate-spin" />
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    <span>Proceed to Payment</span>
+                  )}
+                </button>
+              </div>
             </form>
           </div>
 
@@ -544,9 +717,113 @@ const CheckoutPage = () => {
             </div>
           </div>
         </div>
+
+      </div>
+    </div>
+    )}
+  </>
+);
+};
+
+const OrderSuccessView = ({ orderData }) => {
+if (!orderData) return null;
+
+  const pricing = orderData.pricing || {};
+
+  return (
+    <div className="min-h-screen bg-[#FAF9F6] pt-32 pb-24">
+      <SEO
+        title="Order Placed | The Dirt Place"
+        description="Your order has been placed successfully"
+        url="https://theboernedirtplace.com/checkout"
+      />
+      <div className="container mx-auto px-4">
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-white rounded-lg shadow-2xl p-8 md:p-12 text-center mb-8">
+            <div className="w-24 h-24 bg-[#6B7A3A] rounded-full flex items-center justify-center mx-auto mb-6">
+              <CheckCircle size={64} className="text-white" />
+            </div>
+
+            <h1 className="text-5xl md:text-6xl font-bold text-[#3B2F2F] mb-4" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+              Order Placed!
+            </h1>
+
+            <p className="text-2xl text-[#6B4F3F] mb-6" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              Order #{orderData.order_number}
+            </p>
+
+            <div className="bg-[#D9A441]/10 border-2 border-[#D9A441] rounded-lg p-6 mb-8 text-left" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+              <h2 className="text-2xl font-bold text-[#3B2F2F] mb-4" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                Invoice — Pay at Pickup
+              </h2>
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between">
+                  <span className="text-[#6B4F3F]">Materials:</span>
+                  <span className="font-semibold text-[#3B2F2F]">${(pricing.materials_total || 0).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#6B4F3F]">Delivery:</span>
+                  <span className="font-semibold text-[#3B2F2F]">${(pricing.delivery_fee || 0).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#6B4F3F]">Admin Fee:</span>
+                  <span className="font-semibold text-[#3B2F2F]">${(pricing.admin_fee || 0).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[#6B4F3F]">Tax:</span>
+                  <span className="font-semibold text-[#3B2F2F]">${(pricing.tax || 0).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between border-t-2 border-[#D9A441] pt-2 mt-2">
+                  <span className="text-[#3B2F2F] font-bold text-lg">Total Due:</span>
+                  <span className="text-[#3B2F2F] font-bold text-2xl" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                    ${(pricing.total || 0).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+              <p className="text-sm text-[#6B4F3F]">
+                Please have payment ready at pickup. We accept cash, check, and card.
+              </p>
+            </div>
+
+            <div className="bg-[#FAF9F6] rounded-lg p-6 mb-8 text-left">
+              <h3 className="text-xl font-bold text-[#3B2F2F] mb-3" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+                Order Details
+              </h3>
+              <div className="space-y-2 text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <p><strong>Name:</strong> {orderData.customer?.name}</p>
+                <p><strong>Email:</strong> {orderData.customer?.email}</p>
+                <p><strong>Phone:</strong> {orderData.customer?.phone}</p>
+                {orderData.delivery?.address && (
+                  <p><strong>Delivery Address:</strong> {orderData.delivery.address}</p>
+                )}
+                {orderData.delivery?.date && (
+                  <p><strong>Scheduled:</strong> {orderData.delivery.date} at {orderData.delivery.time}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                to="/materials"
+                className="px-6 py-3 bg-[#D9A441] text-[#3B2F2F] font-bold rounded hover:bg-[#3B2F2F] hover:text-[#FAF9F6] transition-colors"
+                style={{ fontFamily: 'Montserrat, sans-serif' }}
+              >
+                Continue Shopping
+              </Link>
+              <a
+                href={`tel:${businessInfo.phone.replace(/[^0-9]/g, '')}`}
+                className="px-6 py-3 bg-[#3B2F2F] text-[#FAF9F6] font-bold rounded hover:bg-[#D9A441] hover:text-[#3B2F2F] transition-colors"
+                style={{ fontFamily: 'Montserrat, sans-serif' }}
+              >
+                Call {businessInfo.phone}
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
+export { OrderSuccessView };
 export default CheckoutPage;
