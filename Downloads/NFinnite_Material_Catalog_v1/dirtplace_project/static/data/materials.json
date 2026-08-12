@@ -47,6 +47,1464 @@
           "primary": false
         }
       ]
+    },
+    {
+      "product_id": "material-002",
+      "name": "Decorative Gravel",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Decorative Gravel/decorative-gravel-01.jpeg",
+          "original_filename": "08884B3A-1F0A-45B2-8EC5-A563FC4214CF_4_5005_c.jpeg",
+          "alt": "Decorative Gravel product photo 1",
+          "primary": true
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Decorative Gravel/decorative-gravel-02.jpeg",
+          "original_filename": "1D994986-DFC6-4C7C-8498-C27A15241601_4_5005_c.jpeg",
+          "alt": "Decorative Gravel product photo 2",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Decorative Gravel/decorative-gravel-03.jpeg",
+          "original_filename": "1EC12C9C-9E03-4887-B23C-F5C183E296AE_4_5005_c.jpeg",
+          "alt": "Decorative Gravel product photo 3",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Decorative Gravel/decorative-gravel-04.jpeg",
+          "original_filename": "2DEC5295-A71B-4618-9273-F80778DC7678_4_5005_c.jpeg",
+          "alt": "Decorative Gravel product photo 4",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Decorative Gravel/decorative-gravel-05.jpeg",
+          "original_filename": "50A7E08A-C896-4F9C-9C5D-738C628590BA_1_105_c.jpeg",
+          "alt": "Decorative Gravel product photo 5",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Decorative Gravel/decorative-gravel-06.jpeg",
+          "original_filename": "56325C69-E478-443F-A59D-0C0141EF04D4_4_5005_c.jpeg",
+          "alt": "Decorative Gravel product photo 6",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Decorative Gravel/decorative-gravel-07.jpeg",
+          "original_filename": "87A43230-41C6-43BC-9ABF-0EECFE06ABDA_1_105_c.jpeg",
+          "alt": "Decorative Gravel product photo 7",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Decorative Gravel/decorative-gravel-08.jpeg",
+          "original_filename": "C7900C75-4328-4025-8A09-117545870966_4_5005_c.jpeg",
+          "alt": "Decorative Gravel product photo 8",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-003",
+      "name": "Mulch",
+      "category": "Mulch",
+      "category_folder": "02-Mulch",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "02-Mulch/Mulch/mulch-01.jpeg",
+          "original_filename": "0B430D62-97F5-49CB-A8B4-0F20F7B949DA_1_105_c.jpeg",
+          "alt": "Mulch product photo 1",
+          "primary": true
+        },
+        {
+          "src": "02-Mulch/Mulch/mulch-02.jpeg",
+          "original_filename": "4794BB9E-8820-48B1-8D3C-7B1AFEC289E5_4_5005_c.jpeg",
+          "alt": "Mulch product photo 2",
+          "primary": false
+        },
+        {
+          "src": "02-Mulch/Mulch/mulch-03.jpeg",
+          "original_filename": "7AA9BD0B-B97E-4D13-B26E-50EF6EA2EB48_4_5005_c.jpeg",
+          "alt": "Mulch product photo 3",
+          "primary": false
+        },
+        {
+          "src": "02-Mulch/Mulch/mulch-04.jpeg",
+          "original_filename": "C2465C6D-FE5C-44C7-AE60-2974C5744C50_4_5005_c.jpeg",
+          "alt": "Mulch product photo 4",
+          "primary": false
+        },
+        {
+          "src": "02-Mulch/Mulch/mulch-05.jpeg",
+          "original_filename": "F8993BCE-A727-4364-ADD8-94AB425B63B9_1_105_c.jpeg",
+          "alt": "Mulch product photo 5",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-004",
+      "name": "White Marble Rock",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/White Marble Rock/white-marble-rock-01.jpeg",
+          "original_filename": "0D49B45B-B713-4724-A075-E77F1B4F0A5A_1_105_c.jpeg",
+          "alt": "White Marble Rock product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-005",
+      "name": "Mason Sand",
+      "category": "Bulk Materials",
+      "category_folder": "01-Bulk-Materials",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "01-Bulk-Materials/Mason Sand/mason-sand-01.jpeg",
+          "original_filename": "0E7CFDF0-66B2-4AC0-8514-A337BA3E993A_4_5005_c.jpeg",
+          "alt": "Mason Sand product photo 1",
+          "primary": true
+        },
+        {
+          "src": "01-Bulk-Materials/Mason Sand/mason-sand-02.jpeg",
+          "original_filename": "6F9EF7D6-9383-403E-8B6B-0B4E2AD0E22C_4_5005_c.jpeg",
+          "alt": "Mason Sand product photo 2",
+          "primary": false
+        },
+        {
+          "src": "01-Bulk-Materials/Mason Sand/mason-sand-03.jpeg",
+          "original_filename": "84640C4C-E588-421A-8F76-B17C2DF79750_4_5005_c.jpeg",
+          "alt": "Mason Sand product photo 3",
+          "primary": false
+        },
+        {
+          "src": "01-Bulk-Materials/Mason Sand/mason-sand-04.jpeg",
+          "original_filename": "E6CDA65F-FE72-46E1-966C-38E791C0539F_4_5005_c.jpeg",
+          "alt": "Mason Sand product photo 4",
+          "primary": false
+        },
+        {
+          "src": "01-Bulk-Materials/Mason Sand/mason-sand-05.jpeg",
+          "original_filename": "ED5C6D55-31AB-4E0A-87D7-CFD634F53943_4_5005_c.jpeg",
+          "alt": "Mason Sand product photo 5",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-006",
+      "name": "Steel Landscape Edging",
+      "category": "Landscape Edging and Timbers",
+      "category_folder": "05-Landscape-Edging-and-Timbers",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "05-Landscape-Edging-and-Timbers/Steel Landscape Edging/steel-landscape-edging-01.jpeg",
+          "original_filename": "10A72C56-0F0F-4DE6-AEA4-8AF667DE9AD8_4_5005_c.jpeg",
+          "alt": "Steel Landscape Edging product photo 1",
+          "primary": true
+        },
+        {
+          "src": "05-Landscape-Edging-and-Timbers/Steel Landscape Edging/steel-landscape-edging-02.jpeg",
+          "original_filename": "191991E3-64C0-4D1A-A3C4-D1B55F7BC46B_4_5005_c.jpeg",
+          "alt": "Steel Landscape Edging product photo 2",
+          "primary": false
+        },
+        {
+          "src": "05-Landscape-Edging-and-Timbers/Steel Landscape Edging/steel-landscape-edging-03.jpeg",
+          "original_filename": "32A7EE6A-EC4C-4FEF-91F5-5F83310073AB_4_5005_c.jpeg",
+          "alt": "Steel Landscape Edging product photo 3",
+          "primary": false
+        },
+        {
+          "src": "05-Landscape-Edging-and-Timbers/Steel Landscape Edging/steel-landscape-edging-04.jpeg",
+          "original_filename": "44507AEF-BF73-4AB9-878C-E1058FE1201D_4_5005_c.jpeg",
+          "alt": "Steel Landscape Edging product photo 4",
+          "primary": false
+        },
+        {
+          "src": "05-Landscape-Edging-and-Timbers/Steel Landscape Edging/steel-landscape-edging-05.jpeg",
+          "original_filename": "63D23BC5-4C6A-4DCA-BB08-F49F6E00EC0C_4_5005_c.jpeg",
+          "alt": "Steel Landscape Edging product photo 5",
+          "primary": false
+        },
+        {
+          "src": "05-Landscape-Edging-and-Timbers/Steel Landscape Edging/steel-landscape-edging-06.jpeg",
+          "original_filename": "873950D1-6BD5-4CE1-ADE7-88A052251D49_4_5005_c.jpeg",
+          "alt": "Steel Landscape Edging product photo 6",
+          "primary": false
+        },
+        {
+          "src": "05-Landscape-Edging-and-Timbers/Steel Landscape Edging/steel-landscape-edging-07.jpeg",
+          "original_filename": "BC0A6403-5FDD-4274-AA06-AF26BDE543B3_4_5005_c.jpeg",
+          "alt": "Steel Landscape Edging product photo 7",
+          "primary": false
+        },
+        {
+          "src": "05-Landscape-Edging-and-Timbers/Steel Landscape Edging/steel-landscape-edging-08.jpeg",
+          "original_filename": "C4F670BB-2E2D-44E2-96E4-7BA70ABB7B88_4_5005_c.jpeg",
+          "alt": "Steel Landscape Edging product photo 8",
+          "primary": false
+        },
+        {
+          "src": "05-Landscape-Edging-and-Timbers/Steel Landscape Edging/steel-landscape-edging-09.jpeg",
+          "original_filename": "DB8AE0B8-6F63-4052-9DCA-AA09358D498E_4_5005_c.jpeg",
+          "alt": "Steel Landscape Edging product photo 9",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-007",
+      "name": "Black Lava Rock",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Black Lava Rock/black-lava-rock-01.jpeg",
+          "original_filename": "12DC29CC-B00A-47E0-9782-37733203E40D_4_5005_c.jpeg",
+          "alt": "Black Lava Rock product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-008",
+      "name": "Natural Stone",
+      "category": "Accessories and Review",
+      "category_folder": "10-Accessories-and-Review",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "10-Accessories-and-Review/Natural Stone/natural-stone-01.jpeg",
+          "original_filename": "16EC03C0-F4A6-4A4F-98F0-049720D170B1_4_5005_c.jpeg",
+          "alt": "Natural Stone product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-009",
+      "name": "Red Lava Rock",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Red Lava Rock/red-lava-rock-01.jpeg",
+          "original_filename": "1CFFB928-8AAD-418C-B0D0-484C9692A4AB_4_5005_c.jpeg",
+          "alt": "Red Lava Rock product photo 1",
+          "primary": true
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Red Lava Rock/red-lava-rock-02.jpeg",
+          "original_filename": "F7C5CCC3-942D-4223-9FCE-A801782547A9_4_5005_c.jpeg",
+          "alt": "Red Lava Rock product photo 2",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-010",
+      "name": "Road Base",
+      "category": "Bulk Materials",
+      "category_folder": "01-Bulk-Materials",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "01-Bulk-Materials/Road Base/road-base-01.jpeg",
+          "original_filename": "271D40D4-24D9-419B-AB9C-2F65436F1CE8_4_5005_c.jpeg",
+          "alt": "Road Base product photo 1",
+          "primary": true
+        },
+        {
+          "src": "01-Bulk-Materials/Road Base/road-base-02.jpeg",
+          "original_filename": "4993BE3F-1C63-410E-94CD-7318E84CFD2B_1_105_c.jpeg",
+          "alt": "Road Base product photo 2",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-011",
+      "name": "Decorative Rock Samples",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Decorative Rock Samples/decorative-rock-samples-01.jpeg",
+          "original_filename": "29B3FB09-7E1D-4173-9C14-5A7371B617BD_4_5005_c.jpeg",
+          "alt": "Decorative Rock Samples product photo 1",
+          "primary": true
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Decorative Rock Samples/decorative-rock-samples-02.jpeg",
+          "original_filename": "46B8085F-9095-4467-B82C-86CB78CEE932_4_5005_c.jpeg",
+          "alt": "Decorative Rock Samples product photo 2",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Decorative Rock Samples/decorative-rock-samples-03.jpeg",
+          "original_filename": "6E17E39A-0C9C-4FB1-9B89-8514284AD694_4_5005_c.jpeg",
+          "alt": "Decorative Rock Samples product photo 3",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Decorative Rock Samples/decorative-rock-samples-04.jpeg",
+          "original_filename": "7B51C8C5-762A-44B5-A521-6EB43E60CE6C_4_5005_c.jpeg",
+          "alt": "Decorative Rock Samples product photo 4",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-012",
+      "name": "Limestone Slabs",
+      "category": "Natural Stone",
+      "category_folder": "04-Natural-Stone",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "04-Natural-Stone/Limestone Slabs/limestone-slabs-01.jpeg",
+          "original_filename": "29EFA084-BA1F-4DAA-818A-5EB9D23E3375_4_5005_c.jpeg",
+          "alt": "Limestone Slabs product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-013",
+      "name": "Mexican Beach Pebbles",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Mexican Beach Pebbles/mexican-beach-pebbles-01.jpeg",
+          "original_filename": "2F81273A-A654-4E0A-A503-6CD138C7F3CC_4_5005_c.jpeg",
+          "alt": "Mexican Beach Pebbles product photo 1",
+          "primary": true
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Mexican Beach Pebbles/mexican-beach-pebbles-02.jpeg",
+          "original_filename": "4672779C-C1E0-4B7A-A431-DDBCDB93FF66_4_5005_c.jpeg",
+          "alt": "Mexican Beach Pebbles product photo 2",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Mexican Beach Pebbles/mexican-beach-pebbles-03.jpeg",
+          "original_filename": "E0F64C5A-7715-4900-8538-D55A21B99DE9_4_5005_c.jpeg",
+          "alt": "Mexican Beach Pebbles product photo 3",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Mexican Beach Pebbles/mexican-beach-pebbles-04.jpeg",
+          "original_filename": "F62940C9-EB6C-4082-A476-DD4AB33C12B0_4_5005_c.jpeg",
+          "alt": "Mexican Beach Pebbles product photo 4",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Mexican Beach Pebbles/mexican-beach-pebbles-05.jpeg",
+          "original_filename": "F6BD4DCE-BC0F-4764-B1B7-A57E781750EB_4_5005_c.jpeg",
+          "alt": "Mexican Beach Pebbles product photo 5",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Mexican Beach Pebbles/mexican-beach-pebbles-06.jpeg",
+          "original_filename": "FF04CFD3-AC30-4630-AB06-B10ADB272937_4_5005_c.jpeg",
+          "alt": "Mexican Beach Pebbles product photo 6",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-014",
+      "name": "Landscape Accessories",
+      "category": "Accessories and Review",
+      "category_folder": "10-Accessories-and-Review",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "high",
+      "needs_review": false,
+      "review_note": "Context image, not a standalone bulk product",
+      "photos": [
+        {
+          "src": "10-Accessories-and-Review/Landscape Accessories/landscape-accessories-01.jpeg",
+          "original_filename": "2F9CD7BA-BA78-4809-BBFA-9754CA4A9129_1_105_c.jpeg",
+          "alt": "Landscape Accessories product photo 1",
+          "primary": true
+        },
+        {
+          "src": "10-Accessories-and-Review/Landscape Accessories/landscape-accessories-02.jpeg",
+          "original_filename": "41DBDEFE-CDD1-422E-9384-4D54A5912D8A_1_105_c.jpeg",
+          "alt": "Landscape Accessories product photo 2",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-015",
+      "name": "Plaster Sand",
+      "category": "Bulk Materials",
+      "category_folder": "01-Bulk-Materials",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "01-Bulk-Materials/Plaster Sand/plaster-sand-01.jpeg",
+          "original_filename": "318CFC24-553B-4469-95C8-5BB641282F3F_4_5005_c.jpeg",
+          "alt": "Plaster Sand product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-016",
+      "name": "Delivery and Yard",
+      "category": "Delivery and Yard",
+      "category_folder": "09-Delivery-and-Yard",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "high",
+      "needs_review": false,
+      "review_note": "Context image, not a standalone bulk product",
+      "photos": [
+        {
+          "src": "09-Delivery-and-Yard/Delivery and Yard/delivery-and-yard-01.jpeg",
+          "original_filename": "33FBC21B-B050-46A6-B2F3-E423606E7642_4_5005_c.jpeg",
+          "alt": "Delivery and Yard product photo 1",
+          "primary": true
+        },
+        {
+          "src": "09-Delivery-and-Yard/Delivery and Yard/delivery-and-yard-02.jpeg",
+          "original_filename": "8AE415DD-AD89-4C1B-8898-ADF7D1A54C68_4_5005_c.jpeg",
+          "alt": "Delivery and Yard product photo 2",
+          "primary": false
+        },
+        {
+          "src": "09-Delivery-and-Yard/Delivery and Yard/delivery-and-yard-03.jpeg",
+          "original_filename": "9B3F6F53-5EC3-45D0-A27A-DEB396F55275_4_5005_c.jpeg",
+          "alt": "Delivery and Yard product photo 3",
+          "primary": false
+        },
+        {
+          "src": "09-Delivery-and-Yard/Delivery and Yard/delivery-and-yard-04.jpeg",
+          "original_filename": "C4D2D8C1-5C49-49A7-93B5-2C30803DEFD7_4_5005_c.jpeg",
+          "alt": "Delivery and Yard product photo 4",
+          "primary": false
+        },
+        {
+          "src": "09-Delivery-and-Yard/Delivery and Yard/delivery-and-yard-05.jpeg",
+          "original_filename": "C53BBFB4-5501-4B85-92A0-E1459F7ED6E9_4_5005_c.jpeg",
+          "alt": "Delivery and Yard product photo 5",
+          "primary": false
+        },
+        {
+          "src": "09-Delivery-and-Yard/Delivery and Yard/delivery-and-yard-06.jpeg",
+          "original_filename": "E6DC896A-E0DC-4094-8086-87FBF995936B_4_5005_c.jpeg",
+          "alt": "Delivery and Yard product photo 6",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-017",
+      "name": "Bagged Cement and Mortar",
+      "category": "Bagged Materials",
+      "category_folder": "07-Bagged-Materials",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "07-Bagged-Materials/Bagged Cement and Mortar/bagged-cement-and-mortar-01.jpeg",
+          "original_filename": "394D23D9-F235-41D1-9F9F-B2A055FF43FF_1_105_c.jpeg",
+          "alt": "Bagged Cement and Mortar product photo 1",
+          "primary": true
+        },
+        {
+          "src": "07-Bagged-Materials/Bagged Cement and Mortar/bagged-cement-and-mortar-02.jpeg",
+          "original_filename": "49206D1D-8C03-4728-8F09-FBE651731439_1_105_c.jpeg",
+          "alt": "Bagged Cement and Mortar product photo 2",
+          "primary": false
+        },
+        {
+          "src": "07-Bagged-Materials/Bagged Cement and Mortar/bagged-cement-and-mortar-03.jpeg",
+          "original_filename": "F5ADA824-E409-4B05-9599-F27BF3BDC071_1_105_c.jpeg",
+          "alt": "Bagged Cement and Mortar product photo 3",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-018",
+      "name": "Pea Gravel",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Pea Gravel/pea-gravel-01.jpeg",
+          "original_filename": "3DD6A63C-2A81-432A-9464-2997810C9846_1_105_c.jpeg",
+          "alt": "Pea Gravel product photo 1",
+          "primary": true
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Pea Gravel/pea-gravel-02.jpeg",
+          "original_filename": "4368D4FE-C73F-40EB-A4CC-34F27F9E8BFB_4_5005_c.jpeg",
+          "alt": "Pea Gravel product photo 2",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Pea Gravel/pea-gravel-03.jpeg",
+          "original_filename": "6FF1E06F-826F-4EC7-8ED5-E382AB33BD0A_4_5005_c.jpeg",
+          "alt": "Pea Gravel product photo 3",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Pea Gravel/pea-gravel-04.jpeg",
+          "original_filename": "84A38B66-244D-4BCF-9A52-593793EEA990_4_5005_c.jpeg",
+          "alt": "Pea Gravel product photo 4",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Pea Gravel/pea-gravel-05.jpeg",
+          "original_filename": "CE8BA5B1-1A66-44D9-A686-C5FE1A859E70_1_105_c.jpeg",
+          "alt": "Pea Gravel product photo 5",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Pea Gravel/pea-gravel-06.jpeg",
+          "original_filename": "D7F89C2A-E1F4-450B-8ACB-3FF7086D5E74_4_5005_c.jpeg",
+          "alt": "Pea Gravel product photo 6",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-019",
+      "name": "Granite Chips",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Granite Chips/granite-chips-01.jpeg",
+          "original_filename": "3F2E66AA-22DD-4F2B-94F4-CD2059E66288_4_5005_c.jpeg",
+          "alt": "Granite Chips product photo 1",
+          "primary": true
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Granite Chips/granite-chips-02.jpeg",
+          "original_filename": "E392BEEF-9131-4AD6-87C5-FDE571A8DDAD_4_5005_c.jpeg",
+          "alt": "Granite Chips product photo 2",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-020",
+      "name": "Natural Stone Slabs",
+      "category": "Natural Stone",
+      "category_folder": "04-Natural-Stone",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "04-Natural-Stone/Natural Stone Slabs/natural-stone-slabs-01.jpeg",
+          "original_filename": "403EAE1E-D34D-4E7E-9D4C-C85FFA9475A8_4_5005_c.jpeg",
+          "alt": "Natural Stone Slabs product photo 1",
+          "primary": true
+        },
+        {
+          "src": "04-Natural-Stone/Natural Stone Slabs/natural-stone-slabs-02.jpeg",
+          "original_filename": "45EBE65F-A25F-4992-90AE-47BD7E8EDA67_4_5005_c.jpeg",
+          "alt": "Natural Stone Slabs product photo 2",
+          "primary": false
+        },
+        {
+          "src": "04-Natural-Stone/Natural Stone Slabs/natural-stone-slabs-03.jpeg",
+          "original_filename": "628A6AFE-09F5-4A08-BA44-34FDA72B989B_4_5005_c.jpeg",
+          "alt": "Natural Stone Slabs product photo 3",
+          "primary": false
+        },
+        {
+          "src": "04-Natural-Stone/Natural Stone Slabs/natural-stone-slabs-04.jpeg",
+          "original_filename": "68109A3F-80E8-4E8A-B9DB-19C45A54304E_4_5005_c.jpeg",
+          "alt": "Natural Stone Slabs product photo 4",
+          "primary": false
+        },
+        {
+          "src": "04-Natural-Stone/Natural Stone Slabs/natural-stone-slabs-05.jpeg",
+          "original_filename": "AA531631-67DE-4B17-8DCD-5379E1834678_4_5005_c.jpeg",
+          "alt": "Natural Stone Slabs product photo 5",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-021",
+      "name": "Gray Flagstone",
+      "category": "Natural Stone",
+      "category_folder": "04-Natural-Stone",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "04-Natural-Stone/Gray Flagstone/gray-flagstone-01.jpeg",
+          "original_filename": "463A9927-B025-4DB3-9F6E-6FE701622EC3_4_5005_c.jpeg",
+          "alt": "Gray Flagstone product photo 1",
+          "primary": true
+        },
+        {
+          "src": "04-Natural-Stone/Gray Flagstone/gray-flagstone-02.jpeg",
+          "original_filename": "F9385BED-0296-455E-B642-68A2D027AEF5_4_5005_c.jpeg",
+          "alt": "Gray Flagstone product photo 2",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-022",
+      "name": "Product Sample Display",
+      "category": "Samples and Displays",
+      "category_folder": "08-Samples-and-Displays",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "high",
+      "needs_review": false,
+      "review_note": "Context image, not a standalone bulk product",
+      "photos": [
+        {
+          "src": "08-Samples-and-Displays/Product Sample Display/product-sample-display-01.jpeg",
+          "original_filename": "48DE69DD-0E65-4D92-8DFB-3759D3C74178_4_5005_c.jpeg",
+          "alt": "Product Sample Display product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-023",
+      "name": "River Rock",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/River Rock/river-rock-01.jpeg",
+          "original_filename": "4B533AC0-455F-4BEC-AB78-B6480DAFC7C5_4_5005_c.jpeg",
+          "alt": "River Rock product photo 1",
+          "primary": true
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/River Rock/river-rock-02.jpeg",
+          "original_filename": "624B441C-8636-432F-8D22-55EF01198C39_4_5005_c.jpeg",
+          "alt": "River Rock product photo 2",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/River Rock/river-rock-03.jpeg",
+          "original_filename": "75C059EF-E125-4180-A1F8-7B0F79712116_4_5005_c.jpeg",
+          "alt": "River Rock product photo 3",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/River Rock/river-rock-04.jpeg",
+          "original_filename": "9AD076CD-EEF4-4A20-B6BF-2AE59824A314_4_5005_c.jpeg",
+          "alt": "River Rock product photo 4",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/River Rock/river-rock-05.jpeg",
+          "original_filename": "F9CB5BC5-EFEA-4D84-AEB4-051581084BD2_4_5005_c.jpeg",
+          "alt": "River Rock product photo 5",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-024",
+      "name": "Crushed Stone",
+      "category": "Accessories and Review",
+      "category_folder": "10-Accessories-and-Review",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "10-Accessories-and-Review/Crushed Stone/crushed-stone-01.jpeg",
+          "original_filename": "4C4F5050-CD2F-4A1B-A1AF-3037114351B6_4_5005_c.jpeg",
+          "alt": "Crushed Stone product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-025",
+      "name": "Sand Samples",
+      "category": "Bulk Materials",
+      "category_folder": "01-Bulk-Materials",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "01-Bulk-Materials/Sand Samples/sand-samples-01.jpeg",
+          "original_filename": "4CFEFD89-1719-4699-954F-4C85705038B6_4_5005_c.jpeg",
+          "alt": "Sand Samples product photo 1",
+          "primary": true
+        },
+        {
+          "src": "01-Bulk-Materials/Sand Samples/sand-samples-02.jpeg",
+          "original_filename": "62CBC6B0-F8A4-4D9E-B18E-3B7281C1C6DF_4_5005_c.jpeg",
+          "alt": "Sand Samples product photo 2",
+          "primary": false
+        },
+        {
+          "src": "01-Bulk-Materials/Sand Samples/sand-samples-03.jpeg",
+          "original_filename": "690A302D-987A-4989-A5D3-6EE23B5C3465_4_5005_c.jpeg",
+          "alt": "Sand Samples product photo 3",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-026",
+      "name": "Flagstone",
+      "category": "Natural Stone",
+      "category_folder": "04-Natural-Stone",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "04-Natural-Stone/Flagstone/flagstone-01.jpeg",
+          "original_filename": "4EDA6F18-BF6A-4525-B0EC-5C16F2FB5A7C_4_5005_c.jpeg",
+          "alt": "Flagstone product photo 1",
+          "primary": true
+        },
+        {
+          "src": "04-Natural-Stone/Flagstone/flagstone-02.jpeg",
+          "original_filename": "915F5ADD-D1C8-421E-A648-41E5E8CDDDEB_4_5005_c.jpeg",
+          "alt": "Flagstone product photo 2",
+          "primary": false
+        },
+        {
+          "src": "04-Natural-Stone/Flagstone/flagstone-03.jpeg",
+          "original_filename": "C35CBA3E-EE97-40CA-9258-00AAF185E589_4_5005_c.jpeg",
+          "alt": "Flagstone product photo 3",
+          "primary": false
+        },
+        {
+          "src": "04-Natural-Stone/Flagstone/flagstone-04.jpeg",
+          "original_filename": "CBB5CF5F-E17A-4CAB-BF9D-3459412AF1B7_4_5005_c.jpeg",
+          "alt": "Flagstone product photo 4",
+          "primary": false
+        },
+        {
+          "src": "04-Natural-Stone/Flagstone/flagstone-05.jpeg",
+          "original_filename": "CBE430E7-E40C-45FB-A088-CF5041F5050C_4_5005_c.jpeg",
+          "alt": "Flagstone product photo 5",
+          "primary": false
+        },
+        {
+          "src": "04-Natural-Stone/Flagstone/flagstone-06.jpeg",
+          "original_filename": "D438097A-7AAF-4EE5-B46F-E0DFCA6C4C49_4_5005_c.jpeg",
+          "alt": "Flagstone product photo 6",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-027",
+      "name": "Texas Blend Pea Gravel",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "high",
+      "needs_review": false,
+      "review_note": "Product name visible in source image",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Texas Blend Pea Gravel/texas-blend-pea-gravel-01.jpeg",
+          "original_filename": "502806E6-FAD7-46D6-A064-27985B237F8C_1_105_c.jpeg",
+          "alt": "Texas Blend Pea Gravel product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-028",
+      "name": "Granite Chips 1in Light",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "high",
+      "needs_review": false,
+      "review_note": "Product name visible in source image",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Granite Chips 1in Light/granite-chips-1in-light-01.jpeg",
+          "original_filename": "51727B34-ECA1-40F9-B7FA-92CA39DCA657_1_105_c.jpeg",
+          "alt": "Granite Chips 1in Light product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-029",
+      "name": "Concrete Mix",
+      "category": "Bagged Materials",
+      "category_folder": "07-Bagged-Materials",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "07-Bagged-Materials/Concrete Mix/concrete-mix-01.jpeg",
+          "original_filename": "53E3BD13-2028-4DFF-93DF-CB2FAC35882F_1_105_c.jpeg",
+          "alt": "Concrete Mix product photo 1",
+          "primary": true
+        },
+        {
+          "src": "07-Bagged-Materials/Concrete Mix/concrete-mix-02.jpeg",
+          "original_filename": "A1E93E38-BB5C-44FE-BFE2-AD842E48A663_1_105_c.jpeg",
+          "alt": "Concrete Mix product photo 2",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-030",
+      "name": "Limestone Steps and Slabs",
+      "category": "Natural Stone",
+      "category_folder": "04-Natural-Stone",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "04-Natural-Stone/Limestone Steps and Slabs/limestone-steps-and-slabs-01.jpeg",
+          "original_filename": "5413A8B5-D20D-4056-A375-32810BCA409A_4_5005_c.jpeg",
+          "alt": "Limestone Steps and Slabs product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-031",
+      "name": "Limestone Edging Stone",
+      "category": "Natural Stone",
+      "category_folder": "04-Natural-Stone",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "04-Natural-Stone/Limestone Edging Stone/limestone-edging-stone-01.jpeg",
+          "original_filename": "5C7FBA73-20E3-444F-9709-7B23B7E152BA_4_5005_c.jpeg",
+          "alt": "Limestone Edging Stone product photo 1",
+          "primary": true
+        },
+        {
+          "src": "04-Natural-Stone/Limestone Edging Stone/limestone-edging-stone-02.jpeg",
+          "original_filename": "A0EB9C98-FE69-495E-86BF-AD8159D77010_4_5005_c.jpeg",
+          "alt": "Limestone Edging Stone product photo 2",
+          "primary": false
+        },
+        {
+          "src": "04-Natural-Stone/Limestone Edging Stone/limestone-edging-stone-03.jpeg",
+          "original_filename": "B636091C-8E63-45EB-B441-E5EC4356FE33_4_5005_c.jpeg",
+          "alt": "Limestone Edging Stone product photo 3",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-032",
+      "name": "Lava Rock",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Lava Rock/lava-rock-01.jpeg",
+          "original_filename": "5D08D80A-3CED-4DD1-AB99-C52374905076_1_105_c.jpeg",
+          "alt": "Lava Rock product photo 1",
+          "primary": true
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Lava Rock/lava-rock-02.jpeg",
+          "original_filename": "6B48F8BD-FB1C-476D-A73C-D9451E51BF51_4_5005_c.jpeg",
+          "alt": "Lava Rock product photo 2",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Lava Rock/lava-rock-03.jpeg",
+          "original_filename": "BD1AB596-BD49-4EC0-811E-EE62FEACAE97_4_5005_c.jpeg",
+          "alt": "Lava Rock product photo 3",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-033",
+      "name": "Crushed Gravel",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Crushed Gravel/crushed-gravel-01.jpeg",
+          "original_filename": "6211FE3E-9F68-4E5A-AACC-FA6B0A66AEE1_4_5005_c.jpeg",
+          "alt": "Crushed Gravel product photo 1",
+          "primary": true
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Crushed Gravel/crushed-gravel-02.jpeg",
+          "original_filename": "77F6B02C-93FC-44A1-AB83-15F9A95C7E30_4_5005_c.jpeg",
+          "alt": "Crushed Gravel product photo 2",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Crushed Gravel/crushed-gravel-03.jpeg",
+          "original_filename": "80B7235F-D31B-45DF-AA1F-898982C21493_4_5005_c.jpeg",
+          "alt": "Crushed Gravel product photo 3",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Crushed Gravel/crushed-gravel-04.jpeg",
+          "original_filename": "81645E06-1DBE-43B9-9869-F6454A2B358E_4_5005_c.jpeg",
+          "alt": "Crushed Gravel product photo 4",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Crushed Gravel/crushed-gravel-05.jpeg",
+          "original_filename": "95EED818-C6DA-4ABE-BD11-7D6AAA3C0924_4_5005_c.jpeg",
+          "alt": "Crushed Gravel product photo 5",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Crushed Gravel/crushed-gravel-06.jpeg",
+          "original_filename": "9A9505C8-2081-4A8F-9DA0-57417F84FA9F_4_5005_c.jpeg",
+          "alt": "Crushed Gravel product photo 6",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Crushed Gravel/crushed-gravel-07.jpeg",
+          "original_filename": "F58C311F-085F-4EE6-9EA6-8218B350716F_4_5005_c.jpeg",
+          "alt": "Crushed Gravel product photo 7",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-034",
+      "name": "Limestone Blocks",
+      "category": "Natural Stone",
+      "category_folder": "04-Natural-Stone",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "04-Natural-Stone/Limestone Blocks/limestone-blocks-01.jpeg",
+          "original_filename": "6414F9D9-18FF-4A2E-BD76-F0B4514DFEF5_4_5005_c.jpeg",
+          "alt": "Limestone Blocks product photo 1",
+          "primary": true
+        },
+        {
+          "src": "04-Natural-Stone/Limestone Blocks/limestone-blocks-02.jpeg",
+          "original_filename": "A11F08BB-40CB-4467-B88E-1F53E4FD8107_4_5005_c.jpeg",
+          "alt": "Limestone Blocks product photo 2",
+          "primary": false
+        },
+        {
+          "src": "04-Natural-Stone/Limestone Blocks/limestone-blocks-03.jpeg",
+          "original_filename": "CC9700BD-35D7-43B2-B826-2EC3A25CACDE_4_5005_c.jpeg",
+          "alt": "Limestone Blocks product photo 3",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-035",
+      "name": "Fill Dirt",
+      "category": "Bulk Materials",
+      "category_folder": "01-Bulk-Materials",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "01-Bulk-Materials/Fill Dirt/fill-dirt-01.jpeg",
+          "original_filename": "6AD275C8-419B-4A1A-95C1-899A88E9C69E_4_5005_c.jpeg",
+          "alt": "Fill Dirt product photo 1",
+          "primary": true
+        },
+        {
+          "src": "01-Bulk-Materials/Fill Dirt/fill-dirt-02.jpeg",
+          "original_filename": "BD58194E-B851-47CC-9080-9426629D297A_4_5005_c.jpeg",
+          "alt": "Fill Dirt product photo 2",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-036",
+      "name": "Colorado River Rock",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Colorado River Rock/colorado-river-rock-01.jpeg",
+          "original_filename": "73821CD0-71FB-4DF1-BAFA-915029C8A9C0_1_105_c.jpeg",
+          "alt": "Colorado River Rock product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-037",
+      "name": "Chimineas",
+      "category": "Planters and Outdoor Decor",
+      "category_folder": "06-Planters-and-Outdoor-Decor",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "06-Planters-and-Outdoor-Decor/Chimineas/chimineas-01.jpeg",
+          "original_filename": "77D60205-AC8F-43E0-91C5-F97254F5203C_1_105_c.jpeg",
+          "alt": "Chimineas product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-038",
+      "name": "Mulch Samples",
+      "category": "Mulch",
+      "category_folder": "02-Mulch",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "02-Mulch/Mulch Samples/mulch-samples-01.jpeg",
+          "original_filename": "79C568D2-45E6-47DB-B1DE-F71EE54ABA13_4_5005_c.jpeg",
+          "alt": "Mulch Samples product photo 1",
+          "primary": true
+        },
+        {
+          "src": "02-Mulch/Mulch Samples/mulch-samples-02.jpeg",
+          "original_filename": "D22CE542-5B71-446E-9B00-B85268272E00_4_5005_c.jpeg",
+          "alt": "Mulch Samples product photo 2",
+          "primary": false
+        },
+        {
+          "src": "02-Mulch/Mulch Samples/mulch-samples-03.jpeg",
+          "original_filename": "E55231BE-211E-4AD2-9644-CE81CB79048A_4_5005_c.jpeg",
+          "alt": "Mulch Samples product photo 3",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-039",
+      "name": "White Limestone",
+      "category": "Natural Stone",
+      "category_folder": "04-Natural-Stone",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "04-Natural-Stone/White Limestone/white-limestone-01.jpeg",
+          "original_filename": "7AD276B4-2731-4B64-B113-4EE89990FA54_4_5005_c.jpeg",
+          "alt": "White Limestone product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-040",
+      "name": "Texas Blend Gravel",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Texas Blend Gravel/texas-blend-gravel-01.jpeg",
+          "original_filename": "81A34718-390E-49A3-AEEA-A51EBE3E5912_4_5005_c.jpeg",
+          "alt": "Texas Blend Gravel product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-041",
+      "name": "Red Flagstone",
+      "category": "Natural Stone",
+      "category_folder": "04-Natural-Stone",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "04-Natural-Stone/Red Flagstone/red-flagstone-01.jpeg",
+          "original_filename": "8592C868-E0B9-4644-B468-FA5AF5CFBD74_4_5005_c.jpeg",
+          "alt": "Red Flagstone product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-042",
+      "name": "Landscape Timbers",
+      "category": "Landscape Edging and Timbers",
+      "category_folder": "05-Landscape-Edging-and-Timbers",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "05-Landscape-Edging-and-Timbers/Landscape Timbers/landscape-timbers-01.jpeg",
+          "original_filename": "9BAA6F00-87AC-4DB8-B623-35AAE0AA6524_4_5005_c.jpeg",
+          "alt": "Landscape Timbers product photo 1",
+          "primary": true
+        },
+        {
+          "src": "05-Landscape-Edging-and-Timbers/Landscape Timbers/landscape-timbers-02.jpeg",
+          "original_filename": "CABA63DF-6C90-47F4-9E30-D419C0D52FB6_4_5005_c.jpeg",
+          "alt": "Landscape Timbers product photo 2",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-043",
+      "name": "Lava Rock and River Rock Samples",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/Lava Rock and River Rock Samples/lava-rock-and-river-rock-samples-01.jpeg",
+          "original_filename": "A6595B4E-70D9-4935-90A2-BB2532390A85_4_5005_c.jpeg",
+          "alt": "Lava Rock and River Rock Samples product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-044",
+      "name": "River Rock Samples",
+      "category": "Decorative Rock and Aggregates",
+      "category_folder": "03-Decorative-Rock-and-Aggregates",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/River Rock Samples/river-rock-samples-01.jpeg",
+          "original_filename": "B3D70DEE-2925-4D00-90D7-543340A84186_4_5005_c.jpeg",
+          "alt": "River Rock Samples product photo 1",
+          "primary": true
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/River Rock Samples/river-rock-samples-02.jpeg",
+          "original_filename": "CC36006D-D9D7-491B-8D87-A6C96B55B7CE_1_105_c.jpeg",
+          "alt": "River Rock Samples product photo 2",
+          "primary": false
+        },
+        {
+          "src": "03-Decorative-Rock-and-Aggregates/River Rock Samples/river-rock-samples-03.jpeg",
+          "original_filename": "F2F607AB-AAB2-4A98-8499-34730CAFE7E7_4_5005_c.jpeg",
+          "alt": "River Rock Samples product photo 3",
+          "primary": false
+        }
+      ]
+    },
+    {
+      "product_id": "material-045",
+      "name": "Sand and Gravel Samples",
+      "category": "Bulk Materials",
+      "category_folder": "01-Bulk-Materials",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "01-Bulk-Materials/Sand and Gravel Samples/sand-and-gravel-samples-01.jpeg",
+          "original_filename": "D76D9B31-9AE8-43F1-A8F9-FFBB0CA7D54D_4_5005_c.jpeg",
+          "alt": "Sand and Gravel Samples product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-046",
+      "name": "Soil and Road Base",
+      "category": "Bulk Materials",
+      "category_folder": "01-Bulk-Materials",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "01-Bulk-Materials/Soil and Road Base/soil-and-road-base-01.jpeg",
+          "original_filename": "D838718C-BD91-4E5E-B59B-D2AE7AF99793_4_5005_c.jpeg",
+          "alt": "Soil and Road Base product photo 1",
+          "primary": true
+        }
+      ]
+    },
+    {
+      "product_id": "material-047",
+      "name": "Red Mulch",
+      "category": "Mulch",
+      "category_folder": "02-Mulch",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "02-Mulch/Red Mulch/red-mulch-01.jpeg",
+          "original_filename": "EAD3F1C9-4070-48B5-A0E7-AA1D5ADABA13_4_5005_c.jpeg",
+          "alt": "Red Mulch product photo 1",
+          "primary": true
+        }
+      ]
     }
   ]
 }
