@@ -1,0 +1,52 @@
+{
+  "version": "1.0",
+  "generated_from": "NFinnite_Material_Catalog_v1",
+  "publishing_note": "Cards generated for The Dirt Place. Review and verify before publishing.",
+  "products": [
+    {
+      "product_id": "material-001",
+      "name": "Planters",
+      "category": "Planters and Outdoor Decor",
+      "category_folder": "06-Planters-and-Outdoor-Decor",
+      "price_display": "$$$",
+      "price_status": "pending_quickbooks",
+      "description": "",
+      "unit": "confirm in QuickBooks",
+      "confidence": "medium",
+      "needs_review": true,
+      "review_note": "Visual classification; confirm supplier catalog name before publishing",
+      "photos": [
+        {
+          "src": "06-Planters-and-Outdoor-Decor/Planters/planters-01.jpeg",
+          "original_filename": "07E56DF5-BCAF-4268-B7E3-9B65DCCFA717_1_105_c.jpeg",
+          "alt": "Planters product photo 1",
+          "primary": true
+        },
+        {
+          "src": "06-Planters-and-Outdoor-Decor/Planters/planters-02.jpeg",
+          "original_filename": "3116146B-CEF6-4615-8AED-2F589C316B0B_1_105_c.jpeg",
+          "alt": "Planters product photo 2",
+          "primary": false
+        },
+        {
+          "src": "06-Planters-and-Outdoor-Decor/Planters/planters-03.jpeg",
+          "original_filename": "871D867A-B7F0-4500-927F-085DFE1E498E_1_105_c.jpeg",
+          "alt": "Planters product photo 3",
+          "primary": false
+        },
+        {
+          "src": "06-Planters-and-Outdoor-Decor/Planters/planters-04.jpeg",
+          "original_filename": "977C0A3C-F651-468D-BDCB-2241AF342712_1_105_c.jpeg",
+          "alt": "Planters product photo 4",
+          "primary": false
+        },
+        {
+          "src": "06-Planters-and-Outdoor-Decor/Planters/planters-05.jpeg",
+          "original_filename": "C61CF79B-C4E8-4AAE-8CBE-3C8E3DD31F62_4_5005_c.jpeg",
+          "alt": "Planters product photo 5",
+          "primary": false
+        }
+      ]
+    }
+  ]
+}
