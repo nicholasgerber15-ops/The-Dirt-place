@@ -42,8 +42,6 @@ const DeliveryCalendarPage = lazy(() => import("./pages/admin/DeliveryCalendarPa
 // Driver pages
 const DriverDashboard = lazy(() => import("./pages/DriverDashboard"));
 
-const DeliveryCalendarPage = lazy(() => import("./pages/admin/DeliveryCalendarPage"));
-
 function PageLoader() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FAF9F6]">
@@ -77,18 +75,42 @@ function AppContent() {
     if (!chatMessage.trim()) return;
     
     const userMessage = chatMessage;
-    setChatHistory([...chatHistory, { role: 'user', content: userMessage }]);
+    setChatHistory(prev => [...prev, { role: 'user', content: userMessage }]);
     setChatMessage('');
     setIsLoading(true);
     
     try {
-      const response = await fetch('https://the-dirt-place-chatbot-237434916216.us-central1.run.app/api-proxy', {
+      const chatbotBaseUrl = process.env.REACT_APP_CHATBOT_URL || 'https://dirt-place-chatbot.onrender.com';
+      const response = await fetch(`${chatbotBaseUrl}/api/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-app-proxy': 'default-proxy-header' },
-        body: JSON.stringify({ query: userMessage })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [...chatHistory, { role: 'user', content: userMessage }] })
       });
-      const data = await response.json();
-      setChatHistory(prev => [...prev, { role: 'assistant', content: data.response || "Thanks for your question! A team member will respond soon." }]);
+
+      if (!response.ok) {
+        throw new Error('Chatbot service unavailable');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let assistantText = '';
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        assistantText += chunk;
+        setChatHistory(prev => {
+          const newHistory = [...prev];
+          const last = newHistory[newHistory.length - 1];
+          if (last && last.role === 'assistant') {
+            last.content = assistantText;
+          } else {
+            newHistory.push({ role: 'assistant', content: assistantText });
+          }
+          return newHistory;
+        });
+      }
     } catch (error) {
       setChatHistory(prev => [...prev, { role: 'assistant', content: "Sorry, I'm having trouble connecting. Please call us at (830) 336-3713!" }]);
     } finally {
