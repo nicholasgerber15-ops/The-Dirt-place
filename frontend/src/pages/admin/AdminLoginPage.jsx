@@ -26,18 +26,20 @@ const AdminLoginPage = () => {
 
     try {
       const response = await axios.post(`${API}/admin/login`, { password }, { timeout: 5000 });
-      if (response.data && response.data.success) {
+      if (response.data && response.data.success && response.data.token) {
         localStorage.setItem('admin_token', response.data.token);
         navigate('/admin/dashboard', { replace: true });
       } else {
         setError('Invalid password');
       }
     } catch (err) {
-      if (err.response?.status === 500 || err.response?.status === 503) {
-        localStorage.setItem('admin_token', password);
-        navigate('/admin/dashboard', { replace: true });
-      } else {
+      const status = err.response?.status;
+      if (status === 401) {
         setError('Invalid password');
+      } else if (status === 503) {
+        setError('Admin authentication is not configured');
+      } else {
+        setError('Unable to reach the server. Please try again later.');
       }
     } finally {
       setIsLoading(false);

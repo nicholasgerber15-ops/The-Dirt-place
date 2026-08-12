@@ -19,16 +19,14 @@ logger = logging.getLogger(__name__)
 
 R2_ACCESS_KEY_ID = os.environ.get('R2_ACCESS_KEY_ID')
 R2_SECRET_ACCESS_KEY = os.environ.get('R2_SECRET_ACCESS_KEY')
-R2_BUCKET_NAME = os.environ.get('R2_BUCKET_NAME', 'the-dirt-place')
+R2_BUCKET_NAME = os.environ.get('R2_BUCKET_NAME', 'dirt-place-images')
 R2_ACCOUNT_ID = os.environ.get('R2_ACCOUNT_ID')
 R2_PUBLIC_URL = os.environ.get('R2_PUBLIC_URL')
 
-SUPABASE_URL = os.environ.get('SUPABASE_URL')
-SUPABASE_KEY = os.environ.get('SUPABASE_KEY')
-SUPABASE_BUCKET = os.environ.get('SUPABASE_BUCKET', 'dirt-place-images')
-
 _client = None
-_supabase_client = None
+
+
+R2_ENDPOINT_URL = os.environ.get('R2_ENDPOINT_URL')
 
 
 def get_r2_client():
@@ -40,7 +38,7 @@ def get_r2_client():
         logger.warning("R2 credentials not configured")
         return None
 
-    endpoint_url = f'https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com'
+    endpoint_url = R2_ENDPOINT_URL or f'https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com'
 
     _client = boto3.client(
         's3',
@@ -53,31 +51,11 @@ def get_r2_client():
     return _client
 
 
-def get_supabase_client():
-    global _supabase_client
-    if _supabase_client is not None:
-        return _supabase_client
-
-    if not all([SUPABASE_URL, SUPABASE_KEY]):
-        logger.warning("Supabase credentials not configured")
-        return None
-
-    try:
-        from supabase import create_client
-        _supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
-        return _supabase_client
-    except Exception as e:
-        logger.error(f"Supabase client init failed: {e}")
-        return None
-
-
 def get_public_url(key: str) -> str:
     if R2_PUBLIC_URL:
         return f"{R2_PUBLIC_URL.rstrip('/')}/{key}"
     if R2_ACCOUNT_ID:
         return f"https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com/{R2_BUCKET_NAME}/{key}"
-    if SUPABASE_URL:
-        return f"{SUPABASE_URL.rstrip('/')}/storage/v1/object/public/{SUPABASE_BUCKET}/{key}"
     return f"https://cdn.theboernedirtplace.com/{key}"
 
 
@@ -95,19 +73,6 @@ def upload_file(file_bytes: bytes, key: str, content_type: str) -> str | None:
         except Exception as e:
             logger.error(f"R2 upload failed for {key}: {e}")
 
-    supabase = get_supabase_client()
-    if supabase:
-        try:
-            from supabase.lib.file_config import FileConfig
-            supabase.storage.from_(SUPABASE_BUCKET).upload(
-                path=key,
-                file=file_bytes,
-                file_config=FileConfig(content_type=content_type)
-            )
-            return get_public_url(key)
-        except Exception as e:
-            logger.error(f"Supabase upload failed for {key}: {e}")
-
     logger.warning("No storage backend configured for upload")
     return None
 
@@ -120,13 +85,5 @@ def delete_file(key: str) -> bool:
             return True
         except Exception as e:
             logger.error(f"R2 delete failed for {key}: {e}")
-
-    supabase = get_supabase_client()
-    if supabase:
-        try:
-            supabase.storage.from_(SUPABASE_BUCKET).remove([key])
-            return True
-        except Exception as e:
-            logger.error(f"Supabase delete failed for {key}: {e}")
 
     return False

@@ -1,0 +1,64 @@
+# Render Deployment Configuration
+# Deploys both backend (FastAPI) and frontend (React) on Render's free tier.
+#
+# Usage:
+#   1. Push this file to GitHub.
+#   2. In Render, click "New" → "Blueprint" and connect this repo.
+#   3. Render will create the backend web service and frontend static site.
+#   4. Set secrets in the Render dashboard, not in this file.
+
+services:
+  # Backend: FastAPI web service
+  - type: web
+    name: dirt-place-backend
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn server:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: MONGO_URL
+        fromDatabase:
+          name: dirt-place-mongo
+          property: connectionString
+      - key: DB_NAME
+        value: the_dirt_place
+      - key: ADMIN_JWT_SECRET_KEY
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        generateValue: true
+      - key: QUICKBOOKS_REDIRECT_URI
+        value: https://dirt-place-backend.onrender.com/api/admin/quickbooks/callback
+      - key: QUICKBOOKS_POST_CONNECT_URL
+        value: https://dirt-place-frontend.onrender.com/admin/settings?integration=quickbooks
+      - key: R2_PUBLIC_URL
+        value: https://cdn.theboernedirtplace.com
+      - key: DEV_MODE
+        value: false
+      - key: CORS_ORIGINS
+        value: https://dirt-place-frontend.onrender.com,https://theboernedirtplace.com,https://www.theboernedirtplace.com
+    autoDeploy: true
+
+  # Frontend: React static site
+  - type: web
+    name: dirt-place-frontend
+    runtime: static
+    plan: free
+    region: oregon
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: frontend/build
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: REACT_APP_BACKEND_URL
+        value: https://dirt-place-backend.onrender.com
+    autoDeploy: true
+
+# MongoDB database for backend
+databases:
+  - name: dirt-place-mongo
+    plan: free
+    region: oregon

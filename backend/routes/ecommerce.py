@@ -203,28 +203,73 @@ async def create_payment_intent(request: CheckoutCreateRequest):
         if not request.cart_items:
             raise HTTPException(status_code=400, detail="Your cart is empty")
 
-        products_by_id = {product["material_id"]: product for product in PRODUCTS}
+        database = get_database()
+        db_materials = {}
+        unavailable = []
+        if database:
+            for submitted_item in request.cart_items:
+                material_id = str(submitted_item.get("id", ""))
+                doc = None
+                if ObjectId.is_valid(material_id):
+                    doc = await database.materials.find_one({"_id": ObjectId(material_id)})
+                if not doc:
+                    doc = await database.materials.find_one({"quickbooks_item_id": material_id})
+                if not doc:
+                    unavailable.append(material_id)
+                    continue
+                db_materials[material_id] = doc
+        else:
+            for submitted_item in request.cart_items:
+                material_id = str(submitted_item.get("id", ""))
+                product = next((p for p in PRODUCTS if p.get("material_id") == material_id), None)
+                if not product:
+                    unavailable.append(material_id)
+                    continue
+                db_materials[material_id] = product
+
+        if unavailable:
+            raise HTTPException(status_code=400, detail=f"One or more cart items are no longer available: {', '.join(unavailable)}")
+
         normalized_items = []
         total_material_yards = 0.0
         for submitted_item in request.cart_items:
-            product = products_by_id.get(str(submitted_item.get("id", "")))
-            if not product:
+            material_id = str(submitted_item.get("id", ""))
+            doc = db_materials.get(material_id)
+            if not doc:
                 raise HTTPException(status_code=400, detail="One or more cart items are no longer available")
+
+            status = doc.get("status")
+            if status == "archived":
+                raise HTTPException(status_code=400, detail=f"{doc.get('name')} is no longer available")
+
+            qbo_id = doc.get("quickbooks_item_id")
+            if not qbo_id:
+                raise HTTPException(status_code=400, detail=f"{doc.get('name')} has not been mapped to QuickBooks")
+
+            pricing = doc.get("pricing", {})
+            price_cents = pricing.get("retail_price_cents") or 0
+            if price_cents <= 0:
+                raise HTTPException(status_code=400, detail=f"{doc.get('name')} does not have a valid price")
+
             quantity = float(submitted_item.get("quantity", 0))
             if not math.isfinite(quantity) or quantity <= 0:
-                raise HTTPException(status_code=400, detail=f"Invalid quantity for {product['name']}")
-            unit_type = product.get("unit_type", "each")
-            if unit_type == "yard":
+                raise HTTPException(status_code=400, detail=f"Invalid quantity for {doc.get('name')}")
+
+            unit = pricing.get("unit", "each")
+            if unit == "cubic_yard":
                 total_material_yards += quantity
-            elif unit_type == "half-yard":
-                total_material_yards += quantity * 0.5
+            elif unit == "ton":
+                total_material_yards += quantity
+
             normalized_items.append({
-                "id": product["material_id"],
-                "sku": product["material_id"],
-                "name": product["name"],
+                "id": str(doc.get("_id", doc.get("material_id"))),
+                "sku": doc.get("material_id", str(doc.get("_id"))),
+                "quickbooks_item_id": qbo_id,
+                "name": doc.get("name"),
                 "quantity": quantity,
-                "unit": unit_type,
-                "price": float(product["price_per_unit"]),
+                "unit": unit,
+                "price": price_cents / 100,
+                "price_snapshot_cents": price_cents,
             })
 
         delivery_fee = 0
@@ -278,7 +323,9 @@ async def create_payment_intent(request: CheckoutCreateRequest):
                 "pallet_fee": pallet_fee,
                 "admin_fee": admin_fee,
                 "tax": tax,
-                "total": total
+                "total": total,
+                "source": "server_authoritative",
+                "price_snapshot_cents": {item["id"]: item["price_snapshot_cents"] for item in normalized_items},
             },
             "notes": request.notes,
             "status": "pending_payment",
@@ -308,9 +355,9 @@ async def create_payment_intent(request: CheckoutCreateRequest):
 
         order_data["stripe_session_id"] = payment_intent.id
 
-        database = get_database()
-        if database:
-            await database.orders.insert_one(order_data)
+        db = get_database()
+        if db:
+            await db.orders.insert_one(order_data)
             order_id = str(order_data["_id"])
         else:
             order_id = "demo_" + order_number
@@ -518,6 +565,23 @@ QUICKBOOKS_MINOR_VERSION = os.environ.get('QUICKBOOKS_MINOR_VERSION', '75')
 
 @router.get("/materials")
 async def get_materials():
+    database = get_database()
+    if database:
+        cursor = database.materials.find({"status": "published"})
+        materials = []
+        async for m in cursor:
+            m["_id"] = str(m["_id"])
+            pricing = m.get("pricing", {})
+            unit = pricing.get("unit", "each")
+            retail_cents = pricing.get("retail_price_cents", 0) or 0
+            contractor_cents = pricing.get("contractor_price_cents")
+            m["price"] = retail_cents / 100
+            m["price_per_unit"] = retail_cents / 100
+            m["contractor_price"] = (contractor_cents / 100) if contractor_cents is not None else None
+            m["unit_type"] = unit
+            materials.append(m)
+        return {"materials": materials}
+
     return {"materials": get_all_materials()}
 
 @router.post("/ecommerce/quickbooks/sync")

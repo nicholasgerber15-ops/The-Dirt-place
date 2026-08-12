@@ -28,6 +28,8 @@ from backend.data.products import PRODUCTS
 from pathlib import Path
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
+from jose import jwt
+from jose import exceptions as jwt_exceptions
 
 ROOT_DIR = Path(__file__).parent.parent
 load_dotenv(ROOT_DIR / '.env')
@@ -66,6 +68,9 @@ async def get_database():
         return None
 
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD')
+ADMIN_JWT_SECRET = os.environ.get('ADMIN_JWT_SECRET_KEY')
+ADMIN_JWT_ALGORITHM = 'HS256'
+ADMIN_JWT_EXPIRE_MINUTES = 60 * 24  # 24 hours
 
 router = APIRouter()
 
@@ -74,59 +79,6 @@ class AdminLogin(BaseModel):
 
 class OrderStatusUpdate(BaseModel):
     status: str
-
-def verify_admin(authorization: Optional[str] = Header(None)):
-    """
-    Simple admin verification — checks stored hash first, then env var.
-    """
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    token = authorization.replace("Bearer ", "") if authorization.startswith("Bearer ") else authorization
-    stored_hash = _get_stored_password_hash()
-    if stored_hash:
-        if token != stored_hash:
-            raise HTTPException(status_code=401, detail="Unauthorized")
-        return True
-    if not ADMIN_PASSWORD:
-        raise HTTPException(status_code=503, detail="Admin authentication is not configured")
-    if token != ADMIN_PASSWORD:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    return True
-
-@router.post("/login")
-async def admin_login(credentials: AdminLogin):
-    """
-    Admin login — checks stored hash first, then env var.
-    """
-    stored_hash = _get_stored_password_hash()
-    if stored_hash:
-        if _hash_password(credentials.password) == stored_hash:
-            return {"success": True, "token": stored_hash, "message": "Login successful"}
-        raise HTTPException(status_code=401, detail="Invalid password")
-    if not ADMIN_PASSWORD:
-        raise HTTPException(status_code=503, detail="Admin authentication is not configured")
-    if credentials.password == ADMIN_PASSWORD:
-        return {
-            "success": True,
-            "token": ADMIN_PASSWORD,
-            "message": "Login successful",
-        }
-    raise HTTPException(status_code=401, detail="Invalid password")
-
-# --- Password reset ---
-ADMIN_RESET_FILE = ROOT_DIR / "admin_reset.json"
-RESET_TOKEN_EXPIRY = 3600  # 1 hour
-
-def _load_reset_tokens():
-    if ADMIN_RESET_FILE.exists():
-        try:
-            return json.loads(ADMIN_RESET_FILE.read_text())
-        except Exception:
-            return {}
-    return {}
-
-def _save_reset_tokens(data):
-    ADMIN_RESET_FILE.write_text(json.dumps(data))
 
 def _hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
@@ -139,13 +91,6 @@ def _get_stored_password_hash():
             doc = coll.find_one({"_id": "password"})
             if doc and "hash" in doc:
                 return doc["hash"]
-        except Exception:
-            pass
-    if ADMIN_RESET_FILE.exists():
-        try:
-            data = json.loads(ADMIN_RESET_FILE.read_text())
-            if "password_hash" in data:
-                return data["password_hash"]
         except Exception:
             pass
     return None
@@ -163,14 +108,79 @@ async def _store_password_hash(password_hash: str):
             return
         except Exception:
             pass
-    data = {}
+
+def _create_admin_access_token() -> str:
+    if not ADMIN_JWT_SECRET:
+        raise HTTPException(status_code=503, detail="Admin authentication is not configured")
+    to_encode = {
+        "sub": "admin",
+        "role": "admin",
+        "aud": "admin-panel",
+        "exp": datetime.utcnow().timestamp() + (ADMIN_JWT_EXPIRE_MINUTES * 60),
+    }
+    return jwt.encode(to_encode, ADMIN_JWT_SECRET, algorithm=ADMIN_JWT_ALGORITHM)
+
+def verify_admin(authorization: Optional[str] = Header(None)):
+    """
+    Verify admin JWT from Authorization header.
+    """
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    token = authorization.replace("Bearer ", "") if authorization.startswith("Bearer ") else authorization
+    if not ADMIN_JWT_SECRET:
+        raise HTTPException(status_code=503, detail="Admin authentication is not configured")
+    try:
+        payload = jwt.decode(token, ADMIN_JWT_SECRET, algorithms=[ADMIN_JWT_ALGORITHM], audience="admin-panel")
+        role = payload.get("role")
+        if role != "admin":
+            raise HTTPException(status_code=403, detail="Forbidden")
+        return True
+    except jwt_exceptions.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt_exceptions.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+@router.post("/login")
+async def admin_login(credentials: AdminLogin):
+    """
+    Admin login — returns a signed, expiring JWT on success.
+    """
+    if not ADMIN_PASSWORD:
+        raise HTTPException(status_code=503, detail="Admin authentication is not configured")
+    
+    stored_hash = _get_stored_password_hash()
+    password_valid = False
+    if stored_hash:
+        password_valid = secrets.compare_digest(_hash_password(credentials.password), stored_hash)
+    else:
+        password_valid = secrets.compare_digest(credentials.password, ADMIN_PASSWORD)
+    
+    if not password_valid:
+        raise HTTPException(status_code=401, detail="Invalid password")
+    
+    token = _create_admin_access_token()
+    return {
+        "success": True,
+        "token": token,
+        "token_type": "bearer",
+        "expires_in": ADMIN_JWT_EXPIRE_MINUTES * 60,
+        "message": "Login successful",
+    }
+
+# --- Password reset ---
+ADMIN_RESET_FILE = ROOT_DIR / "admin_reset.json"
+RESET_TOKEN_EXPIRY = 3600  # 1 hour
+
+def _load_reset_tokens():
     if ADMIN_RESET_FILE.exists():
         try:
-            data = json.loads(ADMIN_RESET_FILE.read_text())
+            return json.loads(ADMIN_RESET_FILE.read_text())
         except Exception:
-            pass
-    data["password_hash"] = password_hash
-    _save_reset_tokens(data)
+            return {}
+    return {}
+
+def _save_reset_tokens(data):
+    ADMIN_RESET_FILE.write_text(json.dumps(data))
 
 @router.post("/forgot-password")
 async def forgot_password(request: Request):
@@ -300,14 +310,8 @@ def get_demo_pricing():
         result.append({
             "material_id": p.get("material_id", ""),
             "name": p.get("name", ""),
-            "price_per_unit": price,
             "price_per_cubic_yard": price,
-            "unit_type": p.get("unit_type", "each"),
-            "category": p.get("category", ""),
-            "description": p.get("description", ""),
             "min_order": p.get("min_order", 1),
-            "stock_quantity": p.get("stock_quantity", 0),
-            "product_details": p.get("product_details", ""),
         })
     return result
 
@@ -959,8 +963,7 @@ async def get_driver_deliveries(date: Optional[str] = None):
 
         return {
             "date": date, "day": day_name, "closed": False,
-            "cut_off": "5:00 PM",
-            "deliveries": enriched,
+            "cut_off": "5:00 PM", "deliveries": enriched,
             "total_yards": round(total_yards, 1),
             "total_time_min": sum(d["time_estimate"]["total_min"] for d in enriched)
         }
@@ -1190,7 +1193,7 @@ async def get_popup_settings():
         return settings
     except Exception as e:
         logger.error(f"Failed to fetch popup settings: {str(e)} - returning defaults")
-        return get_demo_popup_settings()
+        return DEFAULT_POPUP_SETTINGS
 
 @router.put("/popup-settings", dependencies=[Depends(verify_admin)])
 async def update_popup_settings(settings: PopupSettingsUpdate):

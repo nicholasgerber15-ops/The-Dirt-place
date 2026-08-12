@@ -28,10 +28,10 @@ from backend.routes.ecommerce import router as ecommerce_router
 from backend.routes.admin import router as admin_router
 from backend.routes.auth import router as auth_router
 from backend.routes.scheduling import router as scheduling_router
-try:
-    from backend.routes.upload import router as upload_router
-except Exception:
-    upload_router = None
+from backend.routes.materials import router as admin_materials_router
+from backend.routes.materials_public import router as public_materials_router
+from backend.routes.upload import router as upload_router
+from backend.routes.quickbooks import router as quickbooks_router
 
 
 ROOT_DIR = Path(__file__).parent
@@ -82,20 +82,21 @@ app = FastAPI(
 # Add GZip compression for faster responses
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
-# Add security middleware
+# Consolidated security headers middleware
 @app.middleware("http")
 async def security_headers(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
-    response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
     r2_domain = os.environ.get('R2_PUBLIC_URL', '').split('//')[-1].split('/')[0] if os.environ.get('R2_PUBLIC_URL') else ''
     backend_host = request.headers.get('host', '').split(':')[0]
     ph_host = 'us.i.posthog.com'
     connect_origins = ','.join(sorted({x.strip() for x in f"{backend_host} {ph_host} theboernedirtplace.com".split() if x.strip()}))
-    response.headers["Content-Security-Policy"] = f"default-src 'none'; frame-src 'self' https://challenges.cloudflare.com https://*.posthog.com; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://theboernedirtplace.com {ph_host} https://*.posthog.com; style-src 'self' 'inline' https://theboernedirtplace.com; img-src 'self' data: https: https://*.r2.cloudflarestorage.com {r2_domain}; connect-src 'self' {connect_origins}; worker-src 'self' blob:;"
+    response.headers["Content-Security-Policy"] = f"default-src 'none'; frame-src 'self' https://challenges.cloudflare.com https://*.posthog.com; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://theboernedirtplace.com {ph_host} https://*.posthog.com; style-src 'self' 'unsafe-inline' https://theboernedirtplace.com; img-src 'self' data: https: https://*.r2.cloudflarestorage.com {r2_domain}; connect-src 'self' {connect_origins}; worker-src 'self' blob:;"
+    if not os.environ.get('DEV_MODE'):
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     return response
 
 # Create a router with the /api prefix
@@ -159,40 +160,17 @@ app.include_router(api_router)
 app.include_router(contact_router, prefix="/api")
 app.include_router(ecommerce_router, prefix="/api/ecommerce")
 app.include_router(admin_router, prefix="/api/admin")
+app.include_router(admin_materials_router, prefix="/api/admin")
+app.include_router(public_materials_router, prefix="/api")
 app.include_router(auth_router)  # Already has /api/auth prefix
 app.include_router(scheduling_router)  # Already has /api/scheduling prefix
 if upload_router:
     app.include_router(upload_router, prefix="/api/admin")
+app.include_router(quickbooks_router, prefix="/api/admin/quickbooks")
 
 @app.options("/{full_path:path}")
 async def options_preflight(request: Request, full_path: str):
     return JSONResponse(content=None, status_code=204, headers={"Allow": "OPTIONS, GET, POST, PUT, DELETE"})
-
-# Security middleware for headers
-@app.middleware("http")
-async def add_security_headers(request: Request, call_next):
-    response = await call_next(request)
-    # Security headers
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
-    response.headers["X-XSS-Protection"] = "1; mode=block"
-    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
-    # HSTS (only in production with HTTPS)
-    if not os.environ.get('DEV_MODE'):
-        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-    return response
-
-# HTTPS redirect middleware
-@app.middleware("http")
-async def https_redirect(request: Request, call_next):
-    # Only redirect in production (not local development)
-    if not os.environ.get('DEV_MODE'):
-        if request.url.scheme == "http":
-            https_url = request.url.replace(scheme="https")
-            from fastapi.responses import RedirectResponse
-            return RedirectResponse(url=str(https_url), status_code=301)
-    return await call_next(request)
 
 # Always include necessary origins, merge with env var if set
 _default_origins = [
