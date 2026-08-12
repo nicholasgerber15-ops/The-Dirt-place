@@ -28,6 +28,7 @@ from backend.data.products import PRODUCTS
 from pathlib import Path
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
+import resend
 from jose import jwt
 from jose import exceptions as jwt_exceptions
 
@@ -206,8 +207,6 @@ async def forgot_password(request: Request):
 
     reset_link = f"https://theboernedirtplace.com/admin/reset-password?token={token}"
     try:
-        import asyncio
-        import resend
         resend.api_key = os.environ.get("RESEND_API_KEY")
         sender = os.environ.get("SENDER_EMAIL", "onboarding@resend.dev")
         params = {
@@ -216,7 +215,7 @@ async def forgot_password(request: Request):
             "subject": "Password Reset — The Dirt Place Admin",
             "html": f"<p>Click the link below to reset your admin password:</p><p><a href='{reset_link}'>{reset_link}</a></p><p>This link expires in 1 hour.</p>",
         }
-        asyncio.to_thread(resend.Emails.send, params)
+        await asyncio.to_thread(resend.Emails.send, params)
     except Exception as e:
         logger.error(f"Failed to send reset email: {e}")
 
@@ -1237,6 +1236,122 @@ async def get_popup_settings_public():
     except Exception as e:
         logger.error(f"Failed to fetch popup settings: {str(e)}")
         return DEFAULT_POPUP_SETTINGS
+
+
+# ============== OPERATIONAL SETTINGS ==============
+
+class OperationalSettingsUpdate(BaseModel):
+    tax_rate: Optional[float] = None
+    card_admin_fee_rate: Optional[float] = None
+    delivery_fee_base: Optional[float] = None
+    delivery_fee_per_mile: Optional[float] = None
+    min_order_yards: Optional[float] = None
+    pickup_min_order_yards: Optional[float] = None
+    sunday_delivery: Optional[bool] = None
+    dirtplace_address: Optional[str] = None
+    google_maps_api_key: Optional[str] = None
+    sender_email: Optional[str] = None
+    business_email: Optional[str] = None
+    quickbooks_environment: Optional[str] = None
+    quickbooks_redirect_uri: Optional[str] = None
+    quickbooks_post_connect_url: Optional[str] = None
+    quickbooks_minor_version: Optional[str] = None
+    quickbooks_emergency_override_enabled: Optional[bool] = None
+    quickbooks_price_stale_after_hours: Optional[int] = None
+    quickbooks_block_checkout_when_stale: Optional[bool] = None
+    quickbooks_company_id: Optional[str] = None
+    r2_account_id: Optional[str] = None
+    r2_access_key_id: Optional[str] = None
+    r2_endpoint_url: Optional[str] = None
+    r2_bucket_name: Optional[str] = None
+    r2_public_url: Optional[str] = None
+    cors_origins: Optional[str] = None
+    enable_demo_auth: Optional[bool] = None
+    dev_mode: Optional[bool] = None
+
+
+DEFAULT_OPERATIONAL_SETTINGS = {
+    "tax_rate": 0.0825,
+    "card_admin_fee_rate": 0.035,
+    "delivery_fee_base": 70.0,
+    "delivery_fee_per_mile": 5.0,
+    "min_order_yards": 1.0,
+    "pickup_min_order_yards": 0.5,
+    "sunday_delivery": False,
+    "dirtplace_address": "240 TX-46, Boerne, TX 78006",
+    "google_maps_api_key": "",
+    "sender_email": "onboarding@resend.dev",
+    "business_email": "info@thedirtplace.com",
+    "quickbooks_environment": "sandbox",
+    "quickbooks_redirect_uri": "",
+    "quickbooks_post_connect_url": "",
+    "quickbooks_minor_version": "75",
+    "quickbooks_emergency_override_enabled": False,
+    "quickbooks_price_stale_after_hours": 24,
+    "quickbooks_block_checkout_when_stale": False,
+    "quickbooks_company_id": "",
+    "r2_account_id": "",
+    "r2_access_key_id": "",
+    "r2_endpoint_url": "",
+    "r2_bucket_name": "dirt-place-images",
+    "r2_public_url": "",
+    "cors_origins": "",
+    "enable_demo_auth": False,
+    "dev_mode": False,
+}
+
+
+@router.get("/operational-settings", dependencies=[Depends(verify_admin)])
+async def get_operational_settings():
+    """
+    Get operational settings (merged from .env defaults and MongoDB overrides).
+    """
+    db = await get_database()
+    if db is None:
+        return DEFAULT_OPERATIONAL_SETTINGS
+
+    try:
+        settings = await db.site_settings.find_one({"setting_type": "operational"})
+        if not settings:
+            await db.site_settings.insert_one({
+                "setting_type": "operational",
+                **DEFAULT_OPERATIONAL_SETTINGS,
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow(),
+            })
+            return DEFAULT_OPERATIONAL_SETTINGS
+        merged = {**DEFAULT_OPERATIONAL_SETTINGS, **{k: v for k, v in settings.items() if k not in ("_id", "setting_type", "created_at", "updated_at")}}
+        return merged
+    except Exception as e:
+        logger.error(f"Failed to fetch operational settings: {str(e)}")
+        return DEFAULT_OPERATIONAL_SETTINGS
+
+
+@router.put("/operational-settings", dependencies=[Depends(verify_admin)])
+async def update_operational_settings(update: OperationalSettingsUpdate):
+    """
+    Update operational settings in MongoDB.
+    """
+    db = await get_database()
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not available")
+
+    try:
+        update_data = update.model_dump(exclude_none=True)
+        if not update_data:
+            return {"success": True, "message": "No changes provided"}
+
+        update_data["updated_at"] = datetime.utcnow()
+        await db.site_settings.update_one(
+            {"setting_type": "operational"},
+            {"$set": update_data},
+            upsert=True,
+        )
+        return {"success": True, "message": "Operational settings updated successfully"}
+    except Exception as e:
+        logger.error(f"Failed to update operational settings: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.get("/config-status", dependencies=[Depends(verify_admin)])
 async def get_config_status():

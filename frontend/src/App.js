@@ -35,6 +35,7 @@ const SiteSettingsPage = lazy(() => import("./pages/admin/SiteSettingsPage"));
 const PricingManagementPage = lazy(() => import("./pages/admin/PricingManagementPage"));
 const DriverManagementPage = lazy(() => import("./pages/admin/DriverManagementPage"));
 const QuickBooksSettingsPage = lazy(() => import("./pages/admin/QuickBooksSettingsPage"));
+const AdminResetPasswordPage = lazy(() => import("./pages/admin/AdminResetPasswordPage"));
 
 // Driver pages
 const DriverDashboard = lazy(() => import("./pages/DriverDashboard"));
@@ -99,6 +100,7 @@ function AppContent() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-success" element={<OrderSuccessPage />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/admin/reset-password" element={<AdminResetPasswordPage />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/orders" element={<OrdersManagementPage />} />
           <Route path="/admin/leads" element={<LeadsManagementPage />} />
