@@ -56,8 +56,8 @@ const MaterialsPage = () => {
       setLoading(true);
       const response = await axios.get(`${API}/ecommerce/materials`);
       
-      // Transform API data to match MaterialCard expectations
-      const transformedMaterials = response.data.materials.map(m => ({
+      const materials = response.data?.materials || [];
+      const transformedMaterials = materials.map(m => ({
         id: m.material_id || m.id,
         name: m.name,
         description: m.description || `Premium ${m.name.toLowerCase()} for your landscaping needs.`,
@@ -73,7 +73,6 @@ const MaterialsPage = () => {
       setMaterials(transformedMaterials);
     } catch (error) {
       console.error('Failed to fetch materials:', error);
-      // Fallback to empty array on error
       setMaterials([]);
     } finally {
       setLoading(false);
