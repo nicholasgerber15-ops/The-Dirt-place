@@ -34,6 +34,7 @@ const NotificationTemplatesPage = lazy(() => import("./pages/admin/NotificationT
 const SiteSettingsPage = lazy(() => import("./pages/admin/SiteSettingsPage"));
 const PricingManagementPage = lazy(() => import("./pages/admin/PricingManagementPage"));
 const DriverManagementPage = lazy(() => import("./pages/admin/DriverManagementPage"));
+const QuickBooksSettingsPage = lazy(() => import("./pages/admin/QuickBooksSettingsPage"));
 
 // Driver pages
 const DriverDashboard = lazy(() => import("./pages/DriverDashboard"));
@@ -111,6 +112,7 @@ function AppContent() {
           <Route path="/admin/inventory" element={<InventoryPage />} />
           <Route path="/admin/drivers" element={<DriverManagementPage />} />
           <Route path="/admin/settings" element={<SiteSettingsPage />} />
+          <Route path="/admin/quickbooks" element={<QuickBooksSettingsPage />} />
           <Route path="/driver" element={<DriverDashboard />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
