@@ -4,8 +4,12 @@
 #   2. In Render, click "New" → "Blueprint" and connect this repo.
 #   3. After creation, add the remaining secrets in the Render dashboard.
 #   4. Trigger a deploy.
+#
+# MongoDB options:
+# - Use the bundled Render MongoDB by uncommenting the databases section below.
+# - Or use MongoDB Atlas: remove the databases section and set MONGO_URL manually.
 
-services:
+ services:
   - type: web
     name: dirt-place-backend
     runtime: python
@@ -17,10 +21,12 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
-      - key: MONGO_URL
-        fromDatabase:
-          name: dirt-place-mongo
-          property: connectionString
+       - key: MONGO_URL
+         # For Render bundled MongoDB, use fromDatabase below.
+         # For MongoDB Atlas, replace with: mongodb+srv://<user>:<password>@<cluster>.mongodb.net/?retryWrites=true&w=majority
+         fromDatabase:
+           name: dirt-place-mongo
+           property: connectionString
       - key: DB_NAME
         value: the_dirt_place
       - key: JWT_SECRET_KEY
@@ -97,20 +103,36 @@ services:
         sync: false
     autoDeploy: true
 
-  - type: web
-    name: dirt-place-frontend
-    runtime: static
-    plan: free
-    buildCommand: cd frontend && npm ci && npm run build
-    staticPublishPath: frontend/build
-    envVars:
-      - key: NODE_VERSION
-        value: 20.11.1
-      - key: REACT_APP_BACKEND_URL
-        value: https://dirt-place-backend.onrender.com
-    autoDeploy: true
+   - type: web
+     name: dirt-place-frontend
+     runtime: static
+     plan: free
+     buildCommand: cd frontend && npm ci && npm run build
+     staticPublishPath: frontend/build
+     envVars:
+       - key: NODE_VERSION
+         value: 20.11.1
+       - key: REACT_APP_BACKEND_URL
+         value: https://dirt-place-backend.onrender.com
+       - key: REACT_APP_CHATBOT_URL
+         value: https://dirt-place-chatbot.onrender.com
+     autoDeploy: true
 
-databases:
+   - type: web
+     name: dirt-place-chatbot
+     runtime: node
+     plan: free
+     region: oregon
+     buildCommand: cd chatbot && npm ci && npm run build
+     startCommand: cd chatbot && npm run start
+     envVars:
+       - key: OPENAI_API_KEY
+         sync: false
+       - key: MONGODB_URI
+         sync: false
+     autoDeploy: true
+
+ databases:
   - name: dirt-place-mongo
     plan: free
     region: oregon
