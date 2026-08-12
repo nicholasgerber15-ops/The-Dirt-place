@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 import SeasonalPopup from "./components/SeasonalPopup";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { MessageCircle, X } from 'lucide-react';
+import { isCapacitor } from './utils/capacitor';
 
 // Lazy load pages for code splitting (except critical pages)
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -36,9 +37,12 @@ const PricingManagementPage = lazy(() => import("./pages/admin/PricingManagement
 const DriverManagementPage = lazy(() => import("./pages/admin/DriverManagementPage"));
 const QuickBooksSettingsPage = lazy(() => import("./pages/admin/QuickBooksSettingsPage"));
 const AdminResetPasswordPage = lazy(() => import("./pages/admin/AdminResetPasswordPage"));
+const DeliveryCalendarPage = lazy(() => import("./pages/admin/DeliveryCalendarPage"));
 
 // Driver pages
 const DriverDashboard = lazy(() => import("./pages/DriverDashboard"));
+
+const DeliveryCalendarPage = lazy(() => import("./pages/admin/DeliveryCalendarPage"));
 
 function PageLoader() {
   return (
@@ -55,6 +59,12 @@ function AppContent() {
   const [chatMessage, setChatMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [mobileRole, setMobileRole] = useState(() => {
+    if (isCapacitor) {
+      return localStorage.getItem('mobile_role') || null;
+    }
+    return null;
+  });
 
   const toggleChatbot = () => {
     setShowChatbot(!showChatbot);
@@ -86,13 +96,64 @@ function AppContent() {
     }
   };
 
+  const selectRole = (role) => {
+    setMobileRole(role);
+    localStorage.setItem('mobile_role', role);
+  };
+
+  if (isCapacitor && !mobileRole) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#3B2F2F] to-[#6B4F3F] flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-2xl p-8">
+          <h1 className="text-4xl font-bold text-[#3B2F2F] text-center mb-2" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
+            The Dirt Place
+          </h1>
+          <p className="text-center text-[#6B4F3F] mb-8" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            Select your role to continue
+          </p>
+          <div className="space-y-4">
+            <button
+              onClick={() => selectRole('customer')}
+              className="w-full py-4 bg-[#D9A441] text-[#3B2F2F] font-bold rounded-lg hover:bg-[#3B2F2F] hover:text-white transition-all"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Customer
+            </button>
+            <button
+              onClick={() => selectRole('admin')}
+              className="w-full py-4 bg-[#6B7A3A] text-white font-bold rounded-lg hover:bg-[#3B2F2F] transition-all"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Admin
+            </button>
+            <button
+              onClick={() => selectRole('driver')}
+              className="w-full py-4 bg-[#6B4F3F] text-white font-bold rounded-lg hover:bg-[#3B2F2F] transition-all"
+              style={{ fontFamily: 'Montserrat, sans-serif' }}
+            >
+              Driver
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const getInitialRoute = () => {
+    if (mobileRole === 'admin') return '/admin/dashboard';
+    if (mobileRole === 'driver') return '/driver';
+    return '/';
+  };
+
   return (
     <>
-      {!isAdminRoute && <Header />}
+      {!isAdminRoute && mobileRole !== 'admin' && mobileRole !== 'driver' && <Header />}
       <Suspense fallback={<PageLoader />}>
         <ErrorBoundary fallbackMessage="Something went wrong loading this page. Please try refreshing.">
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          {isCapacitor && mobileRole === 'admin' && <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />}
+          {isCapacitor && mobileRole === 'driver' && <Route path="/" element={<Navigate to="/driver" replace />} />}
+          {(!isCapacitor || !mobileRole) && <Route path="/" element={<HomePage />} />}
           <Route path="/materials" element={<MaterialsPage />} />
           <Route path="/delivery" element={<DeliveryPage />} />
           <Route path="/contact" element={<ContactPage />} />
@@ -116,12 +177,13 @@ function AppContent() {
           <Route path="/admin/settings" element={<SiteSettingsPage />} />
           <Route path="/admin/quickbooks" element={<QuickBooksSettingsPage />} />
           <Route path="/driver" element={<DriverDashboard />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/admin/delivery-calendar" element={<AdminDashboard />} />
+          <Route path="*" element={<Navigate to={getInitialRoute()} replace />} />
         </Routes>
         </ErrorBoundary>
       </Suspense>
-      {!isAdminRoute && <Footer />}
-      {!isAdminRoute && <SeasonalPopup />}
+      {!isAdminRoute && mobileRole !== 'admin' && mobileRole !== 'driver' && <Footer />}
+      {!isAdminRoute && mobileRole !== 'admin' && mobileRole !== 'driver' && <SeasonalPopup />}
       
       {/* Chatbot Bubble */}
       {!isAdminRoute && (

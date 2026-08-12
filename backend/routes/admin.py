@@ -387,6 +387,7 @@ def get_demo_settings():
 @router.get("/orders", dependencies=[Depends(verify_admin)])
 async def get_all_orders(
     status: Optional[str] = None,
+    delivery_date: Optional[str] = None,
     limit: int = 50,
     skip: int = 0
 ):
@@ -402,6 +403,8 @@ async def get_all_orders(
         query = {}
         if status:
             query["status"] = status
+        if delivery_date:
+            query["delivery.date"] = delivery_date
         
         orders = await db.orders.find(query).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
         total = await db.orders.count_documents(query)

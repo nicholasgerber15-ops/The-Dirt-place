@@ -47,3 +47,60 @@ npm start
 ## License
 
 Proprietary — NRG-CO. All rights reserved.
+
+## Mobile App (Capacitor)
+
+The frontend is wrapped with Capacitor for native Android/iOS builds.
+
+### Prerequisites
+
+- Node.js 18+
+- Android Studio (for Android builds)
+- Xcode (for iOS builds, macOS only)
+
+### Build Commands
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Build web assets
+npm run build
+
+# Sync Capacitor platforms
+npm run cap:sync
+
+# Open Android Studio
+npm run cap:open:android
+
+# Open Xcode
+npm run cap:open:ios
+```
+
+### Role Selection
+
+On first launch, the mobile app prompts the user to select a role:
+- **Customer** — standard shopping flow
+- **Admin** — admin dashboard, inventory, settings
+- **Driver** — delivery dashboard and calendar
+
+The selected role is stored locally and used to route the app. To reset the role, clear the app data or use:
+
+```bash
+# In browser dev tools
+localStorage.removeItem('mobile_role')
+```
+
+### Android Build
+
+1. Run `npm run build:android`
+2. In Android Studio, select **Build → Build Bundle(s) / APK(s) → Build APK(s)**
+3. For Play Store, build a signed release bundle
+
+### iOS Build
+
+1. Run `npm run build:ios`
+2. In Xcode, select a development team and build
+3. Archive and upload to App Store Connect

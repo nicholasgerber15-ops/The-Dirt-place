@@ -32,6 +32,7 @@ from backend.routes.materials import router as admin_materials_router
 from backend.routes.materials_public import router as public_materials_router
 from backend.routes.upload import router as upload_router
 from backend.routes.quickbooks import router as quickbooks_router
+from backend.routes.delivery_zones import router as delivery_zones_router
 
 
 ROOT_DIR = Path(__file__).parent
@@ -167,6 +168,7 @@ app.include_router(scheduling_router)  # Already has /api/scheduling prefix
 if upload_router:
     app.include_router(upload_router, prefix="/api/admin")
 app.include_router(quickbooks_router, prefix="/api/admin/quickbooks")
+app.include_router(delivery_zones_router, prefix="/api/admin")
 
 @app.options("/{full_path:path}")
 async def options_preflight(request: Request, full_path: str):
