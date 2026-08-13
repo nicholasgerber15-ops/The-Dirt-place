@@ -759,9 +759,8 @@ QUICKBOOKS_MINOR_VERSION = os.environ.get('QUICKBOOKS_MINOR_VERSION', '75')
 async def get_materials():
     database = get_database()
     if database:
-        cursor = database.materials.find({"status": "published"})
-        materials = []
-        async for m in cursor:
+        published = []
+        async for m in database.materials.find({"status": "published"}):
             m["_id"] = str(m["_id"])
             pricing = m.get("pricing", {})
             unit = pricing.get("unit", "each")
@@ -771,8 +770,31 @@ async def get_materials():
             m["price_per_unit"] = retail_cents / 100
             m["contractor_price"] = (contractor_cents / 100) if contractor_cents is not None else None
             m["unit_type"] = unit
-            materials.append(m)
-        return {"materials": materials}
+            published.append(m)
+
+        admin_materials = []
+        async for m in database.material_pricing.find({}):
+            admin_materials.append({
+                "material_id": m.get("material_id", ""),
+                "name": m.get("name", ""),
+                "price_per_unit": float(m.get("price_per_unit", 0) or 0),
+                "unit_type": m.get("unit_type", "each"),
+                "category": m.get("category", ""),
+                "description": m.get("description", ""),
+                "image_url": m.get("image_url", ""),
+                "min_order": m.get("min_order", 1),
+                "stock_quantity": m.get("stock_quantity", 0),
+                "product_details": m.get("product_details", ""),
+            })
+
+        seen = set()
+        combined = []
+        for m in published + admin_materials:
+            mid = m.get("material_id") or m.get("_id")
+            if mid and mid not in seen:
+                seen.add(mid)
+                combined.append(m)
+        return {"materials": combined}
 
     return {"materials": get_all_materials()}
 

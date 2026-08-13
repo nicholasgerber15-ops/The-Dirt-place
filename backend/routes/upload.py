@@ -12,21 +12,14 @@
 import os
 import uuid
 import logging
-from fastapi import APIRouter, HTTPException, UploadFile, File, Depends, Header
+from fastapi import APIRouter, HTTPException, UploadFile, File, Depends
 from typing import Optional
+from backend.routes.admin import verify_admin
 from backend.utils.r2 import upload_file
 
 logger = logging.getLogger(__name__)
 
-ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'dirtplace2024')
-
 router = APIRouter()
-
-
-def verify_admin(authorization: Optional[str] = Header(None)):
-    if not authorization or authorization != f"Bearer {ADMIN_PASSWORD}":
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    return True
 
 
 @router.post("/upload-image", dependencies=[Depends(verify_admin)])

@@ -13,9 +13,14 @@ from fastapi import APIRouter, HTTPException
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
 
+import logging
+from fastapi import APIRouter, HTTPException
+from motor.motor_asyncio import AsyncIOMotorClient
+from bson import ObjectId
+
 from backend.models.material import MaterialResponse, MaterialStatus
 
-logger = ...  # use standard logging import in actual file
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/materials", tags=["Public Materials"])
 
 
