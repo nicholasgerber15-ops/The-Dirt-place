@@ -196,12 +196,12 @@ const HomePage = () => {
             {[
               {
                 title: language === 'es' ? 'Bloques para Paisajismo' : 'Landscaping Blocks',
-                image: '/images/landscaping-blocks.jpg',
+                image: '/images/SLAB-BLUE/blue-lueders-slab-5x2.jpg',
                 link: '/materials'
               },
               {
                 title: language === 'es' ? 'Agregados y Gravas' : 'Aggregates and Gravels',
-                image: '/images/aggregates-gravels.jpg',
+                image: '/images/CHIP-GRA1/granite-chips-pile.jpg',
                 link: '/materials'
               },
               {
@@ -211,7 +211,7 @@ const HomePage = () => {
               },
               {
                 title: language === 'es' ? 'Piedras Decorativas' : 'Decorative Stones',
-                image: '/images/decorative-stones.jpg',
+                image: '/images/ROCK-RIO26/rio-rock-2-6-primary.jpg',
                 link: '/materials'
               }
             ].map((category, index) => (
