@@ -21,10 +21,10 @@
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.9
-       - key: MONGO_URL
-         value: mongodb+srv://n4011846_db_user:mPoucdgLxLXoNjPN@cluster0.saqgzqs.mongodb.net/?retryWrites=true&w=majority
-         # For MongoDB Atlas, replace with: mongodb+srv://<user>:<password>@<cluster>.mongodb.net/?retryWrites=true&w=majority
-         # For Render bundled MongoDB, use fromDatabase below.
+        - key: MONGO_URL
+          value: mongodb+srv://n4011846_db_user:QpGrR4TQkYVS0nuV@cluster0.saqgzqs.mongodb.net/?retryWrites=true&w=majority
+          # For MongoDB Atlas, replace with: mongodb+srv://<user>:<password>@<cluster>.mongodb.net/?retryWrites=true&w=majority
+          # For Render bundled MongoDB, use fromDatabase below.
       - key: DB_NAME
         value: the_dirt_place
       - key: JWT_SECRET_KEY
