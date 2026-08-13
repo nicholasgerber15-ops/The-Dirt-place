@@ -7,37 +7,37 @@ const Gallery = () => {
   const galleryImages = [
     {
       id: 1,
-      url: '/images/IMG_0483.jpg',
+      url: 'https://cdn.theboernedirtplace.com/images/IMG_0483.jpg',
       title: 'Decorative Rock Installation',
       category: 'Landscaping'
     },
     {
       id: 2,
-      url: '/images/IMG_0477.jpg',
+      url: 'https://cdn.theboernedirtplace.com/images/IMG_0477.jpg',
       title: 'Gravel Driveway',
       category: 'Driveways'
     },
     {
       id: 3,
-      url: '/images/IMG_0476.jpg',
+      url: 'https://cdn.theboernedirtplace.com/images/IMG_0476.jpg',
       title: 'Garden Topsoil',
       category: 'Gardens'
     },
     {
       id: 4,
-      url: '/images/IMG_0482.jpg',
+      url: 'https://cdn.theboernedirtplace.com/images/IMG_0482.jpg',
       title: 'Mulch Landscape Bed',
       category: 'Landscaping'
     },
     {
       id: 5,
-      url: '/images/IMG_0484.jpg',
+      url: 'https://cdn.theboernedirtplace.com/images/IMG_0484.jpg',
       title: 'Stone Pathway',
       category: 'Pathways'
     },
     {
       id: 6,
-      url: '/images/IMG_0489.jpg',
+      url: 'https://cdn.theboernedirtplace.com/images/IMG_0489.jpg',
       title: 'Material Delivery',
       category: 'Delivery'
     }

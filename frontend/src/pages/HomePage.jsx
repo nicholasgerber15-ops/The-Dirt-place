@@ -90,7 +90,8 @@ const HomePage = () => {
       setLoadingMaterials(true);
       const response = await axios.get(`${API}/ecommerce/materials`);
       
-      const transformedMaterials = response.data.materials.map(m => ({
+      const materials = response.data?.materials || [];
+      const transformedMaterials = materials.map(m => ({
         id: m.material_id || m.id,
         name: m.name,
         description: m.description || `Premium ${m.name.toLowerCase()} for your landscaping needs.`,
@@ -195,22 +196,22 @@ const HomePage = () => {
             {[
               {
                 title: language === 'es' ? 'Bloques para Paisajismo' : 'Landscaping Blocks',
-                image: '/images/EDGE-410BLK/black-steel-edging.jpg',
+                image: '/images/landscaping-blocks.jpg',
                 link: '/materials'
               },
               {
                 title: language === 'es' ? 'Agregados y Gravas' : 'Aggregates and Gravels',
-                image: '/images/CHIP-GRA1/granite-chips-closeup-01.jpg',
+                image: '/images/aggregates-gravels.jpg',
                 link: '/materials'
               },
               {
                 title: language === 'es' ? 'Tierra, Mantillo y Suelos' : 'Dirt Mulch and Soils',
-                image: '/images/IMG_0476.jpg',
+                image: '/images/dirt-mulch-soils.jpg',
                 link: '/materials'
               },
               {
                 title: language === 'es' ? 'Piedras Decorativas' : 'Decorative Stones',
-                image: '/images/ROCK-RIO12/rio-rock-1-2-primary.jpg',
+                image: '/images/decorative-stones.jpg',
                 link: '/materials'
               }
             ].map((category, index) => (
