@@ -115,7 +115,7 @@ async def get_quickbooks_status():
 @router.get("/mappings")
 async def get_quickbooks_mappings():
     db = _db()
-    if not db:
+    if db is None:
         return {"mappings": [], "unmapped": [], "duplicates": []}
 
     materials = await db.materials.find({}).to_list(1000)
@@ -157,7 +157,7 @@ async def get_quickbooks_mappings():
 @router.post("/mappings")
 async def save_quickbooks_mapping(mapping: QuickBooksItemMapping):
     db = _db()
-    if not db:
+    if db is None:
         raise HTTPException(status_code=503, detail="Database not configured")
 
     if not ObjectId.is_valid(mapping.material_id):
@@ -184,7 +184,7 @@ async def save_quickbooks_mapping(mapping: QuickBooksItemMapping):
 @router.delete("/mappings/{material_id}")
 async def delete_quickbooks_mapping(material_id: str):
     db = _db()
-    if not db:
+    if db is None:
         raise HTTPException(status_code=503, detail="Database not configured")
 
     if not ObjectId.is_valid(material_id):
@@ -201,7 +201,7 @@ async def delete_quickbooks_mapping(material_id: str):
 async def connect_quickbooks(request: QuickBooksConnectRequest, authorization: Optional[str] = Header(None)):
     verify_admin(authorization)
     db = _db()
-    if not db:
+    if db is None:
         raise HTTPException(status_code=503, detail="Database not configured")
 
     if not QUICKBOOKS_CLIENT_ID or not QUICKBOOKS_CLIENT_SECRET:
@@ -261,7 +261,7 @@ async def connect_quickbooks(request: QuickBooksConnectRequest, authorization: O
 async def disconnect_quickbooks(authorization: Optional[str] = Header(None)):
     verify_admin(authorization)
     db = _db()
-    if not db:
+    if db is None:
         raise HTTPException(status_code=503, detail="Database not configured")
 
     await db.integration_connections.delete_many({"provider": "quickbooks"})
@@ -286,7 +286,7 @@ async def trigger_sync(authorization: Optional[str] = Header(None)):
 @router.get("/items")
 async def list_qbo_items():
     db = _db()
-    if not db:
+    if db is None:
         raise HTTPException(status_code=503, detail="Database not configured")
 
     conn = await db.integration_connections.find_one({"provider": "quickbooks"})
@@ -321,7 +321,7 @@ async def set_emergency_override(override: EmergencyOverrideRequest, authorizati
 
     verify_admin(authorization)
     db = _db()
-    if not db:
+    if db is None:
         raise HTTPException(status_code=503, detail="Database not configured")
 
     if not ObjectId.is_valid(override.material_id):
@@ -366,7 +366,7 @@ async def clear_emergency_override(material_id: str, authorization: Optional[str
 
     verify_admin(authorization)
     db = _db()
-    if not db:
+    if db is None:
         raise HTTPException(status_code=503, detail="Database not configured")
 
     if not ObjectId.is_valid(material_id):

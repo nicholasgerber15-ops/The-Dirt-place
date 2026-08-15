@@ -802,7 +802,7 @@ async def import_materials_csv(request: Request):
         errors = []
 
         database = await get_database()
-        if not database:
+        if database is None:
             return {"success": True, "imported": len(list(reader)), "errors": []}
 
         for row in reader:

@@ -231,7 +231,7 @@ async def create_payment_intent(request: CheckoutCreateRequest):
         database = get_database()
         db_materials = {}
         unavailable = []
-        if database:
+        if database is not None:
             for submitted_item in request.cart_items:
                 material_id = str(submitted_item.get("id", ""))
                 doc = None
@@ -381,7 +381,7 @@ async def create_payment_intent(request: CheckoutCreateRequest):
         order_data["stripe_session_id"] = payment_intent.id
 
         db = get_database()
-        if db:
+        if db is not None:
             await db.orders.insert_one(order_data)
             order_id = str(order_data["_id"])
         else:
@@ -425,7 +425,7 @@ async def create_order_no_payment(request: CheckoutCreateRequest):
         database = get_database()
         db_materials = {}
         unavailable = []
-        if database:
+        if database is not None:
             for submitted_item in request.cart_items:
                 material_id = str(submitted_item.get("id", ""))
                 doc = None
@@ -566,7 +566,7 @@ async def create_order_no_payment(request: CheckoutCreateRequest):
 
         db = get_database()
         order_id = None
-        if db:
+        if db is not None:
             result = await db.orders.insert_one(order_data)
             order_id = str(result.inserted_id)
         else:
@@ -645,7 +645,7 @@ async def handle_payment_success(payment_intent):
     order_number = payment_intent.get("metadata", {}).get("order_number")
 
     database = get_database()
-    if not database:
+    if database is None:
         logger.info(f"Demo mode: Payment succeeded for {pi_id}")
         return
 
@@ -680,7 +680,7 @@ async def handle_payment_success(payment_intent):
 async def handle_payment_failed(payment_intent):
     pi_id = payment_intent["id"]
     database = get_database()
-    if not database:
+    if database is None:
         return
 
     await database.orders.update_one(
@@ -743,7 +743,7 @@ async def send_order_confirmation_email(order):
 @router.get("/checkout/status/{session_id}")
 async def get_checkout_status(session_id: str):
     database = get_database()
-    if database:
+    if database is not None:
         order = await database.orders.find_one({"stripe_session_id": session_id})
         if order:
             return {
@@ -783,7 +783,7 @@ QUICKBOOKS_MINOR_VERSION = os.environ.get('QUICKBOOKS_MINOR_VERSION', '75')
 @router.get("/materials")
 async def get_materials():
     database = get_database()
-    if database:
+    if database is not None:
         published = []
         async for m in database.materials.find({"status": "published"}):
             m["_id"] = str(m["_id"])
@@ -812,9 +812,17 @@ async def get_materials():
                 "product_details": m.get("product_details", ""),
             })
 
+        static = get_all_materials()
+
         seen = set()
         combined = []
         for m in published + admin_materials:
+            mid = m.get("material_id") or m.get("_id")
+            if mid and mid not in seen:
+                seen.add(mid)
+                combined.append(m)
+
+        for m in static:
             mid = m.get("material_id") or m.get("_id")
             if mid and mid not in seen:
                 seen.add(mid)

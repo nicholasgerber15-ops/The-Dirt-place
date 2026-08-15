@@ -47,7 +47,7 @@ def decrypt_token(ciphertext: str) -> str:
 
 async def save_connection(connection) -> None:
     db = get_db()
-    if not db:
+    if db is None:
         raise RuntimeError("Database not configured")
     payload = connection.model_dump()
     await db["integration_connections"].replace_one(
@@ -59,7 +59,7 @@ async def save_connection(connection) -> None:
 
 async def load_connection() -> Optional[dict]:
     db = get_db()
-    if not db:
+    if db is None:
         return None
     doc = await db["integration_connections"].find_one({"provider": "quickbooks"})
     return doc
@@ -67,7 +67,7 @@ async def load_connection() -> Optional[dict]:
 
 async def delete_connection() -> bool:
     db = get_db()
-    if not db:
+    if db is None:
         return False
     result = await db["integration_connections"].delete_one({"provider": "quickbooks"})
     return result.deleted_count == 1
@@ -75,7 +75,7 @@ async def delete_connection() -> bool:
 
 async def append_audit_log(entry) -> None:
     db = get_db()
-    if not db:
+    if db is None:
         return
     payload = entry.model_dump()
     await db["integration_audit_log"].insert_one(payload)
@@ -83,7 +83,7 @@ async def append_audit_log(entry) -> None:
 
 async def save_sync_report(report) -> None:
     db = get_db()
-    if not db:
+    if db is None:
         return
     payload = report.model_dump()
     await db["integration_sync_reports"].insert_one(payload)

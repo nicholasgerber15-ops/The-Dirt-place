@@ -272,7 +272,7 @@ async def sync_materials() -> QuickBooksSyncReport:
 
 async def get_connection_status() -> Dict:
     db = _db()
-    if not db:
+    if db is None:
         return {"connected": False, "reason": "database_unavailable"}
 
     conn = await db.integration_connections.find_one({"provider": "quickbooks"})
