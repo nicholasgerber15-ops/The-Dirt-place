@@ -111,7 +111,7 @@
        - key: NODE_VERSION
          value: 20.11.1
        - key: REACT_APP_BACKEND_URL
-         value: https://dirt-place-backend.onrender.com
+         value: https://the-dirt-place-1.onrender.com
        - key: REACT_APP_CHATBOT_URL
          value: https://dirt-place-chatbot.onrender.com
      autoDeploy: true
