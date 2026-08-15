@@ -22,6 +22,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 from bson import ObjectId
 from backend.data.products import PRODUCTS
+from backend.data.material_cards import MATERIAL_CARDS
 
 ROOT_DIR = Path(__file__).parent.parent
 load_dotenv(ROOT_DIR / '.env')
@@ -63,7 +64,7 @@ def get_database():
         return None
 
 def get_all_materials():
-    return [
+    materials = [
         {
             "material_id": p.get("material_id", ""),
             "name": p.get("name", ""),
@@ -78,6 +79,30 @@ def get_all_materials():
         }
         for p in PRODUCTS
     ]
+
+    # Nfinnite material cards (placeholder pricing until QuickBooks sync)
+    for card in MATERIAL_CARDS:
+        materials.append({
+            "material_id": card.get("material_id", ""),
+            "name": card.get("product_name", ""),
+            "price_per_unit": 0.0,
+            "unit_type": "yard",
+            "category": card.get("category", ""),
+            "subcategory": card.get("subcategory", ""),
+            "material_type": card.get("material_type", ""),
+            "color": card.get("color", ""),
+            "texture": card.get("texture", ""),
+            "description": card.get("application", ""),
+            "image_url": card.get("image_url", ""),
+            "min_order": 1,
+            "stock_quantity": 0,
+            "product_details": "",
+            "price_tier": card.get("price", "$$$"),
+            "inventory_status": card.get("inventory_status", "Awaiting QuickBooks Sync"),
+            "quickbooks_item_id": card.get("quickbooks_item_id", ""),
+        })
+
+    return materials
 
 PALLET_ITEMS = ["Pallets", "Butter Blocks", "Bags", "Piggyback"]
 PALLET_FEE = 100

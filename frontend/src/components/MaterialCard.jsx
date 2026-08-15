@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, Truck, ShoppingCart, Check, AlertTriangle, Phone } from 'lucide-react';
+import { ArrowRight, Truck, ShoppingCart, Check, AlertTriangle, Phone, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
@@ -37,6 +37,14 @@ const MaterialCard = ({ material, index }) => {
   };
 
   const getStockBadge = () => {
+    if (material.inventoryStatus) {
+      return (
+        <span className="px-3 py-1 bg-[#D9A441] text-[#3B2F2F] text-xs font-bold rounded-full flex items-center space-x-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <Clock size={12} />
+          <span>{material.inventoryStatus}</span>
+        </span>
+      );
+    }
     if (!material.in_stock || material.stock_quantity === 0) {
       return (
         <span className="px-3 py-1 bg-blue-500 text-white text-xs font-bold rounded-full flex items-center space-x-1" style={{ fontFamily: 'Montserrat, sans-serif' }}>
@@ -108,10 +116,10 @@ const MaterialCard = ({ material, index }) => {
         <div className="absolute top-4 left-4">
           <div className="bg-white/95 px-3 py-2 rounded-lg">
             <p className="text-2xl font-bold text-[#3B2F2F]" style={{ fontFamily: 'Bebas Neue, sans-serif' }}>
-              ${Number(material.pricePerCubicYard).toFixed(2)}
+              {material.priceTier ? material.priceTier : `$${Number(material.pricePerCubicYard).toFixed(2)}`}
             </p>
             <p className="text-xs text-[#6B4F3F]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
-              per {material.unit}
+              {material.priceTier ? 'Price pending sync' : `per ${material.unit}`}
             </p>
           </div>
         </div>

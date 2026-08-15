@@ -63,23 +63,25 @@ def test(name, method, endpoint, expected_status, data=None):
         print(f"    Response keys: {keys}")
 
 def test_materials():
+    global passed, failed
     test("Get all materials", "GET", "ecommerce/materials", 200)
     url = f"{API}/ecommerce/materials"
     try:
         with urllib.request.urlopen(url, timeout=15) as resp:
             data = json.loads(resp.read().decode())
             count = len(data.get("materials", []))
-            if count == 145:
-                print(f"    ✅ Contains all 145 products ({count})")
+            if count == 155:
+                print(f"    ✅ Contains all 155 products ({count})")
                 passed += 1
             else:
-                print(f"    ❌ Expected 145 products, got {count}")
+                print(f"    ❌ Expected 155 products, got {count}")
                 failed += 1
     except Exception as e:
         print(f"    ❌ Failed to count materials: {e}")
         failed += 1
 
 def test_materials_structure():
+    global passed, failed
     url = f"{API}/ecommerce/materials"
     try:
         with urllib.request.urlopen(url, timeout=15) as resp:
@@ -104,6 +106,7 @@ def test_delivery_fee_base():
     test("Get delivery fee (no address)", "GET", "ecommerce/delivery-fee", 200)
 
 def test_delivery_fee_with_address():
+    global passed, failed
     test("Get delivery fee (with address)", "GET", "ecommerce/delivery-fee?address=100+Main+St%2C+Boerne%2C+TX", 200)
     url = f"{API}/ecommerce/delivery-fee?address=100+Main+St%2C+Boerne%2C+TX"
     try:

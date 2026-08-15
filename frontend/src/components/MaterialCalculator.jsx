@@ -23,7 +23,7 @@ const MaterialCalculator = () => {
   const [emailMessage, setEmailMessage] = useState('');
 
   const projectTypes = ['Driveway', 'Garden Bed', 'Pathway', 'Patio', 'Landscape Area', 'Other'];
-  const materials = ['Topsoil', 'Gravel', 'Sand', 'Road Base', 'Mulch', 'Decorative Rock'];
+  const materials = ['Topsoil', 'Gravel', 'Sand', 'Road Base', 'Mulch', 'Decorative Rock', 'River Rock', 'Cobble', 'Crushed Limestone', 'Decomposed Granite'];
 
   const handleChange = (e) => {
     setFormData({
@@ -172,7 +172,7 @@ const MaterialCalculator = () => {
               value={formData.length}
               onChange={handleChange}
               required
-              min="0"
+              min="0.1"
               step="0.1"
               placeholder="e.g., 20"
               className="w-full px-4 py-3 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none transition-colors duration-300"
@@ -196,7 +196,7 @@ const MaterialCalculator = () => {
               value={formData.width}
               onChange={handleChange}
               required
-              min="0"
+              min="0.1"
               step="0.1"
               placeholder="e.g., 10"
               className="w-full px-4 py-3 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none transition-colors duration-300"
@@ -220,7 +220,7 @@ const MaterialCalculator = () => {
               value={formData.depth}
               onChange={handleChange}
               required
-              min="0"
+              min="0.1"
               step="0.1"
               placeholder="e.g., 4"
               className="w-full px-4 py-3 border-2 border-[#6B4F3F]/20 rounded focus:border-[#D9A441] focus:outline-none transition-colors duration-300"

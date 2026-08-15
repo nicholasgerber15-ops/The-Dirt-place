@@ -20,6 +20,7 @@ const ContactPage = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,6 +61,7 @@ const ContactPage = () => {
       });
 
       setSubmitMessage(response.data.message);
+      setSubmitSuccess(true);
 
       trackContactFormSubmit({
         type: 'homeowner',
@@ -77,6 +79,7 @@ const ContactPage = () => {
       setTimeout(() => setSubmitMessage(''), 5000);
     } catch (error) {
       console.error('Form submission error:', error);
+      setSubmitSuccess(false);
       setSubmitMessage(error.response?.data?.detail || 'Failed to send message. Please try again or call us directly.');
     } finally {
       setIsSubmitting(false);
@@ -256,9 +259,7 @@ const ContactPage = () => {
 
                   {submitMessage && (
                     <div className={`p-4 rounded-lg animate-fade-in ${
-                      submitMessage.includes('successfully') || submitMessage.includes('got it') 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
+                      submitSuccess ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}
                     style={{ fontFamily: 'Montserrat, sans-serif' }}
                     >

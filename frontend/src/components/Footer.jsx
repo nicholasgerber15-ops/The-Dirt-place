@@ -14,7 +14,7 @@ const Footer = () => {
             <div className="flex items-center space-x-3 mb-6">
               <div className="w-16 h-16">
                 <img 
-                  src="https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/pl8t7hjh_Final%20logo.png"
+                  src="/images/dirtplace-logo.png"
                   alt="The Dirt Place Logo"
                   className="w-full h-full object-contain"
                 />

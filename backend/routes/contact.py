@@ -14,7 +14,7 @@ import asyncio
 import logging
 import html
 import math
-import resend
+from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr, field_validator
 from dotenv import load_dotenv
@@ -24,13 +24,71 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).parent.parent
 load_dotenv(ROOT_DIR / '.env')
 
-# Configure Resend
-resend.api_key = os.environ.get('RESEND_API_KEY')
 SENDER_EMAIL = os.environ.get('SENDER_EMAIL', 'onboarding@resend.dev')
 BUSINESS_EMAIL = os.environ.get('BUSINESS_EMAIL', 'info@thedirtplace.com')
 
 # Configure logging
 logger = logging.getLogger(__name__)
+
+_resend = None
+
+def get_resend():
+    """Lazily import and configure the Resend SDK. Returns None when unavailable."""
+    global _resend
+    if _resend is not None:
+        return _resend
+    api_key = os.environ.get('RESEND_API_KEY')
+    if not api_key:
+        logger.warning("RESEND_API_KEY not configured - email sending unavailable")
+        return None
+    try:
+        import resend as resend_module
+        resend_module.api_key = api_key
+        _resend = resend_module
+        return _resend
+    except Exception as e:
+        logger.error(f"Failed to load Resend SDK: {e}")
+        return None
+
+_db = None
+_client = None
+
+async def get_database():
+    """Lazy MongoDB connection. Returns None when not configured."""
+    global _db, _client
+    if _db is not None:
+        return _db
+    mongo_url = os.environ.get('MONGO_URL')
+    db_name = os.environ.get('DB_NAME')
+    if not mongo_url or not db_name:
+        logger.warning("MongoDB not configured - running without persistence")
+        return None
+    try:
+        from motor.motor_asyncio import AsyncIOMotorClient
+        _client = AsyncIOMotorClient(mongo_url, serverSelectionTimeoutMS=5000)
+        await _client.admin.command('ping')
+        _db = _client[db_name]
+        logger.info(f"Connected to MongoDB: {db_name}")
+        return _db
+    except Exception as e:
+        logger.error(f"MongoDB connection failed: {e}")
+        return None
+
+async def _save_contact_message(request):
+    """Persist a contact submission so it is never lost, even if email fails."""
+    db = await get_database()
+    if db is None:
+        logger.warning("MongoDB not configured - contact message not persisted")
+        return
+    await db.contact_messages.insert_one({
+        "name": request.name,
+        "phone": request.phone,
+        "email": str(request.email),
+        "material": request.material,
+        "message": request.message,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    logger.info("Contact message persisted to database")
 
 router = APIRouter()
 
@@ -172,10 +230,25 @@ async def submit_contact_form(request: ContactFormRequest):
             "reply_to": request.email
         }
 
-        # Send email asynchronously (non-blocking)
-        email_response = await asyncio.to_thread(resend.Emails.send, params)
-        
-        logger.info(f"Contact form email sent successfully. Email ID: {email_response.get('id')}")
+        email_sent = False
+        resend_api = get_resend()
+        if resend_api is not None:
+            try:
+                # Send email asynchronously (non-blocking)
+                email_response = await asyncio.to_thread(resend_api.Emails.send, params)
+                logger.info(f"Contact form email sent successfully. Email ID: {email_response.get('id')}")
+                email_sent = True
+            except Exception as email_error:
+                logger.warning(f"Contact form email failed: {str(email_error)}")
+        else:
+            logger.warning("Contact form email skipped - email service unavailable")
+
+        if not email_sent:
+            # Persist the message so the inquiry is never lost when email delivery fails
+            try:
+                await _save_contact_message(request)
+            except Exception as persist_error:
+                logger.error(f"Failed to persist contact message: {str(persist_error)}")
 
         # ============================================
         # AUTO-REPLY SECTION - START
@@ -299,7 +372,7 @@ async def submit_contact_form(request: ContactFormRequest):
                             <p style="margin: 0 0 15px 0; color: #3B2F2F; font-size: 18px; font-weight: bold;">
                                 Need to calculate materials?
                             </p>
-                            <a href="https://earth-supply-1.preview.emergentagent.com/materials" class="cta-button">
+                            <a href="https://theboernedirtplace.com/materials" class="cta-button">
                                 Try Our Material Calculator
                             </a>
                         </div>
@@ -325,7 +398,9 @@ async def submit_contact_form(request: ContactFormRequest):
             }
             
             # Send auto-reply asynchronously (non-blocking)
-            auto_reply_response = await asyncio.to_thread(resend.Emails.send, auto_reply_params)
+            if resend_api is None:
+                raise RuntimeError("email service unavailable")
+            auto_reply_response = await asyncio.to_thread(resend_api.Emails.send, auto_reply_params)
             logger.info(f"Auto-reply sent successfully to {request.email}. Email ID: {auto_reply_response.get('id')}")
             
         except Exception as auto_reply_error:
@@ -408,6 +483,26 @@ async def calculate_material(request: CalculatorRequest):
                 "unit": "cubic yards",
                 "coverage": volume_cubic_yards,
                 "recommendation": "Decorative rock looks best at 2-4 inches depth depending on rock size."
+            },
+            "River Rock": {
+                "unit": "cubic yards",
+                "coverage": volume_cubic_yards,
+                "recommendation": "River rock works well at 2-3 inches depth for landscaping beds and drainage areas."
+            },
+            "Cobble": {
+                "unit": "cubic yards",
+                "coverage": volume_cubic_yards,
+                "recommendation": "Cobble is typically used at 2-3 inches depth for accent beds and erosion control."
+            },
+            "Crushed Limestone": {
+                "unit": "cubic yards",
+                "coverage": volume_cubic_yards,
+                "recommendation": "Crushed limestone compacts best at 4-6 inches depth for driveways and base layers."
+            },
+            "Decomposed Granite": {
+                "unit": "cubic yards",
+                "coverage": volume_cubic_yards,
+                "recommendation": "Decomposed granite should be applied 2-4 inches deep and compacted for walkways and dog runs."
             }
         }
         
@@ -583,7 +678,7 @@ async def email_calculation(request: EmailCalculationRequest):
                         <p style="font-size: 18px; color: #3B2F2F; margin-bottom: 10px;">
                             Ready to order?
                         </p>
-                        <a href="https://earth-supply-1.preview.emergentagent.com/contact" class="cta-button">
+                        <a href="https://theboernedirtplace.com/contact" class="cta-button">
                             Request a Quote
                         </a>
                     </div>
@@ -608,7 +703,13 @@ async def email_calculation(request: EmailCalculationRequest):
         }
 
         # Send email asynchronously
-        email_response = await asyncio.to_thread(resend.Emails.send, params)
+        resend_api = get_resend()
+        if resend_api is None:
+            raise HTTPException(
+                status_code=503,
+                detail="Email service is currently unavailable. Please try again later."
+            )
+        email_response = await asyncio.to_thread(resend_api.Emails.send, params)
         
         logger.info(f"Calculation email sent successfully to {request.email}. Email ID: {email_response.get('id')}")
 
@@ -617,6 +718,8 @@ async def email_calculation(request: EmailCalculationRequest):
             "message": f"Calculation results sent to {request.email}"
         }
 
+    except HTTPException:
+        raise
     except Exception as e:
         logger.error(f"Failed to send calculation email: {str(e)}")
         raise HTTPException(

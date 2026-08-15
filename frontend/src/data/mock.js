@@ -1656,7 +1656,7 @@ export const projectBundles = [
       { name: "Gravel Base #2 1 1/2\" (1 Yard)", quantity: 5, unit: "yards" }
     ],
     estimatedSavings: "10% vs individual pricing",
-    image: "https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/9bmvbbb2_sample%203%20.jpg"
+    image: "/images/material-sample.jpg"
   },
   {
     id: 2,
@@ -1667,7 +1667,7 @@ export const projectBundles = [
       { name: "Cedar Mulch (1 Yard)", quantity: 3, unit: "yards" }
     ],
     estimatedSavings: "Save $25 vs individual pricing",
-    image: "https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/6qvpvdwn_mulch%20mound.png"
+    image: "/images/material-mulch-mound.png"
   },
   {
     id: 3,

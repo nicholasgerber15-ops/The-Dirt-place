@@ -1,0 +1,163 @@
+# UNIVERSAL NRG-CO HEADER BLOCK
+# Use this exact banner at the top of source files. License/covenant terms still apply.
+# 
+################################################################
+#                                                              #
+#                ⚡  N R G - C O  ⚡                          #
+#                                                              #
+#    CRITICAL ASSET — CLOSED SOURCE / CONFIDENTIAL              #
+#    PROPRIETARY / UNDER DEVELOPMENT / SECRET                   #
+#                                                              #
+################################################################
+# Material cards for the Nfinnite material-card builder.
+# Schema:
+#   material_id, product_name, category, subcategory, material_type, color,
+#   texture, application, image_url, price, inventory_status,
+#   quickbooks_item_id
+#
+# material_id doubles as the SKU and is derived from the suggested image
+# filename. quickbooks_item_id is populated after QuickBooks OAuth sync.
+# Pricing is intentionally a placeholder ($$$ / Awaiting QuickBooks Sync)
+# until the QuickBooks OAuth sync populates real item pricing.
+MATERIAL_CARDS = [
+    {
+        "material_id": "ROCK-TXRN",
+        "product_name": "Texas River Rock - Natural 3/4\"-1\"",
+        "category": "Decorative Stone",
+        "subcategory": "River Rock",
+        "material_type": "River Rock",
+        "color": "Multi-color (tan, brown, gray, cream)",
+        "texture": "Rounded, smooth",
+        "application": "Landscaping beds, drainage, and accents",
+        "image_url": "/images/decorative-texas-river-rock-natural.jpg",
+        "price": "$$$",
+        "inventory_status": "Awaiting QuickBooks Sync",
+        "quickbooks_item_id": "",
+    },
+    {
+        "material_id": "ROCK-TXCOB",
+        "product_name": "Texas River Rock - Large Natural Cobble",
+        "category": "Decorative Stone",
+        "subcategory": "Cobble Stone",
+        "material_type": "River Cobble",
+        "color": "Mixed sediment colors",
+        "texture": "Rounded, large",
+        "application": "Creek beds, borders, and landscape features",
+        "image_url": "/images/decorative-texas-river-cobble.jpg",
+        "price": "$$$",
+        "inventory_status": "Awaiting QuickBooks Sync",
+        "quickbooks_item_id": "",
+    },
+    {
+        "material_id": "BASE-CRLIM",
+        "product_name": "Crushed Limestone Base",
+        "category": "Aggregates",
+        "subcategory": "Base Material",
+        "material_type": "Crushed Limestone",
+        "color": "Brown-gray",
+        "texture": "Crushed, angular, compactable",
+        "application": "Driveways, foundations, roads, and compacted base applications",
+        "image_url": "/images/aggregate-crushed-limestone-base.jpg",
+        "price": "$$$",
+        "inventory_status": "Awaiting QuickBooks Sync",
+        "quickbooks_item_id": "",
+    },
+    {
+        "material_id": "DG-NATBR",
+        "product_name": "Decomposed Granite (DG) - Natural Brown",
+        "category": "Aggregates",
+        "subcategory": "Decomposed Granite",
+        "material_type": "Decomposed Granite",
+        "color": "Earthy brown",
+        "texture": "Fine, granular",
+        "application": "Pathways, patios, and xeriscape applications",
+        "image_url": "/images/aggregate-decomposed-granite-brown.jpg",
+        "price": "$$$",
+        "inventory_status": "Awaiting QuickBooks Sync",
+        "quickbooks_item_id": "",
+    },
+    {
+        "material_id": "FLAG-BASBL",
+        "product_name": "Black Basalt Stepping Stones",
+        "category": "Flagstone & Patio Stone",
+        "subcategory": "Basalt Flagstone",
+        "material_type": "Basalt Flagstone",
+        "color": "Charcoal-black",
+        "texture": "Textured, flat surface",
+        "application": "Modern pathways and hardscape features",
+        "image_url": "/images/stone-black-basalt-stepping-stones.jpg",
+        "price": "$$$",
+        "inventory_status": "Awaiting QuickBooks Sync",
+        "quickbooks_item_id": "",
+    },
+    {
+        "material_id": "FLAG-LIMCR",
+        "product_name": "Cream Limestone Flagstone",
+        "category": "Flagstone & Patio Stone",
+        "subcategory": "Limestone Flagstone",
+        "material_type": "Limestone Flagstone",
+        "color": "Cream",
+        "texture": "Irregular edges, layered texture",
+        "application": "Patios, walkways, and outdoor living areas",
+        "image_url": "/images/stone-cream-limestone-flagstone.jpg",
+        "price": "$$$",
+        "inventory_status": "Awaiting QuickBooks Sync",
+        "quickbooks_item_id": "",
+    },
+    {
+        "material_id": "SLAB-LIMBU",
+        "product_name": "Buff Limestone Slabs",
+        "category": "Natural Stone",
+        "subcategory": "Slabs",
+        "material_type": "Limestone Slab",
+        "color": "Warm beige",
+        "texture": "Natural weathering",
+        "application": "Steps, walls, patios, and landscape accents",
+        "image_url": "/images/stone-buff-limestone-slabs.jpg",
+        "price": "$$$",
+        "inventory_status": "Awaiting QuickBooks Sync",
+        "quickbooks_item_id": "",
+    },
+    {
+        "material_id": "WALL-LIMWH",
+        "product_name": "White Limestone Building Stone",
+        "category": "Natural Stone",
+        "subcategory": "Wall Stone",
+        "material_type": "Limestone Block",
+        "color": "Light cream-white",
+        "texture": "Rough-cut edges",
+        "application": "Retaining walls, fireplaces, and masonry",
+        "image_url": "/images/stone-white-limestone-wall-block.jpg",
+        "price": "$$$",
+        "inventory_status": "Awaiting QuickBooks Sync",
+        "quickbooks_item_id": "",
+    },
+    {
+        "material_id": "BLK-LIMGR",
+        "product_name": "Grey Limestone Blocks",
+        "category": "Natural Stone",
+        "subcategory": "Blocks",
+        "material_type": "Limestone Block",
+        "color": "Gray",
+        "texture": "Natural split faces",
+        "application": "Retaining walls, borders, and architectural stonework",
+        "image_url": "/images/stone-grey-limestone-blocks.jpg",
+        "price": "$$$",
+        "inventory_status": "Awaiting QuickBooks Sync",
+        "quickbooks_item_id": "",
+    },
+    {
+        "material_id": "STEP-LIMNA",
+        "product_name": "Natural Limestone Steps / Treads",
+        "category": "Natural Stone",
+        "subcategory": "Steps & Treads",
+        "material_type": "Limestone Step / Tread",
+        "color": "Natural tan-gray",
+        "texture": "Cut, consistent thickness",
+        "application": "Stair applications and landscape transitions",
+        "image_url": "/images/stone-natural-limestone-steps.jpg",
+        "price": "$$$",
+        "inventory_status": "Awaiting QuickBooks Sync",
+        "quickbooks_item_id": "",
+    },
+]

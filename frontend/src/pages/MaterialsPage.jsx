@@ -56,19 +56,26 @@ const MaterialsPage = () => {
       setLoading(true);
       const response = await axios.get(`${API}/ecommerce/materials`);
       
-      const materials = response.data?.materials || [];
-      const transformedMaterials = materials.map(m => ({
-        id: m.material_id || m.id,
-        name: m.name,
-        description: m.description || `Premium ${m.name.toLowerCase()} for your landscaping needs.`,
-        image: m.image_url || '/images/IMG_0477.jpg',
-        category: m.category || m.name,
-        pricePerCubicYard: parseFloat(m.price_per_unit || m.price_per_cubic_yard || m.price || 0),
-        unit: m.unit_type || m.unit || 'cubic yard',
-        minOrder: m.min_order || 1,
-        stock_quantity: m.stock_quantity || 100,
-        in_stock: m.in_stock !== undefined ? m.in_stock : ((m.stock_quantity || 100) > 0)
-      }));
+      // Transform API data to match MaterialCard expectations
+      const transformedMaterials = response.data.materials.map(m => {
+        const priceTier = m.price_tier || null;
+        const placeholderPricing = Boolean(priceTier);
+        return {
+          id: m.material_id || m.id,
+          name: m.name,
+          description: m.description || `Premium ${m.name.toLowerCase()} for your landscaping needs.`,
+          image: m.image_url || '/images/IMG_0477.jpg',
+          category: m.category || m.name,
+          pricePerCubicYard: parseFloat(m.price_per_unit || m.price_per_cubic_yard || m.price || 0),
+          unit: m.unit_type || m.unit || 'cubic yard',
+          minOrder: m.min_order || 1,
+          stock_quantity: placeholderPricing ? 0 : (m.stock_quantity || 100),
+          in_stock: placeholderPricing ? false : (m.in_stock !== undefined ? m.in_stock : ((m.stock_quantity || 100) > 0)),
+          priceTier,
+          inventoryStatus: m.inventory_status || null,
+          quickbooksItemId: m.quickbooks_item_id || null
+        };
+      });
       
       setMaterials(transformedMaterials);
     } catch (error) {

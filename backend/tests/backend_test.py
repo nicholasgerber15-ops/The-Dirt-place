@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).parent.parent / ".env")
 
-BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://earth-supply-1.preview.emergentagent.com").rstrip("/")
+BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://theboernedirtplace.com").rstrip("/")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "dirtplace2024")
 
 

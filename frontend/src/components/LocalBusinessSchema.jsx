@@ -6,7 +6,7 @@ const LocalBusinessSchema = () => {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "The Dirt Place",
-    "image": "https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/pl8t7hjh_Final%20logo.png",
+    "image": "https://theboernedirtplace.com/images/dirtplace-logo.png",
     "description": "Premium landscape materials supplier in Boerne, Texas. Providing dirt, gravel, sand, mulch, and decorative rock for the Texas Hill Country.",
     "address": {
       "@type": "PostalAddress",

@@ -26,7 +26,7 @@ const Header = () => {
           <Link to="/" className="flex items-center space-x-3 group">
             <div className="w-16 h-16 transition-all duration-300">
               <img 
-                src="https://customer-assets.emergentagent.com/job_earth-supply-1/artifacts/pl8t7hjh_Final%20logo.png" 
+                src="/images/dirtplace-logo.png" 
                 alt="The Dirt Place Logo"
                 className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
               />
